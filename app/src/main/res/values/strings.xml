@@ -19,6 +19,12 @@
     <string name="delete">Delete</string>
     <string name="no_saved_locations">No saved locations yet</string>
     <string name="add_saved_location">Add saved location</string>
+    <string name="no_history">No tracking history yet</string>
+    <string name="clear_all">Clear All</string>
+    <string name="clear">Clear</string>
+    <string name="cancel">Cancel</string>
+    <string name="clear_all_history_title">Clear all history?</string>
+    <string name="clear_all_history_message">This will permanently delete all distance tracking history.</string>
 
     <!-- §6.2 Speedometer -->
     <string name="action_start">Start</string>
