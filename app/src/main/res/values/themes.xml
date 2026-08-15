@@ -1,9 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.TrueDistance" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <!-- §9 Visual Style Guide / §12 Theming: Light/Dark/System via DayNight -->
+    <style name="Theme.TrueDistance" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/accent_warm</item>
+        <item name="android:windowBackground">@color/background_soft</item>
     </style>
 
-    <style name="Theme.TrueDistance" parent="Base.Theme.TrueDistance" />
+    <!-- §5.2 Splash Screen theme -->
+    <style name="Theme.TrueDistance.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/background_soft</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.TrueDistance</item>
+    </style>
 </resources>

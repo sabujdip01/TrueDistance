@@ -1,3 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">TrueDistance</string>
+    <string name="app_name">True Distance</string>
+
+    <!-- Nav / tabs -->
+    <string name="true_distance">True Distance</string>
+    <string name="speedometer">Speedometer</string>
+    <string name="settings">Settings</string>
+
+    <!-- §6.1.1 Main Screen -->
+    <string name="saved_locations">Saved Locations</string>
+    <string name="distance_history">Distance History</string>
+    <string name="search_destination_hint">Search destination</string>
+    <string name="pick_on_map">Pick on map</string>
+    <string name="from_current_location">From: Current Location</string>
+    <string name="to_choose_destination">To: (choose a destination)</string>
+    <string name="start_tracking">Start Tracking</string>
+    <string name="stop_tracking">Stop Tracking</string>
+
+    <!-- §6.2 Speedometer -->
+    <string name="action_start">Start</string>
+    <string name="action_pause">Pause</string>
+    <string name="action_resume">Resume</string>
+    <string name="action_stop">Stop</string>
+    <string name="stat_start_time">Start Time</string>
+    <string name="stat_elapsed">Elapsed Time</string>
+    <string name="stat_distance">Distance</string>
+    <string name="stat_avg_speed">Avg Speed</string>
+    <string name="stat_max_speed">Max Speed</string>
+    <string name="past_trips">Past Trips</string>
+
+    <!-- Misc -->
+    <string name="tracking">Tracking</string>
 </resources>
