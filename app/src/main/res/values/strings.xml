@@ -25,6 +25,10 @@
     <string name="cancel">Cancel</string>
     <string name="clear_all_history_title">Clear all history?</string>
     <string name="clear_all_history_message">This will permanently delete all distance tracking history.</string>
+    <string name="you">You</string>
+    <string name="destination">Destination</string>
+    <string name="signal_lost">Signal lost — showing last known distance</string>
+    <string name="recenter">Recenter on my location</string>
 
     <!-- §6.2 Speedometer -->
     <string name="action_start">Start</string>

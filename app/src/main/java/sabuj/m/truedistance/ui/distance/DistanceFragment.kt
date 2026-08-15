@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -13,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import sabuj.m.truedistance.databinding.FragmentDistanceBinding
+import sabuj.m.truedistance.ui.SharedDestinationViewModel
 
 /** §6.1.1 — Main Screen: destination selection + Start Tracking. */
 @AndroidEntryPoint
@@ -22,6 +24,7 @@ class DistanceFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: DistanceViewModel by viewModels()
+    private val sharedDestinationViewModel: SharedDestinationViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -46,11 +49,12 @@ class DistanceFragment : Fragment() {
         }
 
         binding.startTrackingButton.setOnClickListener {
-            // §6.1.1 — validated by isStartEnabled; TrackingFragment reads the
-            // selected destination via a shared ViewModel or nav args.
-            findNavController().navigate(
-                sabuj.m.truedistance.R.id.action_distance_to_tracking
-            )
+            viewModel.uiState.value.selectedDestination?.let {
+                sharedDestinationViewModel.setDestination(it)
+                findNavController().navigate(
+                    sabuj.m.truedistance.R.id.action_distance_to_tracking
+                )
+            }
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
