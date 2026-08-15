@@ -37,6 +37,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
         }
     }
 
@@ -59,6 +60,10 @@ dependencies {
     // ConstraintLayout — required for Flow helper used in Speedometer layouts
     // (project-overview.md §12.4 / res/layout/fragment_speedometer.xml)
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+
+    // RecyclerView + CardView — Saved Locations (§6.1.2), History (§6.1.3), Past Trips (§6.2.2)
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("androidx.cardview:cardview:1.0.0")
 
     // Fragment
     implementation("androidx.fragment:fragment-ktx:1.8.2")
