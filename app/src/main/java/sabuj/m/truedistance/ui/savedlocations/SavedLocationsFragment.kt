@@ -1,27 +1,30 @@
 package sabuj.m.truedistance.ui.savedlocations
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import sabuj.m.truedistance.R
 import sabuj.m.truedistance.databinding.FragmentSavedLocationsBinding
+import sabuj.m.truedistance.ui.SharedDestinationViewModel
+import sabuj.m.truedistance.ui.distance.DestinationSelection
+import sabuj.m.truedistance.ui.mappicker.MapPickerViewModel
 
-/**
- * §6.1.2 Saved Locations Screen — list + swipe-to-delete + add via search/map pick.
- * TODO: wire "Add" flow to Places Autocomplete / map-tap picker; for now the FAB
- * opens a placeholder add dialog (name + manual lat/lng) — replace once the picker
- * exists.
- */
+/** §6.1.2 Saved Locations Screen — list + swipe-to-delete + add via search/map pick. */
 @AndroidEntryPoint
 class SavedLocationsFragment : Fragment() {
 
@@ -29,6 +32,8 @@ class SavedLocationsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: SavedLocationsViewModel by viewModels()
+    private val sharedDestinationViewModel: SharedDestinationViewModel by activityViewModels()
+    private val mapPickerViewModel: MapPickerViewModel by activityViewModels()
     private lateinit var adapter: SavedLocationAdapter
 
     override fun onCreateView(
@@ -44,8 +49,15 @@ class SavedLocationsFragment : Fragment() {
         adapter = SavedLocationAdapter(
             onItemClick = { location ->
                 // §6.1.2 — tapping a row returns to Main Screen with it pre-filled.
-                // TODO: pass via a shared ViewModel (SharedDestinationViewModel) or
-                // savedStateHandle once DistanceFragment supports receiving it.
+                sharedDestinationViewModel.setDestination(
+                    DestinationSelection(
+                        name = location.name,
+                        address = location.address,
+                        latitude = location.latitude,
+                        longitude = location.longitude,
+                        savedLocationId = location.id
+                    )
+                )
                 findNavController().popBackStack()
             },
             onDeleteClick = { location -> viewModel.delete(location) }
@@ -66,9 +78,7 @@ class SavedLocationsFragment : Fragment() {
             }
         }).attachToRecyclerView(binding.recyclerView)
 
-        binding.addButton.setOnClickListener {
-            // TODO: replace with Places Autocomplete / map-tap picker (§6.1.2)
-        }
+        binding.addButton.setOnClickListener { showAddOptionsDialog() }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -78,6 +88,66 @@ class SavedLocationsFragment : Fragment() {
                         if (locations.isEmpty()) View.VISIBLE else View.GONE
                 }
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // §6.1.2 — consume a point picked on MapPickerFragment, if any, then ask
+        // for a name to save it under.
+        mapPickerViewModel.consume()?.let { latLng ->
+            promptNameAndSave(latLng.latitude, latLng.longitude)
+        }
+    }
+
+    private fun showAddOptionsDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.add_saved_location)
+            .setItems(arrayOf(getString(R.string.add_via_search), getString(R.string.add_via_map))) { _, which ->
+                if (which == 0) showSearchDialog()
+                else findNavController().navigate(R.id.action_savedLocations_to_mapPicker)
+            }
+            .show()
+    }
+
+    private fun showSearchDialog() {
+        val input = EditText(requireContext()).apply { hint = getString(R.string.search_destination_hint) }
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.add_via_search)
+            .setView(wrapWithPadding(input))
+            .setPositiveButton(R.string.save) { _, _ ->
+                val query = input.text?.toString().orEmpty()
+                if (query.isNotBlank()) {
+                    viewModel.addFromAddress(query, requireContext()) { success ->
+                        if (!success) {
+                            android.widget.Toast.makeText(
+                                requireContext(), getString(R.string.no_results_found), android.widget.Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun promptNameAndSave(lat: Double, lng: Double) {
+        val input = EditText(requireContext()).apply { hint = getString(R.string.location_name_hint) }
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.location_name_hint)
+            .setView(wrapWithPadding(input))
+            .setPositiveButton(R.string.save) { _, _ ->
+                viewModel.addFromPoint(lat, lng, input.text?.toString().orEmpty(), requireContext())
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun wrapWithPadding(view: View): View {
+        val padding = (16 * resources.displayMetrics.density).toInt()
+        return LinearLayout(requireContext()).apply {
+            setPadding(padding, padding, padding, padding)
+            addView(view)
         }
     }
 

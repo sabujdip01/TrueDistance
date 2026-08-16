@@ -1,14 +1,19 @@
 package sabuj.m.truedistance.ui.savedlocations
 
+import android.content.Context
+import android.location.Geocoder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import sabuj.m.truedistance.database.SavedLocation
 import sabuj.m.truedistance.repository.SavedLocationRepository
+import java.util.Locale
 import java.util.UUID
 import javax.inject.Inject
 
@@ -21,7 +26,6 @@ class SavedLocationsViewModel @Inject constructor(
     val savedLocations: StateFlow<List<SavedLocation>> = repository.observeAll()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    /** Called after either search-autocomplete or map-pick resolves a lat/lng + name. */
     fun addLocation(name: String, address: String, latitude: Double, longitude: Double) {
         viewModelScope.launch {
             repository.save(
@@ -32,6 +36,45 @@ class SavedLocationsViewModel @Inject constructor(
                     latitude = latitude,
                     longitude = longitude
                 )
+            )
+        }
+    }
+
+    /** §6.1.2 — "Add via search" using Geocoder (interim ahead of Places Autocomplete). */
+    fun addFromAddress(query: String, context: Context, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                runCatching {
+                    @Suppress("DEPRECATION")
+                    Geocoder(context, Locale.getDefault()).getFromLocationName(query, 1)
+                }.getOrNull()?.firstOrNull()
+            }
+            if (result != null) {
+                addLocation(
+                    name = result.featureName ?: query,
+                    address = result.getAddressLine(0) ?: query,
+                    latitude = result.latitude,
+                    longitude = result.longitude
+                )
+            }
+            onResult(result != null)
+        }
+    }
+
+    /** §6.1.2 — "Add via map pick": reverse-geocode a tapped point for a name. */
+    fun addFromPoint(latitude: Double, longitude: Double, name: String, context: Context) {
+        viewModelScope.launch {
+            val address = withContext(Dispatchers.IO) {
+                runCatching {
+                    @Suppress("DEPRECATION")
+                    Geocoder(context, Locale.getDefault()).getFromLocation(latitude, longitude, 1)
+                }.getOrNull()?.firstOrNull()
+            }
+            addLocation(
+                name = name.ifBlank { address?.featureName ?: "Pinned location" },
+                address = address?.getAddressLine(0) ?: "$latitude, $longitude",
+                latitude = latitude,
+                longitude = longitude
             )
         }
     }

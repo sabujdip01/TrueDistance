@@ -7,6 +7,37 @@
     android:layout_height="match_parent"
     android:background="@color/background_soft">
 
+    <!-- §11.1 / §11.2 — no-internet / no-GPS banners, hidden by default -->
+    <TextView
+        android:id="@+id/noInternetBanner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/accent_warm"
+        android:padding="8dp"
+        android:text="@string/no_internet_banner"
+        android:textColor="@android:color/white"
+        android:textAlignment="center"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/noGpsBanner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/accent_warm"
+        android:padding="8dp"
+        android:text="@string/no_gps_banner"
+        android:textColor="@android:color/white"
+        android:textAlignment="center"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/noInternetBanner"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <ImageButton
         android:id="@+id/savedLocationsButton"
         android:layout_width="48dp"
@@ -16,7 +47,7 @@
         android:background="@drawable/bg_icon_chip"
         android:contentDescription="@string/saved_locations"
         android:src="@drawable/ic_bookmark"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/noGpsBanner"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton

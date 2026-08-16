@@ -21,13 +21,26 @@
         <action
             android:id="@+id/action_distance_to_tracking"
             app:destination="@id/nav_tracking" />
+        <action
+            android:id="@+id/action_distance_to_mapPicker"
+            app:destination="@id/nav_mapPicker" />
     </fragment>
 
     <fragment
         android:id="@+id/nav_savedLocations"
         android:name="sabuj.m.truedistance.ui.savedlocations.SavedLocationsFragment"
         android:label="@string/saved_locations"
-        tools:layout="@layout/fragment_saved_locations" />
+        tools:layout="@layout/fragment_saved_locations">
+        <action
+            android:id="@+id/action_savedLocations_to_mapPicker"
+            app:destination="@id/nav_mapPicker" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_mapPicker"
+        android:name="sabuj.m.truedistance.ui.mappicker.MapPickerFragment"
+        android:label="@string/pick_on_map"
+        tools:layout="@layout/fragment_map_picker" />
 
     <fragment
         android:id="@+id/nav_history"

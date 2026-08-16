@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Placeholder vector — swap with final icon artwork per §5.1 Branding -->
+<!-- §4, §9 — speed/gauge icon for Speedometer tab -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
@@ -8,5 +8,5 @@
     android:tint="@color/text_primary">
     <path
         android:fillColor="@android:color/white"
-        android:pathData="M12,2L2,7L12,12L22,7L12,2ZM2,17L12,22L22,17M2,12L12,17L22,12" />
+        android:pathData="M12,4C6.48,4 2,8.48 2,14c0,5.52 4.48,10 10,10s10,-4.48 10,-10c0,-5.52 -4.48,-10 -10,-10zM12,22c-4.41,0 -8,-3.59 -8,-8c0,-4.41 3.59,-8 8,-8s8,3.59 8,8c0,4.41 -3.59,8 -8,8zM12.5,7h-1v5.62l3.44,2.06l0.5,-0.85l-2.94,-1.73z" />
 </vector>

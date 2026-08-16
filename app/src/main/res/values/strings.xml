@@ -29,6 +29,41 @@
     <string name="destination">Destination</string>
     <string name="signal_lost">Signal lost — showing last known distance</string>
     <string name="recenter">Recenter on my location</string>
+    <string name="tracking_notification_channel">Distance tracking</string>
+
+    <!-- §6.3 Settings -->
+    <string name="section_preferences">Preferences</string>
+    <string name="section_about">About</string>
+    <string name="theme">Theme</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_system">Follow System</string>
+    <string name="units">Units</string>
+    <string name="unit_km">Kilometers</string>
+    <string name="unit_miles">Miles</string>
+    <string name="unit_both">Both</string>
+    <string name="auto_meters_under_1km">Show meters under 1 km</string>
+    <string name="gps_accuracy_mode">GPS Accuracy</string>
+    <string name="accuracy_high">High Accuracy</string>
+    <string name="accuracy_balanced">Balanced</string>
+    <string name="accuracy_device_only">Device Only</string>
+    <string name="update_frequency">Update Frequency</string>
+    <string name="background_tracking">Background Tracking</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="version">Version</string>
+    <string name="version_format">%1$s (%2$d)</string>
+    <string name="credits">Credits</string>
+    <string name="credits_text">Built with Google Maps Platform.</string>
+    <string name="no_internet_banner">No internet connection — search and map require internet</string>
+    <string name="no_gps_banner">Location is off — tap to enable</string>
+    <string name="confirm_location">Confirm Location</string>
+    <string name="add_via_search">Search Address</string>
+    <string name="add_via_map">Pick on Map</string>
+    <string name="location_name_hint">Name this location</string>
+    <string name="save">Save</string>
+    <string name="no_results_found">No results found</string>
+    <string name="tracking_notification_title">Tracking to %1$s</string>
+    <string name="tracking_channel_name">Distance Tracking</string>
 
     <!-- §6.2 Speedometer -->
     <string name="action_start">Start</string>

@@ -1,6 +1,7 @@
 package sabuj.m.truedistance
 
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.fragment.NavHostFragment
@@ -12,10 +13,19 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
+    // §10 Permissions — POST_NOTIFICATIONS needed for background tracking notification
+    private val requestNotificationPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { /* no-op either way; background tracking still works, notification just won't show */ }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen() // §5.2 — Android 12+ SplashScreen API
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            requestNotificationPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+        }
 
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.navHostFragment) as NavHostFragment
