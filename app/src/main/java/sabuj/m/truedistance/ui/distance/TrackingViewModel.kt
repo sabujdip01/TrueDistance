@@ -7,6 +7,7 @@ import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import sabuj.m.truedistance.repository.SettingsRepository
 import sabuj.m.truedistance.service.TrackingService
 import sabuj.m.truedistance.service.TrackingState
@@ -51,8 +52,7 @@ class TrackingViewModel @Inject constructor(
      */
     suspend fun stopIfBackgroundTrackingDisabled() {
         val enabled = settingsRepository.backgroundTrackingEnabled
-        // collect first value without extra import churn
-        val isEnabled = kotlinx.coroutines.flow.first(enabled)
+        val isEnabled = enabled.first()
         if (!isEnabled) stopTracking()
     }
 }
