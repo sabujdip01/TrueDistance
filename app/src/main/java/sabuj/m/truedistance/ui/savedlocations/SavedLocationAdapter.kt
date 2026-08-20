@@ -28,6 +28,15 @@ class SavedLocationAdapter(
         val item = getItem(position)
         holder.binding.nameText.text = item.name
         holder.binding.addressText.text = item.address
+        
+        // Cycle through pastel gradients
+        val backgroundRes = when (position % 3) {
+            0 -> sabuj.m.truedistance.R.drawable.bg_card_mint
+            1 -> sabuj.m.truedistance.R.drawable.bg_card_lavender
+            else -> sabuj.m.truedistance.R.drawable.bg_card_peach
+        }
+        holder.binding.rootContainer.setBackgroundResource(backgroundRes)
+
         holder.binding.root.setOnClickListener { onItemClick(item) }
         holder.binding.deleteButton.setOnClickListener { onDeleteClick(item) }
     }

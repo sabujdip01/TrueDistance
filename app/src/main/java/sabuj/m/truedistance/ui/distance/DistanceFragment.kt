@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.AutoCompleteTextView
 import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -20,12 +21,11 @@ import sabuj.m.truedistance.ui.SharedDestinationViewModel
 import sabuj.m.truedistance.ui.mappicker.MapPickerViewModel
 import sabuj.m.truedistance.utils.GpsStatusHelper
 import sabuj.m.truedistance.utils.NetworkStatusHelper
+import sabuj.m.truedistance.utils.PlacesAutocompleteAdapter
 
 /**
  * §6.1.1 — Main Screen: destination selection + Start Tracking.
- * Search uses Android's built-in Geocoder for now (§6.1.1a); upgrading to the
- * Places Autocomplete widget is a follow-up (needs Places SDK init + API key
- * wiring beyond this pass) — tracked as a known gap, not blocking V1.
+ * Search uses Google Places Autocomplete (§6.1.1a).
  */
 @AndroidEntryPoint
 class DistanceFragment : Fragment() {
@@ -57,6 +57,18 @@ class DistanceFragment : Fragment() {
             findNavController().navigate(
                 sabuj.m.truedistance.R.id.action_distance_to_history
             )
+        }
+
+        val autocompleteAdapter = PlacesAutocompleteAdapter(requireContext())
+        binding.destinationSearchBox.setAdapter(autocompleteAdapter)
+        binding.destinationSearchBox.setOnItemClickListener { _, _, position, _ ->
+            val prediction = autocompleteAdapter.getItem(position)
+            autocompleteAdapter.fetchPlace(prediction) { place ->
+                val latLng = place.latLng
+                if (latLng != null) {
+                    viewModel.selectPickedPoint(latLng.latitude, latLng.longitude, requireContext(), place.name)
+                }
+            }
         }
 
         binding.startTrackingButton.setOnClickListener {
@@ -105,7 +117,7 @@ class DistanceFragment : Fragment() {
                     binding.startTrackingButton.isEnabled = state.isStartEnabled
                     binding.toLabel.text = state.selectedDestination?.let {
                         "To: ${it.name}"
-                    } ?: "To: (choose a destination)"
+                    } ?: "To: (Choose a Destination)"
                 }
             }
         }

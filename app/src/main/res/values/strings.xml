@@ -10,25 +10,25 @@
     <!-- §6.1.1 Main Screen -->
     <string name="saved_locations">Saved Locations</string>
     <string name="distance_history">Distance History</string>
-    <string name="search_destination_hint">Search destination</string>
-    <string name="pick_on_map">Pick on map</string>
+    <string name="search_destination_hint">Search Destination</string>
+    <string name="pick_on_map">Pick on Map</string>
     <string name="from_current_location">From: Current Location</string>
-    <string name="to_choose_destination">To: (choose a destination)</string>
+    <string name="to_choose_destination">To: (Choose a Destination)</string>
     <string name="start_tracking">Start Tracking</string>
     <string name="stop_tracking">Stop Tracking</string>
     <string name="delete">Delete</string>
-    <string name="no_saved_locations">No saved locations yet</string>
-    <string name="add_saved_location">Add saved location</string>
-    <string name="no_history">No tracking history yet</string>
+    <string name="no_saved_locations">No Saved Locations Yet</string>
+    <string name="add_saved_location">Save New Location</string>
+    <string name="no_history">No Tracking History yet</string>
     <string name="clear_all">Clear All</string>
     <string name="clear">Clear</string>
     <string name="cancel">Cancel</string>
-    <string name="clear_all_history_title">Clear all history?</string>
+    <string name="clear_all_history_title">Clear all History?</string>
     <string name="clear_all_history_message">This will permanently delete all distance tracking history.</string>
     <string name="you">You</string>
     <string name="destination">Destination</string>
     <string name="signal_lost">Signal lost — showing last known distance</string>
-    <string name="recenter">Recenter on my location</string>
+    <string name="recenter">Recenter On My Location</string>
     <string name="tracking_notification_channel">Distance tracking</string>
 
     <!-- §6.3 Settings -->
@@ -51,15 +51,15 @@
     <string name="background_tracking">Background Tracking</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="version">Version</string>
-    <string name="version_format">%1$s (%2$d)</string>
+    <string name="version_format">v%1$s (%2$d)</string>
     <string name="credits">Credits</string>
     <string name="credits_text">Built with Google Maps Platform.</string>
-    <string name="no_internet_banner">No internet connection — search and map require internet</string>
-    <string name="no_gps_banner">Location is off — tap to enable</string>
+    <string name="no_internet_banner">No Internet Connection — Search and Map require Internet</string>
+    <string name="no_gps_banner">Location is off — Tap to enable</string>
     <string name="confirm_location">Confirm Location</string>
     <string name="add_via_search">Search Address</string>
     <string name="add_via_map">Pick on Map</string>
-    <string name="location_name_hint">Name this location</string>
+    <string name="location_name_hint">Name this Location</string>
     <string name="save">Save</string>
     <string name="no_results_found">No results found</string>
     <string name="tracking_notification_title">Tracking to %1$s</string>

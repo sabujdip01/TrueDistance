@@ -44,7 +44,7 @@ object NotificationHelper {
         )
 
         return NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_map_pin)
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(destinationName)
             .setContentText(formattedDistance)
             .setContentIntent(contentIntent)

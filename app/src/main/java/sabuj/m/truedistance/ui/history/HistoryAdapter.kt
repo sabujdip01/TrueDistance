@@ -80,6 +80,14 @@ class HistoryAdapter(
                 entry.initialDistanceMeters, unit, decimalPrecision, autoMetersUnder1km
             )
 
+            // Cycle through pastel gradients
+            val backgroundRes = when (bindingAdapterPosition % 3) {
+                0 -> sabuj.m.truedistance.R.drawable.bg_card_lavender
+                1 -> sabuj.m.truedistance.R.drawable.bg_card_mint
+                else -> sabuj.m.truedistance.R.drawable.bg_card_peach
+            }
+            binding.rootContainer.setBackgroundResource(backgroundRes)
+
             binding.root.setOnClickListener { onEntryClick(entry) }
             binding.deleteButton.setOnClickListener { onDeleteClick(entry) }
 

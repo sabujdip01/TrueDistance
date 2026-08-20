@@ -19,7 +19,6 @@ class MainActivity : AppCompatActivity() {
     ) { /* no-op either way; background tracking still works, notification just won't show */ }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen() // §5.2 — Android 12+ SplashScreen API
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 

@@ -16,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import dagger.hilt.android.AndroidEntryPoint
@@ -125,7 +126,9 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
         if (state.currentLocation != null) {
             if (currentMarker == null) {
                 currentMarker = map.addMarker(
-                    MarkerOptions().position(state.currentLocation).title(getString(R.string.you))
+                    MarkerOptions().position(state.currentLocation)
+                        .title(getString(R.string.you))
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
                 )
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(state.currentLocation, 14f))
             } else {
@@ -135,7 +138,9 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
 
         if (state.destination != null && destinationMarker == null) {
             destinationMarker = map.addMarker(
-                MarkerOptions().position(state.destination).title(getString(R.string.destination))
+                MarkerOptions().position(state.destination)
+                    .title(getString(R.string.destination))
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
             )
         }
 
@@ -144,7 +149,7 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
             polyline = map.addPolyline(
                 PolylineOptions()
                     .add(state.currentLocation, state.destination)
-                    .color(resources.getColor(R.color.accent_warm, null))
+                    .color(resources.getColor(R.color.accent_teal, null))
                     .width(6f)
             )
         }

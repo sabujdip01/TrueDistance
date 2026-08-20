@@ -101,23 +101,34 @@ class DistanceViewModel @Inject constructor(
     }
 
     /** §6.1.1b — resolves a map-tapped point (reverse-geocode for a display name). */
-    fun selectPickedPoint(latitude: Double, longitude: Double, context: Context) {
+    fun selectPickedPoint(latitude: Double, longitude: Double, context: Context, name: String? = null) {
         viewModelScope.launch {
-            val address = withContext(Dispatchers.IO) {
-                runCatching {
-                    @Suppress("DEPRECATION")
-                    Geocoder(context, Locale.getDefault()).getFromLocation(latitude, longitude, 1)
-                }.getOrNull()?.firstOrNull()
-            }
-
-            selectDestination(
-                DestinationSelection(
-                    name = address?.featureName ?: "Pinned location",
-                    address = address?.getAddressLine(0) ?: "$latitude, $longitude",
-                    latitude = latitude,
-                    longitude = longitude
+            if (name != null) {
+                selectDestination(
+                    DestinationSelection(
+                        name = name,
+                        address = name, // Use name as address if not available, or we could fetch it
+                        latitude = latitude,
+                        longitude = longitude
+                    )
                 )
-            )
+            } else {
+                val address = withContext(Dispatchers.IO) {
+                    runCatching {
+                        @Suppress("DEPRECATION")
+                        Geocoder(context, Locale.getDefault()).getFromLocation(latitude, longitude, 1)
+                    }.getOrNull()?.firstOrNull()
+                }
+
+                selectDestination(
+                    DestinationSelection(
+                        name = address?.featureName ?: "Pinned location",
+                        address = address?.getAddressLine(0) ?: "$latitude, $longitude",
+                        latitude = latitude,
+                        longitude = longitude
+                    )
+                )
+            }
         }
     }
 

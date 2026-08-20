@@ -40,13 +40,13 @@ object DistanceCalculator {
         fun fmt(value: Double) = "%.${decimalPrecision}f".format(value)
 
         if (autoMetersUnder1km && meters < 1000.0) {
-            return "${meters.toInt()} m"
+            return "${meters.toInt()} M"
         }
 
         return when (unit) {
-            UnitPreference.KM -> "${fmt(km)} km"
-            UnitPreference.MILES -> "${fmt(miles)} mi"
-            UnitPreference.BOTH -> "${fmt(km)} km / ${fmt(miles)} mi"
+            UnitPreference.KM -> "${fmt(km)} KM"
+            UnitPreference.MILES -> "${fmt(miles)} MI"
+            UnitPreference.BOTH -> "${fmt(km)} KM / ${fmt(miles)} MI"
         }
     }
 }

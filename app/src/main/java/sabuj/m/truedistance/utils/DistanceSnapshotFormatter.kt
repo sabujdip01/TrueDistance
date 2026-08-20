@@ -28,9 +28,9 @@ object DistanceSnapshotFormatter {
                 ?: snapshots.minByOrNull { abs(it.elapsedPercent - pct) }
             closest?.let {
                 val label = when (pct) {
-                    0 -> "Start time"
-                    100 -> "End time"
-                    else -> "After ${pct}% of elapsed time"
+                    0 -> "Start Time"
+                    100 -> "End Time"
+                    else -> "After ${pct}% Of Elapsed Time"
                 }
                 DisplayRow(label, it.distanceMeters)
             }

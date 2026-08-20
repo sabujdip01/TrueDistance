@@ -25,7 +25,8 @@
         app:cardElevation="4dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_max="600dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -60,22 +61,26 @@
         android:src="@drawable/ic_recenter"
         android:contentDescription="@string/recenter"
         app:layout_constraintBottom_toTopOf="@id/controlsBar"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="@id/controlsBar" />
 
     <!-- §6.1.4 — Start/Stop under the map, matches Speedometer control placement -->
     <LinearLayout
         android:id="@+id/controlsBar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="16dp"
         android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_max="600dp">
 
         <Button
             android:id="@+id/stopButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:backgroundTint="@color/accent_warm"
             android:text="@string/stop_tracking" />
     </LinearLayout>
 

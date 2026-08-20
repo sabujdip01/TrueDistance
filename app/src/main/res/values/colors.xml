@@ -1,12 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- §9 Visual Style Guide -->
+<!-- §9 Visual Style Guide updated per design.md -->
 <resources>
-    <color name="background_soft">#FBEFEA</color>
+    <!-- Palette from design.md -->
+    <color name="bg_gradient_start">#FFFFFF</color>
+    <color name="bg_gradient_end">#F3E5F5</color> <!-- Very soft lavender -->
+    <color name="background_soft">#F9F4F8</color> <!-- Pale pinkish/lavender white -->
     <color name="background_soft_dark">#1C1B1A</color>
+
+    <color name="primary_violet">#7C4DFF</color> <!-- Electric Purple -->
+    <color name="primary_lavender">#E1BEE7</color> <!-- Soft lavender -->
+
+    <color name="success_mint">#B2DFDB</color>
+    <color name="warning_peach">#FFCCBC</color>
+    <color name="info_blue">#E1F5FE</color>
+
+    <color name="text_charcoal">#37474F</color>
+    <color name="text_gray_purple">#90A4AE</color>
+
+    <color name="card_white_translucent">#E6FFFFFF</color> <!-- 90% White -->
     <color name="card_white">#FFFFFF</color>
     <color name="card_dark">#2A2826</color>
-    <color name="accent_warm">#E85D4B</color>
-    <color name="pill_dark">#1A1A1A</color>
-    <color name="text_primary">#1A1A1A</color>
-    <color name="text_secondary">#6B6B6B</color>
+
+    <!-- Aliases for existing code compatibility where needed -->
+    <color name="accent_warm">#7C4DFF</color> <!-- Violet as primary accent now -->
+    <color name="accent_teal">#B2DFDB</color>
+    <color name="pill_dark">#37474F</color>
+    <color name="text_primary">#37474F</color>
+    <color name="text_secondary">#90A4AE</color>
+    <color name="glass_white">#CCFFFFFF</color>
 </resources>

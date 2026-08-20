@@ -1,10 +1,11 @@
 package sabuj.m.truedistance.ui.savedlocations
 
-import android.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
@@ -23,6 +24,7 @@ import sabuj.m.truedistance.databinding.FragmentSavedLocationsBinding
 import sabuj.m.truedistance.ui.SharedDestinationViewModel
 import sabuj.m.truedistance.ui.distance.DestinationSelection
 import sabuj.m.truedistance.ui.mappicker.MapPickerViewModel
+import sabuj.m.truedistance.utils.PlacesAutocompleteAdapter
 
 /** §6.1.2 Saved Locations Screen — list + swipe-to-delete + add via search/map pick. */
 @AndroidEntryPoint
@@ -101,7 +103,7 @@ class SavedLocationsFragment : Fragment() {
     }
 
     private fun showAddOptionsDialog() {
-        AlertDialog.Builder(requireContext())
+        MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.add_saved_location)
             .setItems(arrayOf(getString(R.string.add_via_search), getString(R.string.add_via_map))) { _, which ->
                 if (which == 0) showSearchDialog()
@@ -111,18 +113,47 @@ class SavedLocationsFragment : Fragment() {
     }
 
     private fun showSearchDialog() {
-        val input = EditText(requireContext()).apply { hint = getString(R.string.search_destination_hint) }
-        AlertDialog.Builder(requireContext())
+        val input = AutoCompleteTextView(requireContext()).apply {
+            hint = getString(R.string.search_destination_hint)
+            threshold = 1
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        }
+        val autocompleteAdapter = PlacesAutocompleteAdapter(requireContext())
+        input.setAdapter(autocompleteAdapter)
+
+        var selectedPlace: com.google.android.libraries.places.api.model.Place? = null
+
+        input.setOnItemClickListener { _, _, position, _ ->
+            val prediction = autocompleteAdapter.getItem(position)
+            autocompleteAdapter.fetchPlace(prediction) { place ->
+                selectedPlace = place
+            }
+        }
+
+        MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.add_via_search)
             .setView(wrapWithPadding(input))
             .setPositiveButton(R.string.save) { _, _ ->
-                val query = input.text?.toString().orEmpty()
-                if (query.isNotBlank()) {
-                    viewModel.addFromAddress(query, requireContext()) { success ->
-                        if (!success) {
-                            android.widget.Toast.makeText(
-                                requireContext(), getString(R.string.no_results_found), android.widget.Toast.LENGTH_SHORT
-                            ).show()
+                val place = selectedPlace
+                if (place != null && place.latLng != null) {
+                    viewModel.addLocation(
+                        place.name ?: input.text.toString(),
+                        place.address ?: input.text.toString(),
+                        place.latLng!!.latitude,
+                        place.latLng!!.longitude
+                    )
+                } else {
+                    val query = input.text?.toString().orEmpty()
+                    if (query.isNotBlank()) {
+                        viewModel.addFromAddress(query, requireContext()) { success ->
+                            if (!success) {
+                                android.widget.Toast.makeText(
+                                    requireContext(), getString(R.string.no_results_found), android.widget.Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
                     }
                 }
@@ -132,8 +163,14 @@ class SavedLocationsFragment : Fragment() {
     }
 
     private fun promptNameAndSave(lat: Double, lng: Double) {
-        val input = EditText(requireContext()).apply { hint = getString(R.string.location_name_hint) }
-        AlertDialog.Builder(requireContext())
+        val input = EditText(requireContext()).apply {
+            hint = getString(R.string.location_name_hint)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        }
+        MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.location_name_hint)
             .setView(wrapWithPadding(input))
             .setPositiveButton(R.string.save) { _, _ ->

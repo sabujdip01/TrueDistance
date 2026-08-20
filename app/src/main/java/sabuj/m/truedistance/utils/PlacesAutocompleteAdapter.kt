@@ -1,9 +1,11 @@
 package sabuj.m.truedistance.utils
 
 import android.content.Context
+import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Filter
 import android.widget.Filterable
+import android.widget.Toast
 import com.google.android.gms.tasks.Tasks
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompletePrediction
@@ -22,6 +24,10 @@ class PlacesAutocompleteAdapter(context: Context) :
 
     private var resultList: List<AutocompletePrediction> = arrayListOf()
     private val placesClient: PlacesClient = Places.createClient(context)
+
+    companion object {
+        private const val TAG = "PlacesAutocomplete"
+    }
 
     override fun getCount(): Int = resultList.size
 
@@ -68,8 +74,14 @@ class PlacesAutocompleteAdapter(context: Context) :
 
         return try {
             val task = placesClient.findAutocompletePredictions(request)
-            Tasks.await(task, 10, TimeUnit.SECONDS).autocompletePredictions
+            val response = Tasks.await(task, 10, TimeUnit.SECONDS)
+            Log.d(TAG, "Autocomplete success: ${response.autocompletePredictions.size} results for '$constraint'")
+            response.autocompletePredictions
         } catch (e: Exception) {
+            Log.e(TAG, "Autocomplete error for '$constraint': ${e.message}", e)
+            android.os.Handler(android.os.Looper.getMainLooper()).post {
+                Toast.makeText(context, "Autocomplete error: Check Places API/Network", Toast.LENGTH_SHORT).show()
+            }
             emptyList()
         }
     }

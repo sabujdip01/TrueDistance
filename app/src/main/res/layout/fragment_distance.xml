@@ -1,146 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- §6.1.1 Main Screen — responsive per §12.4, ConstraintLayout, no fixed dp widths -->
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_soft">
+    android:background="@color/background_soft"
+    android:fillViewport="true">
 
-    <!-- §11.1 / §11.2 — no-internet / no-GPS banners, hidden by default -->
-    <TextView
-        android:id="@+id/noInternetBanner"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/accent_warm"
-        android:padding="8dp"
-        android:text="@string/no_internet_banner"
-        android:textColor="@android:color/white"
-        android:textAlignment="center"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/noGpsBanner"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/accent_warm"
-        android:padding="8dp"
-        android:text="@string/no_gps_banner"
-        android:textColor="@android:color/white"
-        android:textAlignment="center"
-        android:clickable="true"
-        android:focusable="true"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/noInternetBanner"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <ImageButton
-        android:id="@+id/savedLocationsButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        android:background="@drawable/bg_icon_chip"
-        android:contentDescription="@string/saved_locations"
-        android:src="@drawable/ic_bookmark"
-        app:layout_constraintTop_toBottomOf="@id/noGpsBanner"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageButton
-        android:id="@+id/historyButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/bg_icon_chip"
-        android:contentDescription="@string/distance_history"
-        android:src="@drawable/ic_history"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Location selection card, §6.1.1 -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/locationCard"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginHorizontal="16dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="4dp"
-        app:layout_constraintTop_toBottomOf="@id/savedLocationsButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintWidth_max="480dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- §11.1 / §11.2 — no-internet / no-GPS banners, hidden by default -->
+        <TextView
+            android:id="@+id/noInternetBanner"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:background="@color/accent_warm"
+            android:padding="8dp"
+            android:text="@string/no_internet_banner"
+            android:textColor="@android:color/white"
+            android:textAlignment="center"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- Destination input: search box + map-pick icon + saved dropdown -->
+        <TextView
+            android:id="@+id/noGpsBanner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/accent_warm"
+            android:padding="8dp"
+            android:text="@string/no_gps_banner"
+            android:textColor="@android:color/white"
+            android:textAlignment="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/noInternetBanner"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageButton
+            android:id="@+id/savedLocationsButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_icon_chip"
+            android:contentDescription="@string/saved_locations"
+            android:src="@drawable/ic_bookmark"
+            app:layout_constraintTop_toBottomOf="@id/noGpsBanner"
+            app:layout_constraintStart_toStartOf="@id/locationCard" />
+
+        <ImageButton
+            android:id="@+id/historyButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_icon_chip"
+            android:contentDescription="@string/distance_history"
+            android:src="@drawable/ic_history"
+            app:layout_constraintTop_toBottomOf="@id/noGpsBanner"
+            app:layout_constraintEnd_toEndOf="@id/locationCard" />
+
+        <!-- Location selection card, §6.1.1 -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/locationCard"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginHorizontal="16dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="4dp"
+            app:layout_constraintTop_toBottomOf="@id/savedLocationsButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintWidth_max="600dp">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:orientation="vertical"
+                android:padding="16dp">
 
-                <EditText
-                    android:id="@+id/destinationSearchBox"
-                    android:layout_width="0dp"
+                <!-- Destination input: search box + map-pick icon + saved dropdown -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="@string/search_destination_hint"
-                    android:inputType="text"
-                    android:importantForAutofill="no" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-                <ImageButton
-                    android:id="@+id/mapPickButton"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/bg_icon_chip"
-                    android:contentDescription="@string/pick_on_map"
-                    android:src="@drawable/ic_map_pin" />
+                    <AutoCompleteTextView
+                        android:id="@+id/destinationSearchBox"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="@string/search_destination_hint"
+                        android:inputType="text"
+                        android:completionThreshold="1"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_secondary"
+                        android:importantForAutofill="no" />
 
-                <ImageButton
-                    android:id="@+id/savedLocationDropdown"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/bg_icon_chip"
-                    android:contentDescription="@string/saved_locations"
-                    android:src="@drawable/ic_chevron_down" />
+                    <ImageButton
+                        android:id="@+id/mapPickButton"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_icon_chip"
+                        android:contentDescription="@string/pick_on_map"
+                        android:src="@drawable/ic_map_pin" />
+
+                    <ImageButton
+                        android:id="@+id/savedLocationDropdown"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_icon_chip"
+                        android:contentDescription="@string/saved_locations"
+                        android:src="@drawable/ic_chevron_down" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/fromLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/from_current_location"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/toLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/to_choose_destination" />
+
+                <Button
+                    android:id="@+id/startTrackingButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:enabled="false"
+                    android:text="@string/start_tracking" />
+
             </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
-            <TextView
-                android:id="@+id/fromLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="@string/from_current_location"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/toLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@string/to_choose_destination" />
-
-            <Button
-                android:id="@+id/startTrackingButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:enabled="false"
-                android:text="@string/start_tracking" />
-
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

@@ -1,85 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- §6.3 Settings — Preferences (§6.3.1) + About (§6.3.2) -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_soft">
+    android:background="@color/background_soft"
+    android:fillViewport="true">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
-
-        <TextView
-            style="@style/SettingsSectionHeader"
-            android:text="@string/section_preferences" />
-
-        <TextView android:text="@string/theme" style="@style/SettingsLabel" />
-        <Spinner android:id="@+id/themeSpinner" style="@style/SettingsSpinner" />
-
-        <TextView android:text="@string/units" style="@style/SettingsLabel" />
-        <Spinner android:id="@+id/unitSpinner" style="@style/SettingsSpinner" />
-
-        <LinearLayout style="@style/SettingsRow">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/auto_meters_under_1km" />
-            <Switch android:id="@+id/autoMetersSwitch" />
-        </LinearLayout>
-
-        <TextView android:text="@string/gps_accuracy_mode" style="@style/SettingsLabel" />
-        <Spinner android:id="@+id/accuracySpinner" style="@style/SettingsSpinner" />
-
-        <TextView android:text="@string/update_frequency" style="@style/SettingsLabel" />
-        <Spinner android:id="@+id/frequencySpinner" style="@style/SettingsSpinner" />
-
-        <LinearLayout style="@style/SettingsRow">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/background_tracking" />
-            <Switch android:id="@+id/backgroundTrackingSwitch" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginVertical="20dp"
-            android:background="@color/text_secondary" />
-
-        <TextView
-            style="@style/SettingsSectionHeader"
-            android:text="@string/section_about" />
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:id="@+id/privacyPolicyRow"
-            style="@style/SettingsRow"
-            android:clickable="true"
-            android:focusable="true">
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="600dp">
+
             <TextView
-                android:layout_width="0dp"
+                style="@style/SettingsSectionHeader"
+                android:text="@string/section_preferences" />
+
+            <TextView
+                style="@style/SettingsLabel"
+                android:text="@string/theme" />
+
+            <Spinner
+                android:id="@+id/themeSpinner"
+                style="@style/SettingsSpinner" />
+
+            <TextView
+                style="@style/SettingsLabel"
+                android:text="@string/units" />
+
+            <Spinner
+                android:id="@+id/unitSpinner"
+                style="@style/SettingsSpinner" />
+
+            <LinearLayout style="@style/SettingsRow">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/auto_meters_under_1km"
+                    android:textColor="@color/text_charcoal" />
+
+                <Switch android:id="@+id/autoMetersSwitch" />
+            </LinearLayout>
+
+            <TextView
+                style="@style/SettingsLabel"
+                android:text="@string/gps_accuracy_mode" />
+
+            <Spinner
+                android:id="@+id/accuracySpinner"
+                style="@style/SettingsSpinner" />
+
+            <TextView
+                style="@style/SettingsLabel"
+                android:text="@string/update_frequency" />
+
+            <Spinner
+                android:id="@+id/frequencySpinner"
+                style="@style/SettingsSpinner" />
+
+            <LinearLayout style="@style/SettingsRow">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/background_tracking"
+                    android:textColor="@color/text_charcoal" />
+
+                <Switch android:id="@+id/backgroundTrackingSwitch" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="20dp"
+                android:background="@color/text_gray_purple" />
+
+            <TextView
+                style="@style/SettingsSectionHeader"
+                android:text="@string/section_about" />
+
+            <LinearLayout
+                android:id="@+id/privacyPolicyRow"
+                style="@style/SettingsRow"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/privacy_policy"
+                    android:textColor="@color/text_charcoal" />
+            </LinearLayout>
+
+            <TextView
+                style="@style/SettingsLabel"
+                android:text="@string/version" />
+
+            <TextView
+                android:id="@+id/versionText"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/privacy_policy" />
+                android:textColor="@color/text_gray_purple" />
+
+            <TextView
+                style="@style/SettingsLabel"
+                android:text="@string/credits" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/credits_text"
+                android:textColor="@color/text_gray_purple" />
+
         </LinearLayout>
-
-        <TextView android:text="@string/version" style="@style/SettingsLabel" />
-        <TextView
-            android:id="@+id/versionText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/text_secondary" />
-
-        <TextView android:text="@string/credits" style="@style/SettingsLabel" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/credits_text"
-            android:textColor="@color/text_secondary" />
-
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
