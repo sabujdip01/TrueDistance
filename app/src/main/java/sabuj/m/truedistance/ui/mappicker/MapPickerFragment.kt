@@ -1,15 +1,12 @@
 package sabuj.m.truedistance.ui.mappicker
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -62,39 +59,11 @@ class MapPickerFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCall
         // Enable zoom controls (+/- buttons)
         map.uiSettings.isZoomControlsEnabled = true
 
-        // Enable My Location if permission is granted
+        // Enable My Location blue dot + built-in "my location" button (top-right)
         if (LocationPermissionHelper.hasForegroundLocationPermission(requireContext())) {
             try {
                 map.isMyLocationEnabled = true
                 map.uiSettings.isMyLocationButtonEnabled = true
-
-                // Center on current location
-                val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    if (location != null) {
-                        val currentLatLng = LatLng(location.latitude, location.longitude)
-                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 18f))
-                    }
-
-                    // Always request a fresh fix for accuracy
-                    val locationRequest = com.google.android.gms.location.LocationRequest.Builder(
-                        com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY, 500
-                    ).setMaxUpdates(1).build()
-
-                    try {
-                        fusedLocationClient.requestLocationUpdates(locationRequest, object : com.google.android.gms.location.LocationCallback() {
-                            override fun onLocationResult(result: com.google.android.gms.location.LocationResult) {
-                                val last = result.lastLocation
-                                if (last != null) {
-                                    val currentLatLng = LatLng(last.latitude, last.longitude)
-                                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 18f))
-                                }
-                            }
-                        }, android.os.Looper.getMainLooper())
-                    } catch (e: SecurityException) {
-                        Log.e("MapPicker", "SecurityException requesting location", e)
-                    }
-                }
             } catch (_: SecurityException) { }
         }
 

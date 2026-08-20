@@ -140,6 +140,12 @@ class DistanceFragment : Fragment() {
         mapPickerViewModel.consume()?.let { latLng ->
             viewModel.selectPickedPoint(latLng.latitude, latLng.longitude, requireContext())
         }
+
+        // Consume destination set by SavedLocationsFragment (tap on saved location)
+        sharedDestinationViewModel.destination.value?.let { dest ->
+            viewModel.selectDestination(dest)
+            sharedDestinationViewModel.clear()
+        }
     }
 
     override fun onDestroyView() {
