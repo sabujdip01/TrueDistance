@@ -117,6 +117,30 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
 
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
+
+        // Enable zoom controls (+/- buttons)
+        map.uiSettings.isZoomControlsEnabled = true
+
+        // Enable My Location layer if permission is granted
+        if (LocationPermissionHelper.hasForegroundLocationPermission(requireContext())) {
+            try {
+                map.isMyLocationEnabled = true
+                map.uiSettings.isMyLocationButtonEnabled = true
+
+                // Center on current location immediately
+                val fusedClient = com.google.android.gms.location.LocationServices
+                    .getFusedLocationProviderClient(requireActivity())
+                fusedClient.lastLocation.addOnSuccessListener { location ->
+                    if (location != null) {
+                        val latLng = com.google.android.gms.maps.model.LatLng(
+                            location.latitude, location.longitude
+                        )
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+                    }
+                }
+            } catch (_: SecurityException) { }
+        }
+
         updateMap(viewModel.uiState.value)
     }
 
