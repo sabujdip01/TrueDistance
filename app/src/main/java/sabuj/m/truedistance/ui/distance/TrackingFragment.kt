@@ -23,6 +23,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import dagger.hilt.android.AndroidEntryPoint
@@ -208,6 +209,13 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
             }
         }
 
+        // Tell the Maps SDK about UI overlays so bounds/camera calculations avoid them.
+        // Top padding accounts for the distance card; bottom for the stop button area.
+        val density = resources.displayMetrics.density
+        val topPadding = (140 * density).toInt()    // ~140dp for distance card + margin
+        val bottomPadding = (16 * density).toInt()
+        map.setPadding(0, topPadding, 0, bottomPadding)
+
         // Draw markers and polyline using the latest known tracking state
         updateMap(viewModel.uiState.value)
     }
@@ -320,16 +328,13 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
         // --- Current location marker ---
         if (state.currentLocation != null) {
             if (currentMarker == null) {
-                // First location fix: place marker and animate camera to it
                 currentMarker = map.addMarker(
                     MarkerOptions()
                         .position(state.currentLocation)
                         .title(getString(R.string.you))
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
                 )
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(state.currentLocation, 14f))
             } else {
-                // Subsequent fixes: just move the existing marker (no camera jump)
                 currentMarker?.position = state.currentLocation
             }
         }
@@ -346,13 +351,31 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
 
         // --- Polyline from current → destination ---
         if (state.currentLocation != null && state.destination != null) {
-            polyline?.remove()  // remove old line before drawing updated one
+            polyline?.remove()
             polyline = map.addPolyline(
                 PolylineOptions()
                     .add(state.currentLocation, state.destination)
-                    .color(resources.getColor(R.color.accent_teal, null))
-                    .width(6f)
+                    .color(0xFF00796B.toInt())  // Dark teal — visible against all map styles
+                    .width(8f)
             )
+        }
+
+        // --- Auto-fit camera to show both markers with padding ---
+        if (state.currentLocation != null && state.destination != null) {
+            val bounds = LatLngBounds.builder()
+                .include(state.currentLocation)
+                .include(state.destination)
+                .build()
+            // 100px padding for comfortable spacing (map.setPadding handles the card overlay)
+            try {
+                map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
+            } catch (_: Exception) {
+                // Map not yet laid out — fall back to simple center
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(state.currentLocation, 14f))
+            }
+        } else if (state.currentLocation != null) {
+            // Only current location available — center on it
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(state.currentLocation, 14f))
         }
     }
 
