@@ -214,21 +214,16 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
 
         val adjustPosition = {
             val locationButton = findMyLocationButton(mapView)
+            val zoomControls = findZoomControls(mapView)
+
             if (locationButton != null &&
                 locationButton.layoutParams is android.widget.RelativeLayout.LayoutParams
             ) {
                 val rlp = locationButton.layoutParams as android.widget.RelativeLayout.LayoutParams
 
-                // Clear the default top-right anchoring
                 rlp.addRule(android.widget.RelativeLayout.ALIGN_PARENT_TOP, 0)
-
-                // Anchor to bottom-right, above the +/- zoom controls
                 rlp.addRule(
                     android.widget.RelativeLayout.ALIGN_PARENT_BOTTOM,
-                    android.widget.RelativeLayout.TRUE
-                )
-                rlp.addRule(
-                    android.widget.RelativeLayout.ALIGN_PARENT_RIGHT,
                     android.widget.RelativeLayout.TRUE
                 )
                 rlp.addRule(
@@ -236,11 +231,19 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
                     android.widget.RelativeLayout.TRUE
                 )
 
+                // Read the zoom controls' actual right margin and match it exactly
+                val zoomMarginEnd = if (zoomControls != null &&
+                    zoomControls.layoutParams is android.widget.RelativeLayout.LayoutParams
+                ) {
+                    (zoomControls.layoutParams as android.widget.RelativeLayout.LayoutParams).marginEnd
+                } else {
+                    0
+                }
+
                 val density = resources.displayMetrics.density
-                // 90dp clears the ~80dp height of the +/- zoom button pair.
-                // marginEnd = 0 aligns the location button flush-right with the +/- controls.
                 rlp.bottomMargin = (90 * density).toInt()
-                rlp.marginEnd = 0
+                rlp.marginEnd = zoomMarginEnd
+                rlp.rightMargin = zoomMarginEnd
 
                 locationButton.layoutParams = rlp
             }
@@ -250,14 +253,6 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
         mapView.postDelayed(adjustPosition, 300)
     }
 
-    /**
-     * Recursively searches the Maps SDK view tree for the "My Location" button.
-     *
-     * Detection order:
-     *  1. Content description contains "location" (Maps SDK sets this, locale-dependent)
-     *  2. Tag contains "location"
-     *  3. View ID == 2 (stable internal Maps SDK constant)
-     */
     private fun findMyLocationButton(view: View): View? {
         if (view.contentDescription?.toString()?.contains("location", ignoreCase = true) == true ||
             view.tag?.toString()?.contains("location", ignoreCase = true) == true ||
@@ -268,6 +263,25 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
         if (view is ViewGroup) {
             for (i in 0 until view.childCount) {
                 val child = findMyLocationButton(view.getChildAt(i))
+                if (child != null) return child
+            }
+        }
+        return null
+    }
+
+    private fun findZoomControls(view: View): View? {
+        if (view is android.widget.LinearLayout && view.childCount == 2) {
+            val child0 = view.getChildAt(0)
+            val child1 = view.getChildAt(1)
+            if ((child0 is android.widget.ImageView || child0 is android.widget.ImageButton) &&
+                (child1 is android.widget.ImageView || child1 is android.widget.ImageButton)
+            ) {
+                return view
+            }
+        }
+        if (view is ViewGroup) {
+            for (i in 0 until view.childCount) {
+                val child = findZoomControls(view.getChildAt(i))
                 if (child != null) return child
             }
         }

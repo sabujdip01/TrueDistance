@@ -146,21 +146,19 @@ class MapPickerFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCall
 
         val adjustPosition = {
             val locationButton = findMyLocationButton(mapView)
+            val zoomControls = findZoomControls(mapView)
+
             if (locationButton != null &&
                 locationButton.layoutParams is android.widget.RelativeLayout.LayoutParams
             ) {
                 val rlp = locationButton.layoutParams as android.widget.RelativeLayout.LayoutParams
 
-                // Remove the default top-right anchoring rules
+                // Remove the default top-right anchoring
                 rlp.addRule(android.widget.RelativeLayout.ALIGN_PARENT_TOP, 0)
 
-                // Anchor to bottom-right to sit above the +/- zoom buttons
+                // Anchor to bottom-right, same as the zoom controls
                 rlp.addRule(
                     android.widget.RelativeLayout.ALIGN_PARENT_BOTTOM,
-                    android.widget.RelativeLayout.TRUE
-                )
-                rlp.addRule(
-                    android.widget.RelativeLayout.ALIGN_PARENT_RIGHT,
                     android.widget.RelativeLayout.TRUE
                 )
                 rlp.addRule(
@@ -168,19 +166,28 @@ class MapPickerFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCall
                     android.widget.RelativeLayout.TRUE
                 )
 
+                // Read the zoom controls' actual right margin and match it exactly
+                val zoomMarginEnd = if (zoomControls != null &&
+                    zoomControls.layoutParams is android.widget.RelativeLayout.LayoutParams
+                ) {
+                    (zoomControls.layoutParams as android.widget.RelativeLayout.LayoutParams).marginEnd
+                } else {
+                    0
+                }
+
                 val density = resources.displayMetrics.density
-                // 90dp bottom margin clears the zoom (+/-) buttons beneath it.
-                // marginEnd = 0 aligns the location button flush-right with the +/- controls.
+                // Place directly above the +/- zoom buttons
                 rlp.bottomMargin = (90 * density).toInt()
-                rlp.marginEnd = 0
+                // Use the exact same right margin as the zoom controls
+                rlp.marginEnd = zoomMarginEnd
+                rlp.rightMargin = zoomMarginEnd
 
                 locationButton.layoutParams = rlp
             }
         }
 
-        // First pass: immediately after the map view is laid out
+        // Two passes: immediate + delayed, since Maps SDK inflates controls asynchronously
         mapView.post(adjustPosition)
-        // Second pass: Maps SDK may inflate controls asynchronously, retry after 300ms
         mapView.postDelayed(adjustPosition, 300)
     }
 
@@ -202,6 +209,29 @@ class MapPickerFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCall
         if (view is ViewGroup) {
             for (i in 0 until view.childCount) {
                 val child = findMyLocationButton(view.getChildAt(i))
+                if (child != null) return child
+            }
+        }
+        return null
+    }
+
+    /**
+     * Finds the zoom controls container in the Maps SDK view hierarchy.
+     * The zoom controls are a LinearLayout containing two buttons (+ and -).
+     */
+    private fun findZoomControls(view: View): View? {
+        if (view is android.widget.LinearLayout && view.childCount == 2) {
+            val child0 = view.getChildAt(0)
+            val child1 = view.getChildAt(1)
+            if ((child0 is android.widget.ImageView || child0 is android.widget.ImageButton) &&
+                (child1 is android.widget.ImageView || child1 is android.widget.ImageButton)
+            ) {
+                return view
+            }
+        }
+        if (view is ViewGroup) {
+            for (i in 0 until view.childCount) {
+                val child = findZoomControls(view.getChildAt(i))
                 if (child != null) return child
             }
         }
