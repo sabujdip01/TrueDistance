@@ -71,11 +71,7 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
             findNavController().popBackStack()
         }
 
-        binding.recenterButton.setOnClickListener {
-            viewModel.uiState.value.currentLocation?.let {
-                googleMap?.animateCamera(CameraUpdateFactory.newLatLng(it))
-            }
-        }
+
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -121,27 +117,54 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
         // Enable zoom controls (+/- buttons)
         map.uiSettings.isZoomControlsEnabled = true
 
-        // Enable My Location layer if permission is granted
+        // Enable My Location layer + button (repositioned to bottom-right above +/-)
         if (LocationPermissionHelper.hasForegroundLocationPermission(requireContext())) {
             try {
                 map.isMyLocationEnabled = true
                 map.uiSettings.isMyLocationButtonEnabled = true
-
-                // Center on current location immediately
-                val fusedClient = com.google.android.gms.location.LocationServices
-                    .getFusedLocationProviderClient(requireActivity())
-                fusedClient.lastLocation.addOnSuccessListener { location ->
-                    if (location != null) {
-                        val latLng = com.google.android.gms.maps.model.LatLng(
-                            location.latitude, location.longitude
-                        )
-                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
-                    }
-                }
+                repositionMyLocationButton()
             } catch (_: SecurityException) { }
         }
 
         updateMap(viewModel.uiState.value)
+    }
+
+    private fun repositionMyLocationButton() {
+        val mapFragment = childFragmentManager.findFragmentById(R.id.mapContainer) as? SupportMapFragment
+        val mapView = mapFragment?.view ?: return
+        
+        val adjustPosition = {
+            val locationButton = findMyLocationButton(mapView)
+            if (locationButton != null && locationButton.layoutParams is android.widget.RelativeLayout.LayoutParams) {
+                val rlp = locationButton.layoutParams as android.widget.RelativeLayout.LayoutParams
+                rlp.addRule(android.widget.RelativeLayout.ALIGN_PARENT_TOP, 0)
+                rlp.addRule(android.widget.RelativeLayout.ALIGN_PARENT_BOTTOM, android.widget.RelativeLayout.TRUE)
+                rlp.addRule(android.widget.RelativeLayout.ALIGN_PARENT_RIGHT, android.widget.RelativeLayout.TRUE)
+                rlp.addRule(android.widget.RelativeLayout.ALIGN_PARENT_END, android.widget.RelativeLayout.TRUE)
+                val density = resources.displayMetrics.density
+                rlp.bottomMargin = (90 * density).toInt()
+                rlp.marginEnd = (12 * density).toInt()
+                locationButton.layoutParams = rlp
+            }
+        }
+
+        mapView.post(adjustPosition)
+        mapView.postDelayed(adjustPosition, 300)
+    }
+
+    private fun findMyLocationButton(view: View): View? {
+        if (view.contentDescription?.toString()?.contains("location", ignoreCase = true) == true ||
+            view.tag?.toString()?.contains("location", ignoreCase = true) == true ||
+            view.id == 2) {
+            return view
+        }
+        if (view is ViewGroup) {
+            for (i in 0 until view.childCount) {
+                val child = findMyLocationButton(view.getChildAt(i))
+                if (child != null) return child
+            }
+        }
+        return null
     }
 
     private fun updateMap(state: TrackingState) {

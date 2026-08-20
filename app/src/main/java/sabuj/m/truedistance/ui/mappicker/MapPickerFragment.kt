@@ -59,11 +59,12 @@ class MapPickerFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCall
         // Enable zoom controls (+/- buttons)
         map.uiSettings.isZoomControlsEnabled = true
 
-        // Enable My Location blue dot + built-in "my location" button (top-right)
+        // Enable My Location blue dot + built-in "my location" button (repositioned to bottom-right with +/-)
         if (LocationPermissionHelper.hasForegroundLocationPermission(requireContext())) {
             try {
                 map.isMyLocationEnabled = true
                 map.uiSettings.isMyLocationButtonEnabled = true
+                repositionMyLocationButton()
             } catch (_: SecurityException) { }
         }
 
@@ -74,6 +75,45 @@ class MapPickerFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCall
             pickedMarker = map.addMarker(MarkerOptions().position(latLng))
             binding.confirmButton.isEnabled = true
         }
+    }
+
+    private fun repositionMyLocationButton() {
+        val mapFragment = childFragmentManager.findFragmentById(R.id.pickerMapContainer) as? SupportMapFragment
+        val mapView = mapFragment?.view ?: return
+        
+        val adjustPosition = {
+            val locationButton = findMyLocationButton(mapView)
+            if (locationButton != null && locationButton.layoutParams is android.widget.RelativeLayout.LayoutParams) {
+                val rlp = locationButton.layoutParams as android.widget.RelativeLayout.LayoutParams
+                rlp.addRule(android.widget.RelativeLayout.ALIGN_PARENT_TOP, 0)
+                rlp.addRule(android.widget.RelativeLayout.ALIGN_PARENT_BOTTOM, android.widget.RelativeLayout.TRUE)
+                rlp.addRule(android.widget.RelativeLayout.ALIGN_PARENT_RIGHT, android.widget.RelativeLayout.TRUE)
+                rlp.addRule(android.widget.RelativeLayout.ALIGN_PARENT_END, android.widget.RelativeLayout.TRUE)
+                val density = resources.displayMetrics.density
+                // Position directly above the +/- zoom buttons
+                rlp.bottomMargin = (90 * density).toInt()
+                rlp.marginEnd = (12 * density).toInt()
+                locationButton.layoutParams = rlp
+            }
+        }
+
+        mapView.post(adjustPosition)
+        mapView.postDelayed(adjustPosition, 300)
+    }
+
+    private fun findMyLocationButton(view: View): View? {
+        if (view.contentDescription?.toString()?.contains("location", ignoreCase = true) == true ||
+            view.tag?.toString()?.contains("location", ignoreCase = true) == true ||
+            view.id == 2) {
+            return view
+        }
+        if (view is ViewGroup) {
+            for (i in 0 until view.childCount) {
+                val child = findMyLocationButton(view.getChildAt(i))
+                if (child != null) return child
+            }
+        }
+        return null
     }
 
     override fun onDestroyView() {
