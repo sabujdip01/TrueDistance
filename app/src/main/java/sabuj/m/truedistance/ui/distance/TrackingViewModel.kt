@@ -23,12 +23,16 @@ import javax.inject.Inject
 class TrackingViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val settingsRepository: SettingsRepository,
-    stateHolder: TrackingStateHolder
+    private val stateHolder: TrackingStateHolder
 ) : ViewModel() {
 
     val uiState: StateFlow<TrackingState> = stateHolder.state
 
     fun startTracking(destinationName: String, destLat: Double, destLng: Double, savedLocationId: String?) {
+        // Reset state synchronously BEFORE the service starts, so the fragment
+        // never observes stale markers from the previous tracking session.
+        stateHolder.reset()
+
         val intent = Intent(context, TrackingService::class.java).apply {
             putExtra(TrackingService.EXTRA_DEST_NAME, destinationName)
             putExtra(TrackingService.EXTRA_DEST_LAT, destLat)

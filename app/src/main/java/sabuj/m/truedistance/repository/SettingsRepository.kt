@@ -37,7 +37,7 @@ class SettingsRepository @Inject constructor(
     }
 
     val unit: Flow<UnitPreference> = context.dataStore.data.map {
-        UnitPreference.valueOf(it[Keys.UNIT] ?: UnitPreference.BOTH.name)
+        UnitPreference.valueOf(it[Keys.UNIT] ?: UnitPreference.KM.name)
     }
 
     val decimalPrecision: Flow<Int> = context.dataStore.data.map {

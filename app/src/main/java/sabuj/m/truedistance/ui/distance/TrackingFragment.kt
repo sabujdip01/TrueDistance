@@ -294,8 +294,8 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
 
     /**
      * Updates the map to reflect [state]:
-     *  - Adds/moves the current-location marker (azure)
-     *  - Adds the destination marker (red) on first fix
+     *  - Adds/moves the current-location marker (blue)
+     *  - Adds the destination marker (green) on first fix
      *  - Redraws the polyline connecting the two points
      */
     private fun updateMap(state: TrackingState) {
@@ -309,7 +309,7 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
                     MarkerOptions()
                         .position(state.currentLocation)
                         .title(getString(R.string.you))
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
                 )
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(state.currentLocation, 14f))
             } else {
@@ -324,7 +324,7 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
                 MarkerOptions()
                     .position(state.destination)
                     .title(getString(R.string.destination))
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
             )
         }
 

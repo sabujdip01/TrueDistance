@@ -30,4 +30,9 @@ class TrackingStateHolder @Inject constructor() {
     fun update(transform: (TrackingState) -> TrackingState) {
         _state.value = transform(_state.value)
     }
+
+    /** Resets all tracking state — call before starting a new session to clear stale markers. */
+    fun reset() {
+        _state.value = TrackingState()
+    }
 }

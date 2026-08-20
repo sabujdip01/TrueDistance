@@ -72,6 +72,9 @@ class TrackingService : LifecycleService() {
         startedAt = System.currentTimeMillis()
         val destination = LatLng(destLat, destLng)
 
+        // Clear stale state from previous tracking session (markers, polyline data, etc.)
+        stateHolder.reset()
+
         stateHolder.update {
             it.copy(destination = destination, destinationName = name, isTracking = true)
         }
