@@ -109,6 +109,13 @@ class TrackingService : LifecycleService() {
 
                 updateNotification(formatted)
                 persistSnapshot(distance)
+
+                // Auto-stop when within ~10 meters of the destination
+                if (DistanceCalculator.isDestinationReached(distance)) {
+                    stateHolder.update { it.copy(destinationReached = true) }
+                    stopTracking()
+                    return@collect
+                }
             }
         }
 

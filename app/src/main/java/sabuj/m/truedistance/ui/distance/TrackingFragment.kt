@@ -1,10 +1,16 @@
 package sabuj.m.truedistance.ui.distance
 
 import android.Manifest
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.app.AlertDialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.OvershootInterpolator
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -66,6 +72,9 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
     private var destinationMarker: com.google.android.gms.maps.model.Marker? = null
     private var polyline: com.google.android.gms.maps.model.Polyline? = null
 
+    /** Prevents showing the "Destination Reached" dialog more than once per session. */
+    private var reachedDialogShown = false
+
     // -----------------------------------------------------------------------------------------
     // Permission Launcher
     // -----------------------------------------------------------------------------------------
@@ -107,6 +116,7 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
         // Stop Tracking button — stops the service and returns to the main screen
         binding.stopButton.setOnClickListener {
             viewModel.stopTracking()
+            sharedDestinationViewModel.requestClearDestination()
             findNavController().popBackStack()
         }
 
@@ -123,6 +133,12 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
 
                     // Refresh map markers and polyline
                     updateMap(state)
+
+                    // Show "Destination Reached" celebration dialog
+                    if (state.destinationReached && !reachedDialogShown) {
+                        reachedDialogShown = true
+                        showDestinationReachedDialog(state.destinationName)
+                    }
                 }
             }
         }
@@ -337,6 +353,77 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
                     .color(resources.getColor(R.color.accent_teal, null))
                     .width(6f)
             )
+        }
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Destination Reached Dialog
+    // -----------------------------------------------------------------------------------------
+
+    /**
+     * Shows an animated celebration dialog when the user arrives within ~10m of their
+     * destination. The dialog uses a scale + fade entrance animation with an overshoot
+     * bounce. Tapping "Close" returns to the main screen.
+     */
+    private fun showDestinationReachedDialog(destinationName: String) {
+        val dialogView = LayoutInflater.from(requireContext())
+            .inflate(R.layout.dialog_destination_reached, null)
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        // Transparent background so the rounded corners of our custom layout show through
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        // Set the destination name text
+        val nameText = dialogView.findViewById<android.widget.TextView>(R.id.reachedDestinationName)
+        nameText.text = if (destinationName.isNotBlank()) {
+            "You've arrived at $destinationName"
+        } else {
+            "You've arrived at your destination"
+        }
+
+        // Close button — dismiss dialog and return to main screen
+        dialogView.findViewById<android.widget.Button>(R.id.closeButton).setOnClickListener {
+            dialog.dismiss()
+            sharedDestinationViewModel.requestClearDestination()
+            findNavController().popBackStack()
+        }
+
+        dialog.show()
+
+        // Animate the dialog content: scale up + fade in with overshoot bounce
+        dialogView.scaleX = 0.5f
+        dialogView.scaleY = 0.5f
+        dialogView.alpha = 0f
+
+        val scaleX = ObjectAnimator.ofFloat(dialogView, View.SCALE_X, 0.5f, 1f)
+        val scaleY = ObjectAnimator.ofFloat(dialogView, View.SCALE_Y, 0.5f, 1f)
+        val fadeIn = ObjectAnimator.ofFloat(dialogView, View.ALPHA, 0f, 1f)
+
+        AnimatorSet().apply {
+            playTogether(scaleX, scaleY, fadeIn)
+            duration = 400
+            interpolator = OvershootInterpolator(1.2f)
+            start()
+        }
+
+        // Animate the checkmark icon with a delayed bounce
+        val icon = dialogView.findViewById<android.widget.ImageView>(R.id.successIcon)
+        icon.scaleX = 0f
+        icon.scaleY = 0f
+
+        val iconScaleX = ObjectAnimator.ofFloat(icon, View.SCALE_X, 0f, 1f)
+        val iconScaleY = ObjectAnimator.ofFloat(icon, View.SCALE_Y, 0f, 1f)
+
+        AnimatorSet().apply {
+            playTogether(iconScaleX, iconScaleY)
+            duration = 500
+            startDelay = 200
+            interpolator = OvershootInterpolator(2.5f)
+            start()
         }
     }
 

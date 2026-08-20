@@ -136,6 +136,12 @@ class DistanceFragment : Fragment() {
             startActivity(android.content.Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS))
         }
 
+        // Clear destination selection when returning from tracking (stop/reached)
+        if (sharedDestinationViewModel.consumeClearRequest()) {
+            viewModel.clearDestination()
+            binding.destinationSearchBox.setText("")
+        }
+
         // §6.1.1b — consume a point picked on MapPickerFragment, if any.
         mapPickerViewModel.consume()?.let { latLng ->
             viewModel.selectPickedPoint(latLng.latitude, latLng.longitude, requireContext())

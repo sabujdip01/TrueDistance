@@ -14,7 +14,9 @@ data class TrackingState(
     val distanceMeters: Double = 0.0,
     val formattedDistance: String = "",
     val isTracking: Boolean = false,
-    val staleFix: Boolean = false
+    val staleFix: Boolean = false,
+    /** Set to true when the user is within ~10m of the destination. */
+    val destinationReached: Boolean = false
 )
 
 /**
