@@ -32,5 +32,18 @@ class MainActivity : AppCompatActivity() {
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
         bottomNav.setupWithNavController(navController)
+
+        if (intent?.getStringExtra("NAVIGATE_TO") == "speedometer") {
+            bottomNav.selectedItemId = R.id.nav_speedometer
+        }
+    }
+
+    override fun onNewIntent(intent: android.content.Intent?) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (intent?.getStringExtra("NAVIGATE_TO") == "speedometer") {
+            val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+            bottomNav.selectedItemId = R.id.nav_speedometer
+        }
     }
 }

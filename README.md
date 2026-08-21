@@ -59,9 +59,9 @@
 
 ## 📋 Roadmap
 
-- **V1 (Current)**: Core True Distance tracking, Saved Locations, Distance History, Settings, and full Dark Mode.
-- **V2**: Speedometer with live gauge, average/max speed filtering, paused trip handling, and actual-path GPS breadcrumb trails.
-- **V3**: Home-screen widgets (4×2), App shortcuts, sticky notification toggles, and auto-pause.
+- **V1 (Completed)**: Core True Distance tracking, Saved Locations, Distance History with time-based tier snapshots, Settings, and full Dark Mode.
+- **V2 (Completed)**: Speedometer live tracking with breadcrumb polyline, floating speed counter, stats card, foreground service with interactive notifications, and Past Trips screen with expandable route map snapshots.
+- **V3 (Upcoming)**: Home-screen widgets (4×2), App shortcuts, sticky notification toggles, and auto-pause.
 
 ---
 

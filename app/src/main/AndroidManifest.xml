@@ -46,6 +46,12 @@
             android:foregroundServiceType="location"
             android:exported="false" />
 
+        <!-- Speedometer trip tracking foreground service — §6.2 -->
+        <service
+            android:name=".service.SpeedometerService"
+            android:foregroundServiceType="location"
+            android:exported="false" />
+
     </application>
 
 </manifest>

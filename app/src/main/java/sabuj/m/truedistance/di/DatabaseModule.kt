@@ -24,7 +24,9 @@ object DatabaseModule {
             context,
             TrueDistanceDatabase::class.java,
             "true_distance.db"
-        ).build()
+        )
+        .fallbackToDestructiveMigration()
+        .build()
 
     @Provides
     fun provideSavedLocationDao(db: TrueDistanceDatabase): SavedLocationDao =
@@ -37,4 +39,8 @@ object DatabaseModule {
     @Provides
     fun provideDistanceSnapshotDao(db: TrueDistanceDatabase): DistanceSnapshotDao =
         db.distanceSnapshotDao()
+
+    @Provides
+    fun provideTripDao(db: TrueDistanceDatabase): sabuj.m.truedistance.database.TripDao =
+        db.tripDao()
 }

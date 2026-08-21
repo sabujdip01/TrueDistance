@@ -7,13 +7,15 @@ import androidx.room.RoomDatabase
     entities = [
         SavedLocation::class,
         HistoryEntry::class,
-        DistanceSnapshot::class
+        DistanceSnapshot::class,
+        Trip::class
     ],
-    version = 1,
-    exportSchema = true
+    version = 2,
+    exportSchema = false
 )
 abstract class TrueDistanceDatabase : RoomDatabase() {
     abstract fun savedLocationDao(): SavedLocationDao
     abstract fun historyEntryDao(): HistoryEntryDao
     abstract fun distanceSnapshotDao(): DistanceSnapshotDao
+    abstract fun tripDao(): TripDao
 }

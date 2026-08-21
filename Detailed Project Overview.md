@@ -124,123 +124,47 @@ Layout:
 
 ### 6.2 Tab 2: Speedometer
 
-> **Release phasing**: this tab ships as a lightweight placeholder in **V1** (icon +
-> "Coming soon" text) and receives its full implementation, detailed below, in **V2**
-> (see §14 for the updated phased-release plan: V1 = True Distance core, V2 =
-> Speedometer, V3 = sticky notification / widget / shortcuts / changelog).
+The Speedometer tab provides live trip tracking, real-time GPS breadcrumbs, speed metrics with spike filtering, interactive background foreground notifications, and a Past Trips history screen with expandable route map snapshots.
 
-This tab has two screens: the main **Speedometer Screen** (live trip tracking) and a
-**Past Trips Screen** (trip history), reached via a header icon — mirroring the True
-Distance tab's Saved Locations / History icon pattern (§6.1.1) for UI consistency.
+This tab contains two primary screens: the **Speedometer Screen** (live trip tracking) and the **Past Trips Screen** (trip log), accessible via a header history icon chip (`ic_history`).
 
-#### 6.2.1 Speedometer Screen (default screen on this tab, V2)
-Layout, top to bottom (exact vertical order/sizing may adapt per screen size — see
-§12.4 Responsive/Adaptive Layout):
-1. **Header row**: icon button → opens Past Trips Screen (§6.2.2).
-2. **Speed Gauge**: a medium-large gauge (circular or semi-circular analog style)
-   showing current speed, live-updating.
-   - Numeric speed value shown at gauge center/prominently, up to 2 decimal places.
-   - Unit comes from the app-wide Unit setting (§6.3.1) — km/h or mph — not a
-     separate speedometer-only unit setting.
-   - Gauge needs a sensible max-scale so it doesn't clip/break visually at high
-     speeds (e.g., auto-scaling, or a fixed sane upper bound such as 180 km/h /
-     120 mph) — exact scaling behavior TBD at implementation.
-3. **Trip stats**, shown as small stat cards/labels (per §9 Visual Style Guide):
-   - **Start Time** — timestamp the current trip began.
-   - **Elapsed Time** — running trip duration (pauses when trip is paused, §6.2.3).
-   - **Distance** — cumulative distance actually traveled (real path, not straight
-     line — see map below), formatted per Unit settings.
-   - **Average Speed** — total distance ÷ elapsed moving time.
-   - **Max Speed** — highest instantaneous speed recorded so far this trip.
-4. **Map**: full Google Map view showing:
-   - Marker for the trip's **starting location** (fixed once trip starts).
-   - Marker for **current location** (live-updating).
-   - A **polyline following the actual road/path traveled** — this differs from the
-     True Distance tab's straight-line polyline; here the line is the real GPS
-     breadcrumb trail of the trip, updated as the trip progresses.
-5. **Control buttons, directly under the map** (same placement principle as the True
-   Distance Tracking Screen, §6.1.4):
-   - **Start** — begins a new trip: starts GPS tracking, resets all stats to zero,
-     records start time/location. Disabled while a trip is already in progress or has
-     ended but not yet reset.
-   - **Pause / Resume** — single toggling button:
-     - *Pause*: freezes Elapsed Time, Distance, Average, and Max Speed accumulation
-       (GPS listener may keep running for position awareness, but stats stop
-       updating).
-     - *Resume*: continues accumulation from where it left off.
-     - Disabled when no trip is in progress (before Start or after Stop).
-   - **Stop** — ends the trip:
-     - Shows a trip summary (final Distance, Elapsed Time, Average Speed, Max Speed,
-       start/end time, start/end location) — inline on this screen or a brief summary
-       state/dialog, exact presentation TBD.
-     - Saves the completed trip to local storage (Trip entity, §8 Data Model),
-       including its full path polyline.
-     - Disabled when no trip is in progress.
+#### 6.2.1 Speedometer Screen (`SpeedometerFragment`)
+Layout structure (top to bottom):
+1. **Header Row**: History icon chip button (`@id/historyButton`) navigating to the Past Trips screen (`@id/action_speedometer_to_pastTrips`).
+2. **Interactive Map**: Google Map inside a 16dp rounded `CardView` frame with 12dp margins:
+   - **Current Location Marker**: Red pin marker updating live.
+   - **Breadcrumb Polyline**: Traveled path polyline (`#00796B` dark teal, 8px solid) drawn continuously as the user travels.
+   - **Auto-Follow / Bounds Fit**: Camera smoothly centers on user and path points.
+3. **Floating Live Speed Counter**:
+   - Glassmorphic card (`card_white_translucent`, 16dp radius, 4dp elevation) floating at the top of the map.
+   - Large bold speed readout (`36sp` bold) with unit label (`km/h` or `mph` per global Settings).
+4. **Recenter FAB**: Mini floating action button (`@id/recenterButton`) at bottom-right of the map to center on current location.
+5. **Gradient Statistics Card** (`@id/statsCard`):
+   - 24dp rounded corners, 20dp padding, pastel/dark gradient surface.
+   - **Distance Covered**: Numeric with 2 decimal places (18sp bold).
+   - **Average Speed & Max Speed**: Instantaneous max speed sanitized via `SpeedSpikeFilter`.
+   - **Start Timestamp & Elapsed Time**: Running duration (`HH:MM:SS`) excluding paused intervals.
+6. **Control Action Buttons**:
+   - **Idle State**: Full-width [ START ] button (`primary_violet`).
+   - **Active State**: Dual-button layout with [ PAUSE / RESUME ] and [ STOP ] buttons.
 
-#### 6.2.2 Past Trips Screen (full screen, V2)
-- Header: title "Past Trips", back button to Speedometer Screen.
-- List of past trips, **most recent first**.
-- Each entry shows: trip start time, end time, start location, end location,
-  distance, elapsed time, max speed, average speed.
-- Delete button (swipe-to-delete or inline icon) per entry; optional "Clear All" in
-  header overflow menu, matching the True Distance History screen's pattern (§6.1.3).
-- Tapping an entry may show the trip's actual road-path polyline replayed on a map
-  (reusing the stored full path from §6.2.4) — exact interaction (inline expand vs.
-  separate detail screen) TBD at implementation.
-- **Note**: unlike True Distance's Distance History (§6.1.3), Past Trips does **not**
-  use the interval-snapshot (10%/20%/.../end) format — that format is specific to
-  True Distance History. Past Trips shows standard start/end summary stats only.
+#### 6.2.2 Foreground Service & Notification Synchronization (`SpeedometerService`)
+- **Dedicated Foreground Service**: Controlled via explicit actions (`ACTION_START`, `ACTION_PAUSE`, `ACTION_RESUME`, `ACTION_STOP`).
+- **Persistent Notification**:
+  - Notification channel: `speedometer_channel`.
+  - Content text: Displays live Speed, Distance Covered, and Elapsed Time.
+  - **Interactive Action Buttons**: `Pause` / `Resume` and `Stop` PendingIntents, fully synchronized with the app UI state via `SpeedometerStateHolder`.
+- **Spike Filter** (`SpeedSpikeFilter`): Rejects physically impossible acceleration jumps (> 10 m/s²) to guard `maxSpeed` from GPS jitter.
 
-#### 6.2.3 Pause Behavior (detail)
-- While paused: Elapsed Time stops incrementing; Distance/Average/Max Speed stats
-  freeze. The app must not accumulate distance from GPS jitter that occurs while
-  paused.
-- The current-location marker on the map may still update live while paused (so the
-  user can see where they are), but the traveled-path polyline must **not** extend
-  during the paused interval — avoids drawing a route segment for time the user
-  wasn't actively on-trip.
-
-#### 6.2.4 Trip Data Captured (feeds §8 Data Model)
-Per trip, at minimum:
-- Start time, end time
-- Start location (lat/lng), end location (lat/lng)
-- Total distance traveled (actual path, meters)
-- Elapsed/moving time (excludes paused duration)
-- Average speed, max speed (see 6.2.5 for spike filtering on max speed)
-- Full path polyline (ordered list of lat/lng points captured during the trip) — used
-  to redraw the actual route on a map when reviewing a past trip, not just summary
-  numbers.
-- **Trip name** (auto-generated, see 6.2.6) — shown in Past Trips (§6.2.2) list rows.
-
-#### 6.2.5 Max Speed Spike Filtering (V2 scope)
-Raw GPS speed readings can momentarily spike due to signal jumps/multipath
-reflections, which would otherwise corrupt the recorded Max Speed. To guard against
-this:
-- Before accepting a new instantaneous speed reading as a candidate for Max Speed,
-  sanity-check it against what's physically plausible given the time since the last
-  reading — e.g., reject a reading if it implies an acceleration beyond a reasonable
-  threshold (a tunable constant, e.g., ~10 m/s² as a generous upper bound for typical
-  vehicle/foot travel) compared to the previous accepted speed.
-- Rejected/implausible readings should still be allowed to update the live gauge
-  display cosmetically if desired, but must **not** be written into Max Speed or
-  factored into Average Speed/Distance calculations.
-- This filtering logic should live in a single reusable helper (e.g.
-  `SpeedSpikeFilter`) alongside `DistanceSnapshotFormatter` (§6.1.3), so the exact
-  threshold is easy to tune without touching tracking/service code.
-
-#### 6.2.6 Auto-Generated Trip Names (Past Trips, §6.2.2)
-- Trips do not have manual user-editable names for now. Instead, each trip is
-  auto-labeled at save time using one of two templates, chosen based on available
-  data:
-  - **"Trip to \<Destination\>"** — used when a recognizable destination/place name can
-    be resolved (e.g., via reverse-geocoding the trip's end location) at the time the
-    trip is stopped.
-  - **"Trip on \<Date\>"** — fallback used when no meaningful destination name is
-    available (e.g., reverse geocoding fails, no internet, or the end point resolves
-    to a generic/unnamed area) — uses the trip's start date, formatted per the
-    device's locale/date settings.
-- This naming logic should live in its own small helper (e.g. `TripNamer`) so the
-  destination-resolution vs. date-fallback decision is centralized and easy to test.
+#### 6.2.3 Past Trips Screen (`PastTripsFragment`)
+- **Header**: Title "Past Trips", back navigation, and overflow menu with "Clear All" confirmation dialog.
+- **Card Format**: 80/20 card layout with 24dp rounded corners and pastel gradient fills.
+  - **Row 1**: Start Date/Time (`17sp` bold, tone-matched) + Distance (`13sp`).
+  - **Row 2**: Start Time, Elapsed Duration, and Avg Speed (`13sp` at 85% opacity).
+  - **Right 20%**: Centered delete icon button.
+- **Single-Card Exclusive Expand**:
+  - Expanding a card displays an embedded Google Map snapshot with the full recorded route polyline, Start marker (Green), and End marker (Red).
+  - Shows detailed Max Speed and End timestamp.
 
 ---
 
@@ -742,52 +666,31 @@ size. Concretely:
   (github.com/sabujdip01/TrueDistance), package `sabuj.m.truedistance`.
 - Architecture in place: MVVM with Fragments, Room database, Hilt/Dagger DI
   (`DatabaseModule`), Repository pattern (`SavedLocationRepository`,
-  `SettingsRepository`, `TripRepository`).
-- Existing source files (as of last review):
-  - `MainActivity`, `TrueDistanceApp`
-  - `database/`: `SavedLocation`, `SavedLocationDao`, `Trip`, `TripDao`,
-    `TrueDistanceDatabase`
-  - `di/DatabaseModule`
-  - `repository/`: `SavedLocationRepository`, `SettingsRepository`, `TripRepository`
-  - `ui/distance/`: `DistanceFragment`, `DistanceViewModel`
-  - `ui/savedlocations/`: `SavedLocationsFragment`, `SavedLocationAdapter`,
-    `SavedLocationsViewModel`
-  - `ui/settings/`: `SettingsFragment`, `SettingsViewModel`
-  - `ui/speedometer/`: `SpeedometerFragment`, `SpeedometerViewModel`,
-    `TripHistoryAdapter`
-  - `ui/SharedDestinationViewModel`
-  - `utils/`: `DistanceCalculator`, `GpsStatusHelper`, `LocationPermissionHelper`,
-    `LocationTrackingHelper`, `MapUtils`, `NetworkStatusHelper`
+### 15.1 Implemented Architecture & Source Files
+- **Application & Activities**:
+  - `MainActivity`, `SplashActivity`, `TrueDistanceApp`
+- **Database (Room v2)**:
+  - Entities: `SavedLocation`, `HistoryEntry`, `DistanceSnapshot`, `Trip`
+  - DAOs: `SavedLocationDao`, `HistoryEntryDao`, `DistanceSnapshotDao`, `TripDao`
+  - Database: `TrueDistanceDatabase` (Room v2, with fallbackToDestructiveMigration)
+- **Repositories & DI**:
+  - `SavedLocationRepository`, `HistoryRepository`, `TripRepository`, `SettingsRepository`
+  - `DatabaseModule`
+- **Background Foreground Services**:
+  - `TrackingService` (True Distance tracking, notification channel `tracking_channel`)
+  - `SpeedometerService` (Speedometer trip tracking, notification channel `speedometer_channel`)
+  - State Holders: `TrackingStateHolder`, `SpeedometerStateHolder`
+- **UI & Presentation**:
+  - Distance: `DistanceFragment`, `DistanceViewModel`, `TrackingFragment`, `TrackingViewModel`
+  - Saved Locations: `SavedLocationsFragment`, `SavedLocationAdapter`, `SavedLocationsViewModel`
+  - History: `HistoryFragment`, `HistoryAdapter`, `HistoryViewModel`
+  - Speedometer: `SpeedometerFragment`, `SpeedometerViewModel`, `PastTripsFragment`, `PastTripsAdapter`, `PastTripsViewModel`
+  - Settings: `SettingsFragment`, `SettingsViewModel`
+  - Map Picker: `MapPickerFragment`
+- **Utilities**:
+  - `DistanceCalculator`, `DistanceSnapshotFormatter`, `SpeedSpikeFilter`, `LocationTrackingHelper`, `NotificationHelper`, `MapUtils`, `GpsStatusHelper`, `NetworkStatusHelper`
 
-### 15.2 Known Doc-vs-Code Naming Mismatch
-- Design doc §8 names the history entity `HistoryEntry`; actual code uses `Trip`
-  (`Trip.kt`, `TripDao.kt`, `TripRepository.kt`, `TripHistoryAdapter.kt`). Either the
-  doc's naming should be reconciled to `Trip`, or the code renamed to match the doc —
-  not yet decided; flagged here so it isn't lost.
-
-### 15.3 Known Gaps vs. This Doc (as of last review)
-- `AndroidManifest.xml` currently declares only `ACCESS_FINE_LOCATION`,
-  `ACCESS_COARSE_LOCATION`, `INTERNET`, `ACCESS_NETWORK_STATE`. Missing (needed for
-  §6.1.4 background tracking and §14.1 sticky notification): background location
-  permission, `POST_NOTIFICATIONS`, and a declared foreground service.
-- No `AppWidgetProvider`/widget XML present yet — §14.2 (4x2 widget) not started
-  (expected, it's V3 scope now).
-- No `shortcuts.xml`/dynamic shortcuts present yet — §14.3 (app icon long-press
-  shortcuts) not started (expected, V3 scope now).
-- Speedometer (§6.2) is not yet implemented at all in the reference repo (expected,
-  it's V2 scope) — the person has decided to start a fresh implementation rather than
-  build on the existing reference repo (see §15.4).
-- `DistanceCalculator.kt` already includes an `isDestinationReached()` helper (10m
-  threshold) not currently documented anywhere in this spec — worth deciding if
-  "destination reached" should be a documented app behavior (e.g., a notification/
-  toast/vibration when reached) and adding it to §6.1.4 if so.
-
-### 15.4 Development Workflow (this conversation)
-- The person pulls/maintains the actual working copy of the repository locally (not
-  edited directly by Claude in this session).
-- When a code change is discussed, Claude specifies the exact action per file:
-  - **Update**: existing file path + description of the change (and/or a diff/snippet).
-  - **Add**: new file path + full content.
-  - **Delete**: file path to remove, with reason.
-- The person applies these changes to their own local checkout and commits/pushes as
-  they see fit.
+### 15.2 Completed Releases
+- **V1 (Completed)**: Core True Distance tracking, Saved Locations, Distance History with time-based tier snapshots, full DayNight theme support, and 80/20 card design.
+- **V2 (Completed)**: Speedometer live tracking, breadcrumb polyline, floating speed counter, stats card, `SpeedometerService` with interactive notification controls, and Past Trips screen with expandable route map snapshot.
+- **V3 (Planned Roadmap)**: Home screen widgets (4x2), Dynamic App Shortcuts, auto-pause on stop detection.

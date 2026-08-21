@@ -76,6 +76,12 @@
     <string name="stat_avg_speed">Avg Speed</string>
     <string name="stat_max_speed">Max Speed</string>
     <string name="past_trips">Past Trips</string>
+    <string name="no_past_trips">No Past Trips yet</string>
+    <string name="clear_all_trips_title">Clear all Past Trips?</string>
+    <string name="clear_all_trips_message">This will permanently delete all recorded trip history.</string>
+    <string name="speedometer_notification_channel">Speedometer tracking</string>
+    <string name="speedometer_notification_title">Speedometer Active</string>
+    <string name="speedometer_notification_paused">Trip Paused</string>
 
     <!-- Misc -->
     <string name="tracking">Tracking</string>

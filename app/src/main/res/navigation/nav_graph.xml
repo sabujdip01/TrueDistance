@@ -59,7 +59,17 @@
         android:id="@+id/nav_speedometer"
         android:name="sabuj.m.truedistance.ui.speedometer.SpeedometerFragment"
         android:label="@string/speedometer"
-        tools:layout="@layout/fragment_speedometer" />
+        tools:layout="@layout/fragment_speedometer">
+        <action
+            android:id="@+id/action_speedometer_to_pastTrips"
+            app:destination="@id/nav_pastTrips" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_pastTrips"
+        android:name="sabuj.m.truedistance.ui.speedometer.PastTripsFragment"
+        android:label="@string/past_trips"
+        tools:layout="@layout/fragment_past_trips" />
 
     <!-- §6.3 Settings tab -->
     <fragment
