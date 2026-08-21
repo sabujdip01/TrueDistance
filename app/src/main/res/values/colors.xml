@@ -1,31 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- §9 Visual Style Guide updated per design.md -->
+<!-- UI Design Final — Light Mode Color Tokens -->
 <resources>
-    <!-- Palette from design.md -->
+    <!-- Backgrounds -->
     <color name="bg_gradient_start">#FFFFFF</color>
-    <color name="bg_gradient_end">#F3E5F5</color> <!-- Very soft lavender -->
-    <color name="background_soft">#F9F4F8</color> <!-- Pale pinkish/lavender white -->
-    <color name="background_soft_dark">#1C1B1A</color>
+    <color name="bg_gradient_end">#F3E5F5</color>
+    <color name="background_soft">#F9F4F8</color>
+    <color name="background_page">#F5F0F4</color>
 
-    <color name="primary_violet">#7C4DFF</color> <!-- Electric Purple -->
-    <color name="primary_lavender">#E1BEE7</color> <!-- Soft lavender -->
+    <!-- Primary -->
+    <color name="primary_violet">#7C4DFF</color>
+    <color name="primary_violet_dark">#651FFF</color>
+    <color name="primary_violet_light">#B388FF</color>
+    <color name="primary_lavender">#E1BEE7</color>
 
+    <!-- Semantic / Status -->
     <color name="success_mint">#B2DFDB</color>
+    <color name="success_mint_surface">#E0F2F1</color>
     <color name="warning_peach">#FFCCBC</color>
+    <color name="warning_peach_surface">#FFF3E0</color>
+    <color name="error_coral">#EF5350</color>
+    <color name="error_coral_surface">#FFEBEE</color>
     <color name="info_blue">#E1F5FE</color>
 
+    <!-- Surface / Card -->
+    <color name="card_white">#FFFFFF</color>
+    <color name="card_white_translucent">#E6FFFFFF</color>
+    <color name="card_elevated">#FFFFFF</color>
+    <color name="glass_white">#CCFFFFFF</color>
+
+    <!-- Text -->
     <color name="text_charcoal">#37474F</color>
     <color name="text_gray_purple">#90A4AE</color>
+    <color name="text_white">#FFFFFF</color>
+    <color name="text_on_primary">#FFFFFF</color>
+    <color name="text_disabled">#B0BEC5</color>
 
-    <color name="card_white_translucent">#E6FFFFFF</color> <!-- 90% White -->
-    <color name="card_white">#FFFFFF</color>
-    <color name="card_dark">#2A2826</color>
-
-    <!-- Aliases for existing code compatibility where needed -->
-    <color name="accent_warm">#7C4DFF</color> <!-- Violet as primary accent now -->
+    <!-- Aliases for code compatibility -->
+    <color name="text_primary">@color/text_charcoal</color>
+    <color name="text_secondary">@color/text_gray_purple</color>
+    <color name="accent_warm">@color/primary_violet</color>
     <color name="accent_teal">#B2DFDB</color>
     <color name="pill_dark">#37474F</color>
-    <color name="text_primary">#37474F</color>
-    <color name="text_secondary">#90A4AE</color>
-    <color name="glass_white">#CCFFFFFF</color>
 </resources>

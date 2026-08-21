@@ -112,28 +112,37 @@ class HistoryAdapter(
                 binding.elapsedText.text = ""
             }
 
-            // --- Card colour ---
+            // --- Card colour (blue/peach/lavender cycle per spec §2.1) ---
             val backgroundRes = when (bindingAdapterPosition % 3) {
-                0 -> sabuj.m.truedistance.R.drawable.bg_card_lavender
-                1 -> sabuj.m.truedistance.R.drawable.bg_card_mint
-                else -> sabuj.m.truedistance.R.drawable.bg_card_peach
+                0 -> sabuj.m.truedistance.R.drawable.bg_card_blue
+                1 -> sabuj.m.truedistance.R.drawable.bg_card_peach
+                else -> sabuj.m.truedistance.R.drawable.bg_card_lavender
             }
             binding.rootContainer.setBackgroundResource(backgroundRes)
 
-            // Dark text colour matching the card
-            val darkColor = when (bindingAdapterPosition % 3) {
-                0 -> 0xFF6A1B9A.toInt()   // deep purple
-                1 -> 0xFF00695C.toInt()    // deep teal
-                else -> 0xFFBF360C.toInt() // deep orange
+            // Text colors: in light theme, darker shade of card color for row 1 and slightly lighter for row 2
+            val isNightMode = (ctx.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
+            val (primaryTextColor, secondaryTextColor) = if (isNightMode) {
+                val prim = androidx.core.content.ContextCompat.getColor(ctx, sabuj.m.truedistance.R.color.text_charcoal)
+                val sec = androidx.core.content.ContextCompat.getColor(ctx, sabuj.m.truedistance.R.color.text_gray_purple)
+                prim to sec
+            } else {
+                val darkColor = when (bindingAdapterPosition % 3) {
+                    0 -> 0xFF1565C0.toInt()    // deep blue
+                    1 -> 0xFFBF360C.toInt()    // deep orange
+                    else -> 0xFF6A1B9A.toInt() // deep purple
+                }
+                val lightDarkColor = (darkColor and 0x00FFFFFF) or (0xD9 shl 24)
+                darkColor to lightDarkColor
             }
-            binding.destinationText.setTextColor(darkColor)
-            binding.trackedDistanceText.setTextColor(darkColor)
 
-            // Row 2: same hue but lighter (60% alpha)
-            val lightDarkColor = (darkColor and 0x00FFFFFF) or (0x99 shl 24)
-            binding.startTimeText.setTextColor(lightDarkColor)
-            binding.stopTimeText.setTextColor(lightDarkColor)
-            binding.elapsedText.setTextColor(lightDarkColor)
+            binding.destinationText.setTextColor(primaryTextColor)
+            binding.trackedDistanceText.setTextColor(primaryTextColor)
+
+            // Row 2: secondary color (lighter shade / 60% alpha)
+            binding.startTimeText.setTextColor(secondaryTextColor)
+            binding.stopTimeText.setTextColor(secondaryTextColor)
+            binding.elapsedText.setTextColor(secondaryTextColor)
 
             binding.root.setOnClickListener { onEntryClick(entry) }
             binding.deleteButton.setOnClickListener { onDeleteClick(entry) }
@@ -148,7 +157,7 @@ class HistoryAdapter(
                     layoutParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT, 1
                     ).apply { topMargin = 4; bottomMargin = 4 }
-                    setBackgroundColor(0x22000000)
+                    setBackgroundColor(if (isNightMode) 0x33FFFFFF else (primaryTextColor and 0x00FFFFFF) or (0x22 shl 24))
                 }
                 binding.snapshotContainer.addView(divider)
 
@@ -165,6 +174,7 @@ class HistoryAdapter(
                     val elapsedTv = TextView(ctx).apply {
                         text = row.elapsedLabel
                         textSize = 12f
+                        setTextColor(primaryTextColor)
                         layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.2f)
                         setTypeface(null, Typeface.BOLD)
                     }
@@ -173,6 +183,7 @@ class HistoryAdapter(
                     val clockTv = TextView(ctx).apply {
                         text = row.clockTime
                         textSize = 12f
+                        setTextColor(secondaryTextColor)
                         gravity = Gravity.CENTER
                         layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 0.8f)
                     }
@@ -183,6 +194,7 @@ class HistoryAdapter(
                             row.distanceMeters, unit, decimalPrecision, autoMetersUnder1km
                         )
                         textSize = 12f
+                        setTextColor(primaryTextColor)
                         gravity = Gravity.END
                         layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
                     }

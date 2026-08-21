@@ -29,7 +29,7 @@ class SavedLocationAdapter(
         holder.binding.nameText.text = item.name
         holder.binding.addressText.text = item.address
         
-        // Cycle through pastel gradients
+        // Cycle through pastel gradients (mint/lavender/peach per spec §2.1)
         val backgroundRes = when (position % 3) {
             0 -> sabuj.m.truedistance.R.drawable.bg_card_mint
             1 -> sabuj.m.truedistance.R.drawable.bg_card_lavender
@@ -37,16 +37,24 @@ class SavedLocationAdapter(
         }
         holder.binding.rootContainer.setBackgroundResource(backgroundRes)
 
-        // Dark text colour matching the card
-        val darkColor = when (position % 3) {
-            0 -> 0xFF00695C.toInt()    // deep teal
-            1 -> 0xFF6A1B9A.toInt()    // deep purple
-            else -> 0xFFBF360C.toInt() // deep orange
+        // Theme-aware text colors: in light theme, darker shade of card color for name and slightly lighter for address
+        val ctx = holder.binding.root.context
+        val isNightMode = (ctx.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
+        val (primaryTextColor, secondaryTextColor) = if (isNightMode) {
+            val prim = androidx.core.content.ContextCompat.getColor(ctx, sabuj.m.truedistance.R.color.text_charcoal)
+            val sec = androidx.core.content.ContextCompat.getColor(ctx, sabuj.m.truedistance.R.color.text_gray_purple)
+            prim to sec
+        } else {
+            val darkColor = when (position % 3) {
+                0 -> 0xFF00695C.toInt()    // deep teal matching mint card
+                1 -> 0xFF6A1B9A.toInt()    // deep purple matching lavender card
+                else -> 0xFFBF360C.toInt() // deep orange matching peach card
+            }
+            val lightDarkColor = (darkColor and 0x00FFFFFF) or (0xD9 shl 24)
+            darkColor to lightDarkColor
         }
-        holder.binding.nameText.setTextColor(darkColor)
-        // Address: same hue but lighter (60% alpha)
-        val lightDarkColor = (darkColor and 0x00FFFFFF) or (0x99 shl 24)
-        holder.binding.addressText.setTextColor(lightDarkColor)
+        holder.binding.nameText.setTextColor(primaryTextColor)
+        holder.binding.addressText.setTextColor(secondaryTextColor)
 
         holder.binding.root.setOnClickListener { onItemClick(item) }
         holder.binding.deleteButton.setOnClickListener { onDeleteClick(item) }

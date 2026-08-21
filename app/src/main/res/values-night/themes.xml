@@ -1,7 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.TrueDistance" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+    <!-- Dark mode overrides — inherits everything from base Theme.TrueDistance -->
+    <style name="Theme.TrueDistance" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary_violet</item>
+        <item name="colorPrimaryVariant">@color/primary_violet_dark</item>
+        <item name="colorSecondary">@color/primary_lavender</item>
+        <item name="android:windowBackground">@color/background_soft</item>
+
+        <!-- Transparent status bar with light icons for dark mode -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/background_soft</item>
+
+        <!-- Dialog, Button, BottomNav styles inherited via resource name matching -->
+        <item name="materialAlertDialogTheme">@style/Theme.TrueDistance.Dialog</item>
+        <item name="materialButtonStyle">@style/Widget.App.Button</item>
+        <item name="bottomNavigationStyle">@style/Widget.App.BottomNavigationView</item>
     </style>
 </resources>
