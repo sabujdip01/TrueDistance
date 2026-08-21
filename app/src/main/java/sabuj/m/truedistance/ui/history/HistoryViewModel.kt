@@ -42,7 +42,8 @@ class HistoryViewModel @Inject constructor(
         viewModelScope.launch {
             val current = expandedIds.value
             val isNowExpanding = entryId !in current
-            expandedIds.value = if (isNowExpanding) current + entryId else current - entryId
+            // Only one card can be expanded at a time
+            expandedIds.value = if (isNowExpanding) setOf(entryId) else emptySet()
 
             if (isNowExpanding) {
                 // Load snapshots lazily and re-render this entry's rows.

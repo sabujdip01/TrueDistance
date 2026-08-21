@@ -1,75 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- §6.1.3 — collapsed row: destination + Initial Distance + delete; expands to
-     show snapshotContainer (interval rows) below when tapped -->
+<!-- History card: 80% content | 20% delete button -->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="8dp">
+    android:layout_marginVertical="6dp">
 
     <LinearLayout
         android:id="@+id/root_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_card_lavender"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="horizontal">
 
+        <!-- LEFT 80%: Content -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:layout_weight="4"
+            android:orientation="vertical"
+            android:padding="20dp">
 
+            <!-- Row 1: Location Name + Tracked Distance -->
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
                 <TextView
                     android:id="@+id/destinationText"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:textStyle="bold"
-                    android:textSize="16sp" />
+                    android:textSize="17sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
 
                 <TextView
-                    android:id="@+id/initialDistanceText"
-                    android:layout_width="match_parent"
+                    android:id="@+id/trackedDistanceText"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="13sp"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <!-- Row 2: Start Time | Stop Time | Elapsed -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp">
+
+                <TextView
+                    android:id="@+id/startTimeText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="11sp"
                     android:textColor="@color/text_secondary" />
 
-                <!-- Trip date + time preview -->
                 <TextView
-                    android:id="@+id/dateTimeText"
-                    android:layout_width="match_parent"
+                    android:id="@+id/stopTimeText"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textSize="12sp"
+                    android:layout_weight="1"
+                    android:textSize="11sp"
                     android:textColor="@color/text_secondary"
-                    android:layout_marginTop="2dp" />
+                    android:gravity="center" />
+
+                <TextView
+                    android:id="@+id/elapsedText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="11sp"
+                    android:textColor="@color/text_secondary"
+                    android:gravity="end" />
             </LinearLayout>
+
+            <!-- Expanded: snapshot rows -->
+            <LinearLayout
+                android:id="@+id/snapshotContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="10dp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <!-- RIGHT 20%: Delete button centered -->
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
             <ImageButton
                 android:id="@+id/deleteButton"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
+                android:layout_gravity="center"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/delete"
                 android:src="@drawable/ic_delete" />
-        </LinearLayout>
-
-        <!-- §6.1.3 — interval snapshot rows, populated dynamically -->
-        <LinearLayout
-            android:id="@+id/snapshotContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone" />
+        </FrameLayout>
 
     </LinearLayout>
 </FrameLayout>

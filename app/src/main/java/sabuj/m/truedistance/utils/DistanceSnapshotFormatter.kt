@@ -1,34 +1,37 @@
 package sabuj.m.truedistance.utils
 
 import sabuj.m.truedistance.database.DistanceSnapshot
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.math.abs
 
 /**
  * Time-Based Distance History Log (per time-based-log.md spec).
  *
  * Builds display rows for a completed trip's expanded history card.
- * Rows are selected post-hoc from raw (timestamp, distanceMeters) samples
- * using time-based percentage tiers — never during live tracking.
- *
- * Tier selection (by total trip duration):
- *   A (≥10min): 11 bars at 0,10,20,...,100%
- *   B (2–10min): 8 bars at 0,15,30,45,60,75,90,100%
- *   C (20s–2min): 3 bars at 0,50,100%
- *   D (<20s):     2 bars at 0,100%
- *
- * Each percentage mark is converted to a target timestamp, then snapped
- * to the closest real recorded sample. Labels show elapsed time ("+2m 14s"),
- * not percentages.
+ * Each row has three columns:
+ *   1. Elapsed label: "+0:00 (Start)", "+2:30", "+5:00 (End)"
+ *   2. Clock time:    "9:45 AM"
+ *   3. Distance:      formatted by caller
  */
 object DistanceSnapshotFormatter {
 
-    data class DisplayRow(val label: String, val distanceMeters: Double)
-
     /**
-     * @param snapshots     All raw GPS samples for this trip, sorted by timestamp.
-     * @param startedAt     Trip start timestamp (millis).
-     * @param endedAt       Trip end timestamp (millis).
+     * @param elapsedLabel  e.g. "0:00 (Start)", "+ 2:30", "+ 5:00 (End)"
+     * @param clockTime     e.g. "9:45 PM"
+     * @param distanceMeters raw distance for the caller to format per unit settings
      */
+    data class DisplayRow(
+        val elapsedLabel: String,
+        val clockTime: String,
+        val distanceMeters: Double,
+        // Legacy compat — label combines elapsed + clock for old callers
+        val label: String = elapsedLabel
+    )
+
+    private val clockFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
+
     fun buildDisplayRows(
         snapshots: List<DistanceSnapshot>,
         startedAt: Long,
@@ -38,18 +41,14 @@ object DistanceSnapshotFormatter {
 
         val sorted = snapshots.sortedBy { it.timestamp }
         val totalDuration = endedAt - startedAt
-
-        // Step 1 — Choose tier based on total trip duration
         val targetPercents = chooseTier(totalDuration)
 
-        // Step 2+3 — Convert each % to a target timestamp, snap to nearest real sample
         val rows = mutableListOf<DisplayRow>()
         val usedIndices = mutableSetOf<Int>()
 
         for (pct in targetPercents) {
             val targetTime = startedAt + (pct / 100.0 * totalDuration).toLong()
 
-            // Find the sample closest to targetTime
             var bestIdx = 0
             var bestDiff = Long.MAX_VALUE
             for (i in sorted.indices) {
@@ -60,27 +59,30 @@ object DistanceSnapshotFormatter {
                 }
             }
 
-            // Avoid duplicate rows for the same sample (can happen on very short trips)
             if (bestIdx in usedIndices && pct != 0 && pct != 100) continue
             usedIndices.add(bestIdx)
 
             val sample = sorted[bestIdx]
             val elapsed = sample.timestamp - startedAt
-            val label = when (pct) {
-                0 -> "Start  •  ${formatElapsed(0)}"
-                100 -> "End  •  ${formatElapsed(elapsed)}"
-                else -> formatElapsed(elapsed)
+            val elapsedStr = formatElapsed(elapsed)
+            val clock = clockFormat.format(Date(sample.timestamp))
+
+            val elapsedLabel = when (pct) {
+                0 -> "$elapsedStr (Start)"
+                100 -> "$elapsedStr (End)"
+                else -> elapsedStr
             }
-            rows.add(DisplayRow(label, sample.distanceMeters))
+            rows.add(DisplayRow(
+                elapsedLabel = elapsedLabel,
+                clockTime = clock,
+                distanceMeters = sample.distanceMeters
+            ))
         }
 
         return rows
     }
 
-    /**
-     * Legacy overload for existing callers that pass sessionDurationMillis.
-     * Converts to the new (startedAt, endedAt) signature.
-     */
+    /** Legacy overload. */
     fun buildDisplayRows(
         snapshots: List<DistanceSnapshot>,
         sessionDurationMillis: Long
@@ -92,31 +94,30 @@ object DistanceSnapshotFormatter {
         return buildDisplayRows(sorted, startedAt, endedAt)
     }
 
-    /** Step 1 — Choose bar-count tier based on total trip duration. */
     private fun chooseTier(durationMillis: Long): List<Int> {
         val tenMinutes = 10 * 60_000L
         val twoMinutes = 2 * 60_000L
         val twentySeconds = 20_000L
 
         return when {
-            durationMillis >= tenMinutes -> (0..100 step 10).toList()           // Tier A: 11 bars
-            durationMillis >= twoMinutes -> listOf(0, 15, 30, 45, 60, 75, 90, 100) // Tier B: 8 bars
-            durationMillis >= twentySeconds -> listOf(0, 50, 100)               // Tier C: 3 bars
-            else -> listOf(0, 100)                                              // Tier D: 2 bars
+            durationMillis >= tenMinutes -> (0..100 step 10).toList()
+            durationMillis >= twoMinutes -> listOf(0, 15, 30, 45, 60, 75, 90, 100)
+            durationMillis >= twentySeconds -> listOf(0, 50, 100)
+            else -> listOf(0, 100)
         }
     }
 
-    /** Formats elapsed milliseconds as a human-readable duration string. */
+    /** Formats elapsed millis as "H:MM:SS" or "M:SS" or "0:SS". */
     private fun formatElapsed(millis: Long): String {
         val totalSeconds = millis / 1000
         val hours = totalSeconds / 3600
         val minutes = (totalSeconds % 3600) / 60
         val seconds = totalSeconds % 60
 
-        return when {
-            hours > 0 -> "+${hours}h ${minutes}m"
-            minutes > 0 -> "+${minutes}m ${seconds}s"
-            else -> "+${seconds}s"
+        return if (hours > 0) {
+            String.format(Locale.US, "+ %d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            String.format(Locale.US, "+ %d:%02d", minutes, seconds)
         }
     }
 }

@@ -16,7 +16,7 @@ import javax.inject.Inject
 /** §6.3.1 Settings — Theme, Accuracy, Units, Background Tracking. */
 data class SettingsUiState(
     val theme: ThemeMode = ThemeMode.SYSTEM,
-    val unit: UnitPreference = UnitPreference.BOTH,
+    val unit: UnitPreference = UnitPreference.KM,
     val decimalPrecision: Int = 2,
     val autoMetersUnder1km: Boolean = true,
     val gpsAccuracyMode: GpsAccuracyMode = GpsAccuracyMode.HIGH,
