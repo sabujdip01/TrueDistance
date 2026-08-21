@@ -25,22 +25,29 @@ object DistanceCalculator {
         distanceMeters <= thresholdMeters
 
     /**
-     * Formats a distance for display per §6.3.1: auto-meters under 1km, up to 2
-     * decimal places (configurable), Km/Miles/Both per Settings.
+     * Formats a distance for display:
+     * - Under 1 KM (< 1000m): 3-digit meters ("%03d M", e.g. 000 M, 045 M, 850 M)
+     * - 1 KM and above: 2 decimal places ("%.2f KM", e.g. 1.25 KM)
      */
     fun format(
         meters: Double,
         unit: UnitPreference,
-        decimalPrecision: Int,
-        autoMetersUnder1km: Boolean
+        decimalPrecision: Int = 2,
+        autoMetersUnder1km: Boolean = true
     ): String {
-        val km = meters / 1000.0
-        val miles = meters / 1609.344
+        val safeMeters = meters.coerceAtLeast(0.0)
+        val km = safeMeters / 1000.0
+        val miles = safeMeters / 1609.344
 
-        fun fmt(value: Double) = "%.${decimalPrecision}f".format(value)
+        fun fmt(value: Double) = "%.${decimalPrecision}f".format(java.util.Locale.US, value)
 
-        if (autoMetersUnder1km && meters < 1000.0) {
-            return "${meters.toInt()} M"
+        if (autoMetersUnder1km && safeMeters < 1000.0 && unit != UnitPreference.MILES) {
+            return String.format(java.util.Locale.US, "%03d M", safeMeters.toInt())
+        }
+
+        if (autoMetersUnder1km && safeMeters < 1609.344 && unit == UnitPreference.MILES) {
+            val feet = (safeMeters * 3.28084).toInt()
+            return String.format(java.util.Locale.US, "%03d FT", feet)
         }
 
         return when (unit) {
@@ -48,5 +55,41 @@ object DistanceCalculator {
             UnitPreference.MILES -> "${fmt(miles)} MI"
             UnitPreference.BOTH -> "${fmt(km)} KM / ${fmt(miles)} MI"
         }
+    }
+
+    /**
+     * Formats speed:
+     * - Under 1 KM/H: 3-digit meters per hour ("%03d", unit = "M/H", e.g. 000 M/H, 450 M/H)
+     * - 1 KM/H and above: 2 decimal places ("%.2f", unit = "KM/H", e.g. 24.50 KM/H)
+     */
+    fun formatSpeedParts(
+        speedKmh: Double,
+        unit: UnitPreference
+    ): Pair<String, String> {
+        val safeSpeedKmh = speedKmh.coerceAtLeast(0.0)
+        return if (unit == UnitPreference.MILES) {
+            val speedMph = safeSpeedKmh * 0.621371
+            if (speedMph < 1.0) {
+                val ftPerHour = (speedMph * 5280.0).toInt()
+                Pair(String.format(java.util.Locale.US, "%03d", ftPerHour), "FT/H")
+            } else {
+                Pair(String.format(java.util.Locale.US, "%.2f", speedMph), "MPH")
+            }
+        } else {
+            if (safeSpeedKmh < 1.0) {
+                val metersPerHour = (safeSpeedKmh * 1000.0).toInt()
+                Pair(String.format(java.util.Locale.US, "%03d", metersPerHour), "M/H")
+            } else {
+                Pair(String.format(java.util.Locale.US, "%.2f", safeSpeedKmh), "KM/H")
+            }
+        }
+    }
+
+    fun formatSpeedString(
+        speedKmh: Double,
+        unit: UnitPreference
+    ): String {
+        val (valStr, unitStr) = formatSpeedParts(speedKmh, unit)
+        return "$valStr $unitStr"
     }
 }

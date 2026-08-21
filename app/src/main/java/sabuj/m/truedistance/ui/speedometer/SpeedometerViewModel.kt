@@ -24,10 +24,10 @@ data class SpeedometerUiState(
     val isTracking: Boolean = false,
     val isPaused: Boolean = false,
     val formattedSpeed: String = "0.0",
-    val speedUnitLabel: String = "km/h",
-    val formattedDistance: String = "0.00 km",
-    val formattedAvgSpeed: String = "0.0 km/h",
-    val formattedMaxSpeed: String = "0.0 km/h",
+    val speedUnitLabel: String = "KM/H",
+    val formattedDistance: String = "0.00 KM",
+    val formattedAvgSpeed: String = "0.0 KM/H",
+    val formattedMaxSpeed: String = "0.0 KM/H",
     val formattedStartTime: String = "--:--:--",
     val formattedElapsedTime: String = "00:00:00",
     val currentLocation: LatLng? = null,
@@ -49,19 +49,13 @@ class SpeedometerViewModel @Inject constructor(
         settingsRepository.decimalPrecision,
         settingsRepository.autoMetersUnder1km
     ) { state, unit, precision, autoMeters ->
-        val speedUnit = when (unit) {
-            sabuj.m.truedistance.database.UnitPreference.MILES -> "mph"
-            else -> "km/h"
-        }
+        val currentSpeedKmh = if (state.isPaused || state.currentSpeedMps < 0.3) 0.0 else state.currentSpeedMps * 3.6
+        val avgSpeedKmh = if (state.distanceCoveredMeters <= 0.0) 0.0 else state.averageSpeedMps * 3.6
+        val maxSpeedKmh = state.maxSpeedMps * 3.6
 
-        val speedMultiplier = when (unit) {
-            sabuj.m.truedistance.database.UnitPreference.MILES -> 2.23694
-            else -> 3.6
-        }
-
-        val currentSpeedVal = state.currentSpeedMps * speedMultiplier
-        val avgSpeedVal = state.averageSpeedMps * speedMultiplier
-        val maxSpeedVal = state.maxSpeedMps * speedMultiplier
+        val (currentSpeedStr, currentSpeedUnit) = DistanceCalculator.formatSpeedParts(currentSpeedKmh, unit)
+        val formattedAvgSpeed = DistanceCalculator.formatSpeedString(avgSpeedKmh, unit)
+        val formattedMaxSpeed = DistanceCalculator.formatSpeedString(maxSpeedKmh, unit)
 
         val formattedDistance = DistanceCalculator.format(
             state.distanceCoveredMeters, unit, precision, autoMeters
@@ -78,11 +72,11 @@ class SpeedometerViewModel @Inject constructor(
         SpeedometerUiState(
             isTracking = state.isTracking,
             isPaused = state.isPaused,
-            formattedSpeed = String.format(Locale.US, "%.1f", currentSpeedVal),
-            speedUnitLabel = speedUnit,
+            formattedSpeed = currentSpeedStr,
+            speedUnitLabel = currentSpeedUnit,
             formattedDistance = formattedDistance,
-            formattedAvgSpeed = String.format(Locale.US, "%.1f %s", avgSpeedVal, speedUnit),
-            formattedMaxSpeed = String.format(Locale.US, "%.1f %s", maxSpeedVal, speedUnit),
+            formattedAvgSpeed = formattedAvgSpeed,
+            formattedMaxSpeed = formattedMaxSpeed,
             formattedStartTime = startTimeStr,
             formattedElapsedTime = elapsedStr,
             currentLocation = state.currentLocation,

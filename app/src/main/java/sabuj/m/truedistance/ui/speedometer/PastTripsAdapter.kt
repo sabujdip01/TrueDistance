@@ -66,14 +66,12 @@ class PastTripsAdapter(
             val startStr = timeFormat.format(Date(trip.startedAt))
             val elapsedStr = formatElapsed(trip.elapsedMillis)
 
-            val speedUnit = if (unit == sabuj.m.truedistance.database.UnitPreference.MILES) "mph" else "km/h"
-            val speedMultiplier = if (unit == sabuj.m.truedistance.database.UnitPreference.MILES) 0.621371 else 1.0
-            val avgSpeedVal = trip.averageSpeedKmh * speedMultiplier
-            val maxSpeedVal = trip.maxSpeedKmh * speedMultiplier
+            val avgSpeedFormatted = DistanceCalculator.formatSpeedString(trip.averageSpeedKmh, unit)
+            val maxSpeedFormatted = DistanceCalculator.formatSpeedString(trip.maxSpeedKmh, unit)
 
             binding.startTimeText.text = startStr
             binding.elapsedText.text = elapsedStr
-            binding.avgSpeedText.text = String.format(Locale.US, "Avg %.1f %s", avgSpeedVal, speedUnit)
+            binding.avgSpeedText.text = "Avg $avgSpeedFormatted"
 
             // Card background: Cycle through gradient cards
             val backgroundRes = when (bindingAdapterPosition % 3) {
@@ -112,7 +110,7 @@ class PastTripsAdapter(
                 binding.detailMaxSpeedText.setTextColor(secondaryTextColor)
                 binding.detailEndedAtText.setTextColor(secondaryTextColor)
 
-                binding.detailMaxSpeedText.text = String.format(Locale.US, "Max Speed: %.1f %s", maxSpeedVal, speedUnit)
+                binding.detailMaxSpeedText.text = "Max Speed: $maxSpeedFormatted"
                 if (trip.endedAt != null) {
                     binding.detailEndedAtText.text = "Ended: " + timeFormat.format(Date(trip.endedAt))
                 } else {

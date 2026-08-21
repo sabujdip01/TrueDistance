@@ -107,7 +107,7 @@ class SpeedometerService : LifecycleService() {
         startForeground(
             NotificationHelper.SPEEDOMETER_NOTIFICATION_ID,
             NotificationHelper.buildSpeedometerNotification(
-                this, "0.0 km/h", "0.00 km", "00:00:00", isPaused = false
+                this, "000 M/H", "000 M", "00:00:00", isPaused = false
             )
         )
 
@@ -126,7 +126,9 @@ class SpeedometerService : LifecycleService() {
                 val now = System.currentTimeMillis()
 
                 if (!isPaused) {
-                    val filteredSpeed = speedFilter.filter(location.speed, now)
+                    val isAccuracyAcceptable = !location.hasAccuracy() || location.accuracy <= 30.0f
+                    val rawSpeed = if (location.hasSpeed() && isAccuracyAcceptable) location.speed else 0.0f
+                    val filteredSpeed = speedFilter.filter(rawSpeed, now)
                     currentSpeedMps = filteredSpeed
 
                     if (filteredSpeed > maxSpeedMps) {
@@ -138,15 +140,21 @@ class SpeedometerService : LifecycleService() {
                             lastLocation!!.latitude, lastLocation!!.longitude,
                             currentLatLng.latitude, currentLatLng.longitude
                         )
-                        // Ignore tiny GPS jitter (< 1.5m if speed is near zero)
-                        if (delta > 1.5 || filteredSpeed > 0.5) {
+                        val accuracy = if (location.hasAccuracy()) location.accuracy.toDouble() else 10.0
+                        val minDistanceThreshold = kotlin.math.max(4.0, accuracy * 0.5)
+
+                        // Only accumulate distance and polyline if user is genuinely moving
+                        if (filteredSpeed > 0.5 && delta >= minDistanceThreshold && isAccuracyAcceptable) {
                             distanceCoveredMeters += delta
                             pathPoints.add(currentLatLng)
+                            lastLocation = currentLatLng
                         }
                     } else {
-                        pathPoints.add(currentLatLng)
+                        if (isAccuracyAcceptable) {
+                            pathPoints.add(currentLatLng)
+                            lastLocation = currentLatLng
+                        }
                     }
-                    lastLocation = currentLatLng
                 }
 
                 val avgSpeed = if (elapsedMillis > 1000) {
@@ -216,16 +224,15 @@ class SpeedometerService : LifecycleService() {
 
     private fun updateNotification() {
         val speedKmh = currentSpeedMps * 3.6
-        val distKm = distanceCoveredMeters / 1000.0
-        val speedText = String.format(Locale.US, "%.1f km/h", speedKmh)
-        val distText = String.format(Locale.US, "%.2f km", distKm)
+        val speedFormatted = DistanceCalculator.formatSpeedString(speedKmh, sabuj.m.truedistance.database.UnitPreference.KM)
+        val distFormatted = DistanceCalculator.format(distanceCoveredMeters, sabuj.m.truedistance.database.UnitPreference.KM, 2, true)
         val elapsedText = formatElapsed(elapsedMillis)
 
         val manager = getSystemService(android.app.NotificationManager::class.java)
         manager?.notify(
             NotificationHelper.SPEEDOMETER_NOTIFICATION_ID,
             NotificationHelper.buildSpeedometerNotification(
-                this, speedText, distText, elapsedText, isPaused
+                this, speedFormatted, distFormatted, elapsedText, isPaused
             )
         )
     }
@@ -272,10 +279,13 @@ class SpeedometerService : LifecycleService() {
 
             tripRepository.saveTrip(trip)
 
+            val savedLoc = lastLocation
+            stateHolder.reset()
             stateHolder.update {
                 it.copy(
                     isTracking = false,
                     isPaused = false,
+                    currentLocation = savedLoc,
                     currentSpeedMps = 0.0
                 )
             }

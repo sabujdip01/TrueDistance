@@ -132,34 +132,37 @@ This tab contains two primary screens: the **Speedometer Screen** (live trip tra
 Layout structure (top to bottom):
 1. **Header Row**: History icon chip button (`@id/historyButton`) navigating to the Past Trips screen (`@id/action_speedometer_to_pastTrips`).
 2. **Interactive Map**: Google Map inside a 16dp rounded `CardView` frame with 12dp margins:
-   - **Current Location Marker**: Red pin marker updating live.
+   - **Initial Centering**: Loads user's current location immediately on map ready (`17f` zoom) with a Red pin marker.
+   - **Trip Start Zoom**: On clicking Start, zooms tightly into the user's location at street level (`18.5f`).
    - **Breadcrumb Polyline**: Traveled path polyline (`#00796B` dark teal, 8px solid) drawn continuously as the user travels.
-   - **Auto-Follow / Bounds Fit**: Camera smoothly centers on user and path points.
+   - **Auto-Drag & Auto-Zoom Out**: Smoothly follows movement in real time. When the route expands (>15m), camera automatically scales and zooms out to fit the full path polyline and current location with top and bottom UI overlay padding.
 3. **Floating Live Speed Counter**:
    - Glassmorphic card (`card_white_translucent`, 16dp radius, 4dp elevation) floating at the top of the map.
-   - Large bold speed readout (`36sp` bold) with unit label (`km/h` or `mph` per global Settings).
+   - Large bold speed readout (`36sp` bold) with unit label (`KM/H`, `M/H`, or `MPH` per global Settings).
+   - Speed formatting: 3-digit meters per hour (`000 M/H`) under 1 KM/H; 2-decimal format (`%.2f KM/H`) at or above 1 KM/H.
 4. **Recenter FAB**: Mini floating action button (`@id/recenterButton`) at bottom-right of the map to center on current location.
 5. **Gradient Statistics Card** (`@id/statsCard`):
    - 24dp rounded corners, 20dp padding, pastel/dark gradient surface.
-   - **Distance Covered**: Numeric with 2 decimal places (18sp bold).
-   - **Average Speed & Max Speed**: Instantaneous max speed sanitized via `SpeedSpikeFilter`.
+   - **Distance Covered**: 3-digit meters (`000 M`) under 1 KM; 2 decimal places (`%.2f KM`) at or above 1 KM.
+   - **Average Speed & Max Speed**: Sanitized via `SpeedSpikeFilter` (deadband threshold at 0.6 m/s to eliminate stationary jitter).
    - **Start Timestamp & Elapsed Time**: Running duration (`HH:MM:SS`) excluding paused intervals.
 6. **Control Action Buttons**:
    - **Idle State**: Full-width [ START ] button (`primary_violet`).
    - **Active State**: Dual-button layout with [ PAUSE / RESUME ] and [ STOP ] buttons.
+   - **Trip Completion**: Tapping Stop shows a `"Trip Saved"` toast notification, resets all screen stats to initial zero values, and clears the polyline while preserving current location.
 
 #### 6.2.2 Foreground Service & Notification Synchronization (`SpeedometerService`)
 - **Dedicated Foreground Service**: Controlled via explicit actions (`ACTION_START`, `ACTION_PAUSE`, `ACTION_RESUME`, `ACTION_STOP`).
 - **Persistent Notification**:
   - Notification channel: `speedometer_channel`.
-  - Content text: Displays live Speed, Distance Covered, and Elapsed Time.
+  - Content text: Displays live Speed, Distance Covered, and Elapsed Time in uppercase units (`000 M/H • 000 M • 00:00:00`).
   - **Interactive Action Buttons**: `Pause` / `Resume` and `Stop` PendingIntents, fully synchronized with the app UI state via `SpeedometerStateHolder`.
-- **Spike Filter** (`SpeedSpikeFilter`): Rejects physically impossible acceleration jumps (> 10 m/s²) to guard `maxSpeed` from GPS jitter.
+- **Spike Filter** (`SpeedSpikeFilter`): Rejects physically impossible acceleration jumps (> 10 m/s²) and filters stationary noise (< 0.6 m/s) to guard `maxSpeed` from GPS jitter.
 
 #### 6.2.3 Past Trips Screen (`PastTripsFragment`)
 - **Header**: Title "Past Trips", back navigation, and overflow menu with "Clear All" confirmation dialog.
 - **Card Format**: 80/20 card layout with 24dp rounded corners and pastel gradient fills.
-  - **Row 1**: Start Date/Time (`17sp` bold, tone-matched) + Distance (`13sp`).
+  - **Row 1**: Start Date/Time (`17sp` bold, tone-matched) + Distance (`13sp`, 3-digit `M` / 2-decimal `KM`).
   - **Row 2**: Start Time, Elapsed Duration, and Avg Speed (`13sp` at 85% opacity).
   - **Right 20%**: Centered delete icon button.
 - **Single-Card Exclusive Expand**:

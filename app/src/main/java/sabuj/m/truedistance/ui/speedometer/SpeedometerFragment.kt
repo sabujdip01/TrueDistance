@@ -31,6 +31,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import sabuj.m.truedistance.R
 import sabuj.m.truedistance.databinding.FragmentSpeedometerBinding
+import sabuj.m.truedistance.utils.DistanceCalculator
 
 /**
  * §6.2 Speedometer Screen — Live trip tracking with map, floating live speed readout,
@@ -49,13 +50,15 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
     private var polyline: Polyline? = null
     private var isFirstFix = true
 
+    private lateinit var fusedLocationClient: com.google.android.gms.location.FusedLocationProviderClient
+
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         val fineGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
         val coarseGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
         if (fineGranted || coarseGranted) {
-            viewModel.startTrip(requireContext())
+            fetchInitialLocation()
         }
     }
 
@@ -63,6 +66,7 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSpeedometerBinding.inflate(inflater, container, false)
+        fusedLocationClient = com.google.android.gms.location.LocationServices.getFusedLocationProviderClient(requireContext())
         return binding.root
     }
 
@@ -74,6 +78,46 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
 
         setupButtons()
         observeUiState()
+        checkPermissions()
+    }
+
+    private fun checkPermissions() {
+        val fine = ContextCompat.checkSelfPermission(
+            requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        val coarse = ContextCompat.checkSelfPermission(
+            requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (!fine && !coarse) {
+            locationPermissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+        }
+    }
+
+    @android.annotation.SuppressLint("MissingPermission")
+    private fun fetchInitialLocation() {
+        val fine = ContextCompat.checkSelfPermission(
+            requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+        val coarse = ContextCompat.checkSelfPermission(
+            requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (fine || coarse) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                if (location != null && googleMap != null) {
+                    val latLng = LatLng(location.latitude, location.longitude)
+                    updateCurrentMarker(latLng)
+                    googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17f))
+                }
+            }
+        }
     }
 
     private fun setupButtons() {
@@ -96,12 +140,15 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
 
         binding.stopTripButton.setOnClickListener {
             viewModel.stopTrip(requireContext())
+            android.widget.Toast.makeText(requireContext(), getString(R.string.trip_saved), android.widget.Toast.LENGTH_SHORT).show()
         }
 
         binding.recenterButton.setOnClickListener {
             val loc = viewModel.uiState.value.currentLocation
             if (loc != null && googleMap != null) {
                 googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 17f))
+            } else {
+                fetchInitialLocation()
             }
         }
     }
@@ -141,6 +188,8 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
                 .startCap(RoundCap())
                 .endCap(RoundCap())
         )
+
+        fetchInitialLocation()
     }
 
     private fun observeUiState() {
@@ -182,35 +231,72 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    private fun updateCurrentMarker(latLng: LatLng) {
+        val map = googleMap ?: return
+        if (currentMarker == null) {
+            currentMarker = map.addMarker(
+                MarkerOptions()
+                    .position(latLng)
+                    .title(getString(R.string.you))
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+            )
+        } else {
+            currentMarker?.position = latLng
+        }
+    }
+
     private fun updateMap(state: SpeedometerUiState) {
         val map = googleMap ?: return
 
         // Update current location marker
         state.currentLocation?.let { latLng ->
-            if (currentMarker == null) {
-                currentMarker = map.addMarker(
-                    MarkerOptions()
-                        .position(latLng)
-                        .title(getString(R.string.you))
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                )
-            } else {
-                currentMarker?.position = latLng
-            }
+            updateCurrentMarker(latLng)
 
             if (isFirstFix && state.isTracking) {
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17f))
+                // On trip start: zoom to highest level (18.5f) centered on user location
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18.5f))
                 isFirstFix = false
             }
         }
 
-        // Update polyline path
+        // Update polyline path and auto-adjust camera to fit path + current location
         if (state.pathPoints.isNotEmpty()) {
             polyline?.points = state.pathPoints
 
-            // When tracking with multiple points, smoothly follow user or adjust bounds
-            if (state.isTracking && !state.isPaused && state.currentLocation != null) {
-                map.animateCamera(CameraUpdateFactory.newLatLng(state.currentLocation))
+            if (state.isTracking && !state.isPaused) {
+                if (state.pathPoints.size > 2) {
+                    val builder = LatLngBounds.Builder()
+                    state.pathPoints.forEach { builder.include(it) }
+                    state.currentLocation?.let { builder.include(it) }
+
+                    try {
+                        val bounds = builder.build()
+                        // Ensure bounds has noticeable spread before switching to LatLngBounds
+                        val start = state.pathPoints.first()
+                        val current = state.currentLocation ?: state.pathPoints.last()
+                        val spreadMeters = DistanceCalculator.haversineMeters(
+                            start.latitude, start.longitude,
+                            current.latitude, current.longitude
+                        )
+
+                        if (spreadMeters > 15.0) {
+                            // Auto zoom out to fit all covered path points with UI overlay padding
+                            val topPadding = if (binding.speedOverlayCard.height > 0) binding.speedOverlayCard.bottom + 30 else 120
+                            val bottomPadding = if (binding.statsCard.height > 0) (binding.mapCard.bottom - binding.statsCard.top) + 30 else 180
+                            map.setPadding(60, topPadding, 60, bottomPadding)
+                            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 60))
+                        } else if (state.currentLocation != null) {
+                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(state.currentLocation, 18.5f))
+                        }
+                    } catch (_: Exception) {
+                        state.currentLocation?.let {
+                            map.animateCamera(CameraUpdateFactory.newLatLng(it))
+                        }
+                    }
+                } else if (state.currentLocation != null) {
+                    // Small path: follow current location at highest zoom
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(state.currentLocation, 18.5f))
+                }
             }
         } else {
             polyline?.points = emptyList()

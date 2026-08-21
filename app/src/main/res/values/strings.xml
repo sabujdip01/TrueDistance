@@ -82,6 +82,7 @@
     <string name="speedometer_notification_channel">Speedometer tracking</string>
     <string name="speedometer_notification_title">Speedometer Active</string>
     <string name="speedometer_notification_paused">Trip Paused</string>
+    <string name="trip_saved">Trip Saved</string>
 
     <!-- Misc -->
     <string name="tracking">Tracking</string>

@@ -68,7 +68,7 @@
                 android:id="@+id/speedText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0.0"
+                android:text="000"
                 android:textSize="36sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_charcoal" />
@@ -77,7 +77,7 @@
                 android:id="@+id/speedUnitText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="km/h"
+                android:text="M/H"
                 android:textSize="13sp"
                 android:textColor="@color/text_gray_purple" />
         </LinearLayout>
@@ -137,7 +137,7 @@
                     android:id="@+id/distanceCoveredText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0.00 km"
+                    android:text="000 M"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_charcoal" />
@@ -173,7 +173,7 @@
                         android:id="@+id/avgSpeedText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0.0 km/h"
+                        android:text="000 M/H"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_charcoal" />
@@ -198,7 +198,7 @@
                         android:id="@+id/maxSpeedText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0.0 km/h"
+                        android:text="000 M/H"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_charcoal" />
