@@ -30,60 +30,30 @@ planned for a future release (placeholder in v1).
 5. True Distance → Tracking Screen
 6. Speedometer → Speedometer Screen (V2)
 7. Speedometer → Past Trips Screen (V2)
-8. Settings (includes About sub-section: Privacy Policy, Version, Credits)
+8. Settings (includes About sub-section: Privacy Policy, Version, C### 4. App Navigation Structure
 
----
-
-## 4. App Navigation Structure
-
-The app uses a **bottom footer navigation bar with 3 tabs**, always visible at the
-bottom of the screen (except possibly on the full-screen Tracking screen — see 5.1.4):
+The app uses a **floating bottom navigation bar with 3 tabs** (24dp corner radius, elevated card surface), visible across the main screens:
 
 | Icon | Tab Name | Purpose |
 |---|---|---|
-| 📍 (location/ruler icon) | **True Distance** | Core feature — the app's main function |
-| ⏱️ (speed/gauge icon) | **Speedometer** | Placeholder for now, built later |
-| ⚙️ (gear icon) | **Settings** | App preferences and About section |
+| 📍 (`ic_tab_distance`) | **True Distance** | Core feature — straight-line tracking & history |
+| ⏱️ (`ic_speedometer`) | **Speedometer** | Placeholder in V1, built in V2 |
+| ⚙️ (`ic_settings`) | **Settings** | App preferences, theming, and About section |
 
-- Active tab is visually highlighted (per style guide — dark pill background behind the
-  active icon, matching the reference UI kit's nav bar treatment).
-- Navigation state persists app data (switching tabs does not reset in-progress
-  selections on the True Distance tab, e.g., a destination typed into the search box).
-- Bottom nav bar is a standard fixed bottom bar (not floating), consistent across all
-  three tabs.
-- **Active-tracking indicator badge (V2 scope)**: since True Distance tracking and a
-  Speedometer trip can each run independently in the background (§12.5 Concurrent
-  Sessions), the bottom nav icon for a tab with an active background session shows a
-  small badge/dot (e.g., a small colored dot in the corner of the tab icon, using the
-  app's accent color per §9 Visual Style Guide) — so the user doesn't forget a session
-  is silently running and consuming battery/location. Badge disappears when that
-  tab's session is stopped. Applies independently to the True Distance icon and the
-  Speedometer icon (both, one, or neither may show a badge at any given time).
+- Active tab is highlighted with `primary_violet` (`#7C4DFF` in light mode, `#B388FF` in dark mode).
+- Inactive tabs use `text_gray_purple` (`#90A4AE` / `#8A8480`).
+- Floating card style: 16dp horizontal/bottom margin, 24dp corner radius, 8dp elevation.
 
 ---
 
 ## 5. Branding
 
 ### 5.1 App Logo
-- Custom app icon required (not a default/placeholder icon).
-- Icon concept: should visually represent "distance" / "straight line between two
-  points" — e.g., a stylized pin-to-pin line, a compass/ruler motif, or two dots
-  connected by a dashed/solid line. Final artwork TBD in a design pass, but the concept
-  must clearly relate to distance/location, not be generic.
-- Icon needed in standard Android adaptive icon format (foreground + background layers)
-  plus all required density buckets (mdpi through xxxhdpi) and a Play Store listing
-  icon (512x512).
+- Custom app icon with adaptive layers (`ic_launcher_foreground`, `ic_launcher_background`).
 
 ### 5.2 Splash Screen
-- Branded splash screen shown on app cold start.
-- Contains: app logo (centered), app name "True Distance" (below or beside logo).
-- Background: matches app's primary theme color (light/dark aware — see §9 Visual
-  Style Guide).
-- Uses Android 12+ SplashScreen API for proper system-level splash behavior (with a
-  legacy fallback splash Activity/theme for older Android versions if targeting below
-  API 31).
-- Duration: brief, just long enough to initialize app state (location permission
-  check, theme load, DB init) — not an artificial delay.
+- Branded splash screen on cold start with 32sp bold title and version metadata.
+- Theme-aware background (`background_soft`).
 
 ---
 
@@ -91,113 +61,64 @@ bottom of the screen (except possibly on the full-screen Tracking screen — see
 
 ### 6.1 Tab 1: True Distance
 
-This tab has its own internal navigation: a **Main Screen** that links out to two
-full-screen destinations (**Saved Locations** and **Distance History**) via icons, plus
-a **Tracking Screen** reached after starting tracking.
-
 #### 6.1.1 Main Screen (default screen on this tab)
-Layout, top to bottom:
-1. **Header row**: Two icon buttons, top-of-screen (per reference style — icons in
-   rounded card/chip buttons, top corners):
-   - **Saved Locations icon** (e.g., bookmark/star icon) → opens Saved Locations screen
-     (full screen, §6.1.2).
-   - **Distance History icon** (e.g., clock/history icon) → opens Distance History
-     screen (full screen, §6.1.3).
-2. **Location selection card** (main white/light rounded card, central focus of the
-   screen):
-   - **Destination input field** — combined control that supports:
-     a. **Search box** with place autocomplete (type-ahead, Places API) — primary
-        input method, shown by default.
-     b. **Map picker icon/button** next to the search box — opens a map view where the
-        user taps a point to drop a pin as the destination.
-     c. **Saved Locations dropdown** — a dropdown/chevron control on the same card that
-        lets the user quickly pick from their saved locations without leaving this
-        screen (separate from the full Saved Locations screen, this is a quick-select
-        shortcut).
-   - **Labels**: once a destination is chosen (by any method), the card shows two
-     clearly labeled rows:
-     - "From: [Current Location]" (label for the origin point — always current
-       location, not user-editable as text, but shown for clarity)
-     - "To: [destination name/address]" (label for the chosen destination)
-   - **"Start Tracking" button** — primary call-to-action button on this card. Disabled
-     (visually greyed out) until a valid destination is selected. Tapping it:
-     - Validates location permission is granted (prompts if not).
-     - Navigates to the Tracking Screen (§6.1.4) and begins live tracking.
-3. Rest of screen (below the card): may show recent/quick-glance content in later
-   iterations (e.g., a mini list of recent history) — not required for v1, card is the
-   primary content.
+Layout:
+1. **Header row**: Two circular icon chips (`bg_icon_chip.xml`, 48x48dp):
+   - **Saved Locations icon** (`ic_bookmark`) → opens Saved Locations screen (§6.1.2).
+   - **Distance History icon** (`ic_history`) → opens Distance History screen (§6.1.3).
+2. **Location selection card** (`CardView`, 20dp radius, 4dp elevation):
+   - Search box with Places Autocomplete.
+   - Map picker icon (`ic_map_pin`) & Saved locations dropdown (`ic_chevron_down`).
+   - "From: Current Location" and "To: [Destination]" labels.
+   - **"Start Tracking" button** (12dp radius, `primary_violet`).
 
 #### 6.1.2 Saved Locations Screen (full screen)
-- Header: title "Saved Locations", back button to return to Main Screen.
-- List of saved locations, each row shows: name (editable), address/coordinates
-  summary, delete icon/swipe-to-delete.
-- Floating action button (FAB) or header "+" button to add a new saved location:
-  - Opens an "Add Saved Location" flow with two input methods:
-    a. Search place with autocomplete (Places API), OR
-    b. Pick a point on the map (tap to drop pin).
-  - After picking a location, user enters/edits a name for it, then saves.
-- Tapping a saved location row (not the delete icon) → returns to Main Screen with that
-  location pre-filled as the destination (ready to tap "Start Tracking").
-- Data model: minimal — name + location (lat/lng + resolved address string). No
-  categories/tags in v1 (kept intentionally simple per requirements).
+- Header: title "Saved Locations", back button.
+- **Card layout (80% / 20% split)**:
+  - **80% Left (Content, 20dp padding)**:
+    - Row 1: Location Name (`17sp` bold, deep card color in light mode: `#00695C` Mint, `#6A1B9A` Lavender, `#BF360C` Peach).
+    - Row 2: Address (`13sp`, same hue at 85% opacity in light mode).
+  - **20% Right (Action)**: Centered delete button (`36x36dp`).
+- Card backgrounds: Pastel 45° gradients cycling Mint / Lavender / Peach (24dp corner radius). In dark mode, deep desaturated gradients with high-contrast text (`text_charcoal` / `text_gray_purple`).
+- Floating Action Button (FAB) at bottom-right to add new location via Places search or Map picker.
+- Tapping card body sets destination on Main Screen.
 
 #### 6.1.3 Distance History Screen (full screen)
-- Header: title "Distance History", back button to return to Main Screen.
-- Auto-saved every time tracking is started for a destination (no manual "save" step).
-- Entries grouped by date sections: **Today / Yesterday / Older** (Older may be further
-  broken into "This Week" / "This Month" / etc. if the list grows long).
-- **Each entry (collapsed/summary row) shows**: Date, destination name/address,
-  **Initial Distance** (the straight-line distance at the moment tracking started),
-  and a delete button (swipe-to-delete or inline icon).
-- **Expanding an entry reveals interval-based distance snapshots** for that session —
-  since distance-to-destination changes continuously as the user moves, the app
-  records/derives distance at time intervals through the session:
-  - **Start time**: distance at tracking start.
-  - **~10% of elapsed time**: distance at that point.
-  - **~20% of elapsed time**: distance at that point.
-  - ... continuing at ~10% intervals through the session ...
-  - **End time**: distance when tracking was stopped (or destination reached).
-  - **Smart interval count**: the number of snapshot rows shown must adapt to session
-    duration so short sessions don't show a wall of near-identical rows. Suggested
-    rule (exact thresholds tunable at implementation time; same logic/helper should be
-    shared with §6.2's trip-summary formatting if a similar need arises there):
-    - Session < 1 minute: show only Start + End (2 rows).
-    - Session 1–5 minutes: show Start, 50%, End (3 rows).
-    - Session 5–20 minutes: show Start, 25%, 50%, 75%, End (5 rows).
-    - Session > 20 minutes: show Start, every 10% (10 intermediate points), End
-      (12 rows) — full detail as originally specified.
-    - This logic should live in a single reusable helper (e.g.
-      `DistanceSnapshotFormatter`) so thresholds are easy to tune without touching UI
-      code.
-  - Snapshot recording: rather than storing every raw GPS update, the app should
-    periodically record a `(timestamp, distanceMeters)` snapshot during an active
-    tracking session (e.g., at a fixed cadence such as every 10–30 seconds, or
-    computed retroactively by resampling raw location updates at ~10% elapsed-time
-    marks once the session ends) — exact recording strategy TBD at implementation,
-    but the display logic above is the target output either way.
-- "Clear All" option (with confirmation dialog) available in the header overflow menu.
+- Header: title "Distance History", back button, "Clear All" in overflow menu.
+- Date sections: **Today / Yesterday / Older**.
+- **Card layout (80% / 20% split)**:
+  - **80% Left (Content, 20dp padding)**:
+    - Row 1: Destination Name (`17sp` bold) + Tracked Distance (`13sp`, initial distance − final distance) in deep card hue.
+    - Row 2: Start Timestamp (`13sp`) | Stop Timestamp (`13sp`) | Elapsed Duration (`13sp`) in matching hue at 85% opacity.
+  - **20% Right (Action)**: Centered delete button (`36x36dp`).
+- Card backgrounds: Pastel 45° gradients cycling Blue (`#BBDEFB` → `#E3F2FD`) / Peach (`#FFCCBC` → `#FFF3E0`) / Lavender (`#E1BEE7` → `#F3E5F5`). In dark mode, deep desaturated variants with high-contrast text.
+- **Expanded snapshot rows (Single-card exclusive expand)**:
+  - Tapping an entry expands it and collapses any previously expanded card.
+  - Displays a clean **3-column table** (`12sp`):
+    - Col 1: Elapsed label (`+0:00 (Start)`, `+2:30`, `+5:00 (End)`)
+    - Col 2: Clock time (`9:45 PM`, centered)
+    - Col 3: Distance (`12.40 KM`, right-aligned)
+- **Time-Based Snapshot Logic** (`DistanceSnapshotFormatter` per `time-based-log.md`):
+  - Every raw GPS fix during tracking is stored as `(timestamp, distanceMeters)`.
+  - When viewing history, snapshots are derived post-hoc using duration tiers:
+    - **Tier A (≥ 10 min)**: 11 marks at 0%, 10%, 20%, ..., 100% of duration.
+    - **Tier B (2–10 min)**: 8 marks at 0%, 15%, 30%, 45%, 60%, 75%, 90%, 100%.
+    - **Tier C (20s–2 min)**: 3 marks at 0%, 50%, 100%.
+    - **Tier D (< 20s)**: 2 marks at 0%, 100%.
+  - Each mark snaps to the closest real recorded GPS sample (never interpolated).
 
-#### 6.1.4 Tracking Screen (full screen, launched from "Start Tracking")
-- Full-screen Google Map view.
-- **Current location marker** (live, updates continuously as user moves).
-- **Destination marker** (static, at the chosen destination).
-- **Straight line (polyline)** connecting the two markers — re-drawn live as current
-  location updates.
-- **Distance readout**: prominent card/banner (top or bottom overlay on the map)
-  showing live-updating distance, formatted per unit settings (§6.3, and see §7 Units
-  logic).
-- **Recenter button** (FAB) to re-center map on current location.
-- **Start / Stop controls placed directly under the map** (not floating over it) —
-  this placement is intentional for UI consistency with the Speedometer tab's control
-  layout (§6.2.1), so both tabs feel like the same app:
-  - **Stop Tracking button** — ends the live tracking session, returns to Main Screen.
-    The completed/ended session remains in Distance History (with its interval
-    snapshots, §6.1.3).
-- If Background Tracking is enabled in Settings (§6.3): leaving this screen (e.g.
-  pressing Home) does not stop tracking — a persistent notification continues showing
-  live distance, with a "Stop Tracking" action directly in the notification.
-- If Background Tracking is disabled: navigating away from this screen pauses/stops the
-  live location updates (tracking effectively ends).
+#### 6.1.4 Tracking Screen (full screen)
+- **Map Framing**: Map wrapped in a `CardView` with `16dp` corner radius, `12dp` margins, and `2dp` elevation for a modern soft border.
+- **Markers**:
+  - **Current location**: Red marker dot / pin.
+  - **Destination**: Green marker pin.
+- **Camera Behavior**: Auto-fits both markers within visible map bounds (`LatLngBounds`) with dynamic padding accounting for UI overlay cards.
+- **Polyline**: Thick solid 8px dark teal line (`#00796B`) connecting current location and destination.
+- **Distance Readout Overlay**: Floating translucent glass card (`card_white_translucent`, 16dp radius) showing live distance in `36sp` bold numerals.
+- **Auto-Stop on Arrival**: When distance to destination reaches ≤ ~10 meters, tracking automatically completes and presents an animated "Destination Reached" celebration dialog.
+- **Controls**: "Stop Tracking" button (`primary_violet`, 12dp radius) placed beneath the map card.
+- **Foreground Notification Sync**: Stopping tracking from the status bar notification immediately cancels the notification, resets state, and auto-navigates the Tracking screen back to Main screen.
+- **Background Tracking**: When enabled in Settings (§6.3), leaving the app keeps tracking active via foreground service and persistent notification. When disabled, navigating away pauses/stops live location updates.
 
 ---
 
@@ -337,7 +258,7 @@ this:
     e.g. selectable interval such as Every 1s / Every 3s / Every 5s / Every 10s.
     Default: a reasonable middle value (e.g., every 3s) balancing responsiveness and
     battery.
-- **Unit selector**: Kilometers / Miles / Both (default: Both). Applies to all distance
+- **Unit selector**: Kilometers / Miles / Both (default: Kilometers). Applies to all distance
   displays app-wide (Main screen post-tracking readouts, Tracking screen, History).
   - Decimal precision: up to 2 decimals, user-configurable (0/1/2 decimal places).
   - Small-distance auto-format: when distance is under 1 km, automatically display in
@@ -383,7 +304,7 @@ containing:
   destination shortcut.
 - **Distance History**: auto-saved log of every tracking session, grouped by date,
   viewable/replayable, deletable (single or all).
-- **Units**: Kilometers / Miles / Both, up to 2 decimal places (configurable), with
+- **Units**: Kilometers / Miles / Both (default: KM), up to 2 decimal places (configurable), with
   automatic meters display for sub-1km distances.
 - **Settings**: Theme, GPS Accuracy Mode + Update Frequency, Units, Background
   Tracking toggle.
@@ -427,7 +348,7 @@ containing:
 | id | UUID / auto-increment | primary key |
 | historyEntryId | UUID (FK) | parent session this snapshot belongs to |
 | timestamp | Timestamp | when this snapshot was recorded |
-| elapsedPercent | Int (0–100) | approx. % of session elapsed time at recording (0 = start, 100 = end) |
+| elapsedPercent | Int (0–100) | legacy field (0 for raw GPS fixes; derived post-hoc via DistanceSnapshotFormatter) |
 | distanceMeters | Double | distance-to-destination at this point |
 
 ### Trip (Speedometer tab — §6.2, replaces/parallels HistoryEntry for the Speedometer feature)
@@ -449,7 +370,7 @@ containing:
 | Field | Type | Default |
 |---|---|---|
 | theme | enum(Light, Dark, System) | System |
-| unit | enum(Km, Miles, Both) | Both |
+| unit | enum(Km, Miles, Both) | Km |
 | decimalPrecision | int (0–2) | 2 |
 | autoMetersUnder1km | bool | true |
 | gpsAccuracyMode | enum(High, Balanced, DeviceOnly) | High |
@@ -474,41 +395,18 @@ containing:
 
 ## 9. Visual Style Guide
 
-Style is based on a soft, card-based, pastel aesthetic (referenced from a provided UI
-kit sample) — **not a literal clone of any specific app**, but matching this design
-language:
+> **Important**: The complete, pixel-accurate visual design specification, color tokens,
+> component variants, typography scale, and dark theme overrides are defined in
+> [UI-design-final.md](./UI/UI-design-final.md) (Version 1.1). That document is the
+> authoritative single source of truth for all UI implementation details.
 
-- **Background**: soft, muted neutral tone (e.g., blush/cream in light mode) rather
-  than stark white — gives a calm, premium feel. Dark mode equivalent: deep neutral
-  charcoal (not pure black), maintaining the same soft/premium feel.
-- **Cards**: white (light mode) / elevated dark-grey (dark mode) rounded-corner cards
-  (large radius, ~16–24dp) with soft drop shadows, floating above the background.
-  Primary content (location card, list rows, distance readout) lives inside these
-  cards.
-- **Accent/active elements**: dark pill-shaped buttons/badges (near-black in light
-  mode) used for primary actions and the active bottom-nav icon highlight — creates
-  strong contrast against the soft background.
-- **Typography**: clean sans-serif, bold large numerals for key data (e.g., distance
-  value should be large/bold like the reference's "$231.68" balance treatment),
-  medium-weight labels for secondary text.
-- **Iconography**: minimal line icons (thin stroke weight), consistent style across
-  nav bar and in-card action icons (bookmark for Saved Locations, clock for History,
-  map-pin for location, gear for Settings).
-- **List rows**: rounded thumbnail/icon on the left, title + subtitle stacked, value/
-  metadata right-aligned — mirrors the reference's transaction-list row pattern,
-  adapted to show destination name + address (left) and distance + date (right).
-- **Bottom nav bar**: fixed, 3 icons (per §4), active tab shown inside a dark pill
-  background, inactive tabs plain/muted icon color.
-- **Color accents**: a single warm accent color (e.g., a soft coral/red, matching the
-  reference's chart-line accent) reserved for live/active states — e.g., the live
-  tracking line on the map, "recording" indicators, or highlight badges — used
-  sparingly, not as a dominant color.
-- **Map styling**: custom Google Map style (via Maps SDK style JSON) to desaturate
-  default Google Maps colors slightly so the map fits the app's soft palette rather
-  than looking like stock Google Maps.
-- (Exact hex palette and finalized icon/logo artwork to be produced in a dedicated
-  design pass before development — this section defines direction/constraints for
-  that pass.)
+Style summary:
+- **Soft Aesthetic**: Blush/cream background (`background_soft` `#F9F4F8`) in light mode; warm charcoal (`#1C1B1A`) in dark mode.
+- **Card-First Design**: Elevated rounded cards (24dp radius, `80/20` content/action layout split with 20dp padding) floating over the soft background.
+- **Pastel Gradients**: Mint, Peach, Lavender for Saved Locations; Blue, Peach, Lavender for Distance History. In dark mode, deep desaturated variants (`drawable-night/`).
+- **Tone-Matched Typography**: Card text colors dynamically use deep shades of the card hue for title row (17sp bold) and 85% opacity for secondary row (13sp) in light mode; clean high-contrast cream/gray in dark mode.
+- **Map Framing**: Tracking and Map Picker maps wrapped inside soft-bordered `CardView` frames with 16dp corner radius and 12dp margins.
+- **Floating Bottom Nav**: 24dp corner radius, 8dp elevation floating navigation bar with active `primary_violet` indicator.
 
 ---
 
