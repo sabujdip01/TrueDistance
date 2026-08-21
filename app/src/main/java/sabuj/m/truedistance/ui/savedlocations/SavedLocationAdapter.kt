@@ -37,6 +37,17 @@ class SavedLocationAdapter(
         }
         holder.binding.rootContainer.setBackgroundResource(backgroundRes)
 
+        // Dark text colour matching the card
+        val darkColor = when (position % 3) {
+            0 -> 0xFF00695C.toInt()    // deep teal
+            1 -> 0xFF6A1B9A.toInt()    // deep purple
+            else -> 0xFFBF360C.toInt() // deep orange
+        }
+        holder.binding.nameText.setTextColor(darkColor)
+        // Address: same hue but lighter (60% alpha)
+        val lightDarkColor = (darkColor and 0x00FFFFFF) or (0x99 shl 24)
+        holder.binding.addressText.setTextColor(lightDarkColor)
+
         holder.binding.root.setOnClickListener { onItemClick(item) }
         holder.binding.deleteButton.setOnClickListener { onDeleteClick(item) }
     }
