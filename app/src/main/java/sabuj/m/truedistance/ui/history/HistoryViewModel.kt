@@ -48,8 +48,10 @@ class HistoryViewModel @Inject constructor(
                 // Load snapshots lazily and re-render this entry's rows.
                 val entry = repository.getById(entryId) ?: return@launch
                 val snapshots = repository.getSnapshots(entryId)
-                val duration = (entry.endedAt ?: System.currentTimeMillis()) - entry.startedAt
-                val rows = DistanceSnapshotFormatter.buildDisplayRows(snapshots, duration)
+                val endedAt = entry.endedAt ?: System.currentTimeMillis()
+                val rows = DistanceSnapshotFormatter.buildDisplayRows(
+                    snapshots, entry.startedAt, endedAt
+                )
                 _items.value = _items.value.map { item ->
                     if (item is HistoryListItem.EntryRow && item.entry.id == entryId) {
                         item.copy(expanded = true, snapshotRows = rows)

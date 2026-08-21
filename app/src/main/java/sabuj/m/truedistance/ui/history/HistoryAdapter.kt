@@ -80,6 +80,17 @@ class HistoryAdapter(
                 entry.initialDistanceMeters, unit, decimalPrecision, autoMetersUnder1km
             )
 
+            // Show trip date + time + duration in preview
+            val dateFormat = java.text.SimpleDateFormat("MMM d, h:mm a", java.util.Locale.getDefault())
+            val startTime = dateFormat.format(java.util.Date(entry.startedAt))
+            val durationText = if (entry.endedAt != null) {
+                val durationMs = entry.endedAt - entry.startedAt
+                val mins = durationMs / 60_000
+                val secs = (durationMs % 60_000) / 1_000
+                if (mins > 0) "  •  ${mins}m ${secs}s" else "  •  ${secs}s"
+            } else ""
+            binding.dateTimeText.text = "$startTime$durationText"
+
             // Cycle through pastel gradients
             val backgroundRes = when (bindingAdapterPosition % 3) {
                 0 -> sabuj.m.truedistance.R.drawable.bg_card_lavender

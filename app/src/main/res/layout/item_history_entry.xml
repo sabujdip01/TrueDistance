@@ -43,6 +43,15 @@
                     android:layout_height="wrap_content"
                     android:textSize="13sp"
                     android:textColor="@color/text_secondary" />
+
+                <!-- Trip date + time preview -->
+                <TextView
+                    android:id="@+id/dateTimeText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginTop="2dp" />
             </LinearLayout>
 
             <ImageButton

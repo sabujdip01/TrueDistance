@@ -128,6 +128,11 @@ class TrackingService : LifecycleService() {
         }
     }
 
+    /**
+     * Records a raw (timestamp, distanceMeters) sample for the current session.
+     * Every GPS fix is persisted — the display layer (DistanceSnapshotFormatter)
+     * selects which samples to show post-hoc using time-based tiers.
+     */
     private suspend fun persistSnapshot(distance: Double) {
         val id = historyEntryId
         if (id == null) {
@@ -144,20 +149,17 @@ class TrackingService : LifecycleService() {
                     savedLocationId = savedLocationId
                 )
             )
-            recordSnapshot(newId, 0, distance)
-        } else {
-            val elapsed = System.currentTimeMillis() - startedAt
-            val pct = ((elapsed.toDouble() / (elapsed + 60_000)) * 100).toInt().coerceIn(0, 99)
-            recordSnapshot(id, pct, distance)
         }
+        // Record every sample with its real timestamp — no percentage computation here
+        recordSnapshot(id ?: historyEntryId!!, distance)
     }
 
-    private suspend fun recordSnapshot(entryId: String, pct: Int, distance: Double) {
+    private suspend fun recordSnapshot(entryId: String, distance: Double) {
         historyRepository.recordSnapshot(
             DistanceSnapshot(
                 historyEntryId = entryId,
                 timestamp = System.currentTimeMillis(),
-                elapsedPercent = pct,
+                elapsedPercent = 0,  // Legacy field — unused; display uses timestamps now
                 distanceMeters = distance
             )
         )
@@ -184,7 +186,7 @@ class TrackingService : LifecycleService() {
                         )
                     )
                 }
-                recordSnapshot(id, 100, stateHolder.state.value.distanceMeters)
+                recordSnapshot(id, stateHolder.state.value.distanceMeters)
             }
 
             trackingJob?.cancel()
@@ -193,6 +195,9 @@ class TrackingService : LifecycleService() {
             stateHolder.update { it.copy(isTracking = false) }
 
             stopForeground(STOP_FOREGROUND_REMOVE)
+            // Explicitly cancel the notification in case updateNotification() re-posted it
+            val manager = getSystemService(android.app.NotificationManager::class.java)
+            manager?.cancel(NotificationHelper.NOTIFICATION_ID)
             stopSelf()
         }
     }

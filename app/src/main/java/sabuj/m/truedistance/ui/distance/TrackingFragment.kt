@@ -132,6 +132,13 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
                     binding.staleIndicator.visibility =
                         if (state.staleFix) View.VISIBLE else View.GONE
 
+                    // Tracking stopped externally (e.g. notification Stop button) — go back
+                    if (!state.isTracking && currentMarker != null && !state.destinationReached) {
+                        sharedDestinationViewModel.requestClearDestination()
+                        findNavController().popBackStack()
+                        return@collect
+                    }
+
                     // Refresh map markers and polyline
                     updateMap(state)
 
