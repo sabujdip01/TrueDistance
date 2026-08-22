@@ -513,25 +513,26 @@ Content:          "Today", "Yesterday", "Older"
 Container:        CardView wrapper with 36dp rounded corners
 Elevation:        12dp card shadow
 Background:       card_white (#FFFFFF)
-Margin:           32dp horizontal, 20dp bottom
-Max width:        340dp (compact floating pill)
+Margin:           48dp horizontal, 20dp bottom
+Max width:        300dp (compact floating pill)
 Height:           58dp
 Position:         Constrained to bottom of parent, centered horizontally
 
 Tab count:        3 (True Distance, Speedometer, Settings)
 Icon size:        24x24dp
-Label size:       12sp
-Label visibility: Selected only (app:labelVisibilityMode="selected") — only currently active tab displays text label and filled capsule pill; inactive tabs display icons only.
+Label size:       11sp bold (inactive)
+Label visibility: Always shown mode with custom size (active tab displays icon-only filled capsule pill since top header title exists; inactive tabs display text labels visible in both Light and Dark modes).
 
 Active tab (Filled Pill Capsule):
   Indicator:      Material3 NavigationBar active indicator
   Pill Fill:      primary_violet (#7C4DFF) rounded capsule
   Icon color:     text_on_primary (#FFFFFF)
-  Label color:    text_on_primary (#FFFFFF)
+  Label text:     Hidden / 0sp size (since screen header title is visible)
 
 Inactive tab:
-  Indicator:      None (icon-only layout without text label)
-  Icon color:     text_gray_purple (#90A4AE)
+  Indicator:      None (icon + text label underneath)
+  Icon color:     nav_inactive_label (#4A5568 light / #CBD5E0 dark)
+  Label color:    nav_inactive_label (#4A5568 light / #CBD5E0 dark)
 
 Ripple:           primary_lavender at 15% opacity
 Tab Reselection:  Tapping active tab or switching tabs pops back stack directly to root fragment (DistanceFragment, SpeedometerFragment, SettingsFragment)

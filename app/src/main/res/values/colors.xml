@@ -41,4 +41,5 @@
     <color name="accent_warm">@color/primary_violet</color>
     <color name="accent_teal">#B2DFDB</color>
     <color name="pill_dark">#37474F</color>
+    <color name="nav_inactive_label">#4A5568</color>
 </resources>

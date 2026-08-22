@@ -121,10 +121,6 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun setupButtons() {
-        binding.savedLocationsButton.setOnClickListener {
-            findNavController().navigate(R.id.action_speedometer_to_savedLocations)
-        }
-
         binding.historyButton.setOnClickListener {
             findNavController().navigate(R.id.action_speedometer_to_pastTrips)
         }

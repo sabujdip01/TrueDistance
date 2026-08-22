@@ -142,7 +142,8 @@ This tab contains two primary screens: the **Speedometer Screen** (live trip tra
 
 #### 6.2.1 Speedometer Screen (`SpeedometerFragment`)
 Layout structure (top to bottom):
-1. **Header Row**: History icon chip button (`@id/historyButton`) aligned identically with `DistanceFragment` (`16dp` top margin, constrained to card end) for seamless position consistency when switching tabs.
+1. **Header Row**: Screen title "Speedometer" (`24sp` bold) on the top-left, with History icon chip button (`@id/historyButton`) on the top-right (`16dp` top margin, `20dp` marginEnd).
+2. **Generous Whitespace Margin**: `20dp` whitespace margin between top header row and map card.
 2. **Interactive Map**: Google Map inside a 16dp rounded `CardView` frame with 12dp margins:
    - **Initial Centering**: Loads user's current location immediately on map ready (`17f` zoom) with a Red pin marker.
    - **Trip Start Zoom**: On clicking Start, zooms tightly into the user's location at street level (`18.5f`).
