@@ -33,16 +33,17 @@
   - Card preview: Destination name, tracked distance (`initial − final`), start/stop timestamps, and elapsed time.
   - **Single-expand 3-column table**: Displays interval snapshots (`Elapsed Mark` | `Clock Time` | `Distance`) derived post-hoc from raw GPS fixes across 4 duration tiers (A–D).
 - **Background Tracking**: Dedicated foreground services (`TrackingService`, `SpeedometerService`) with persistent notifications and synchronized action controls.
-- **Global Units & Precision**: Default **KM** (configurable to Miles or Both), with 3-digit meters (`000 M` / `000 M/H`) under 1 KM and 2 decimals (`%.2f KM` / `%.2f KM/H`) at or above 1 KM.
+- **Global Units & Precision**: Default **KM** (configurable to Miles or Both), with meters formatted cleanly without leading zeros (`87 M` / `187 M` under 1 KM) and 2 decimals (`%.2f KM` / `%.2f KM/H`) at or above 1 KM.
 - **Modern UI & Full Dark Mode**:
-  - **Compact Material3 Floating Pill Navigation Bar**: Ultra-sleek compact floating pill container (max width 320dp) with 36dp rounded corners and 12dp elevation shadow. The open screen shows an icon-only filled capsule pill (since its header title is visible at the top), while inactive tabs display crisp, high-contrast bold text labels underneath (`#2D3748` dark slate in Light mode / `#E2E8F0` light slate in Dark mode).
+  - **Compact Material3 Floating Navigation Bar**: Ultra-sleek compact floating container (max width 320dp) with 36dp rounded corners and 12dp elevation shadow. Active screen displays a circular round background (`48dp x 48dp`), while inactive tabs display crisp, high-contrast bold text labels underneath with tight icon-label spacing (`#2D3748` dark slate in Light mode / `#E2E8F0` light slate in Dark mode).
   - Smart tab reselection: Tapping any active bottom nav item or switching tabs pops back stack directly to the tab's root destination (`DistanceFragment`, `SpeedometerFragment`, `SettingsFragment`).
-  - **Screen Headers & Clean Whitespace**: Each main tab features a bold 24sp screen title header ("True Distance" / "Speedometer" / "Settings") with generous whitespace separation above cards. True Distance header includes Saved Locations (`ic_bookmark`) and History (`ic_history`) chips; Speedometer header includes History (`ic_history`) chip.
-  - **Unified Header & Map Controls**: Identical top-right history icon chip button position across True Distance and Speedometer screens, and a standardized custom 3-button stack (`[Current Location]`, `[+] Zoom In`, `[-] Zoom Out`) anchored at bottom-right of all map views with 10dp vertical spacing and chip button styling (`bg_icon_chip.xml`).
-  - **Instant Custom Splash Screen**: Omitted the initial system splash delay to immediately display the branded splash screen with app title and dynamic version number.
+  - **Screen Headers & Clean Whitespace**: Every screen (True Distance, Speedometer, Settings, Saved Locations, Distance History, Map Picker, Live Tracking, Past Trips) features a prominent 24sp bold title page header with generous whitespace separation above cards.
+  - **Unified Map Controls Stack & Padding**: Standardized custom 3-button stack (`[Current Location]`, `[+] Zoom In`, `[-] Zoom Out`) anchored at bottom-right of all map views with 10dp vertical spacing and camera viewport padding ensuring start/end markers are never obscured by buttons.
+  - **Race Flag & Car Map Markers**: Speedometer live map and Past Trips history map feature a checkered car race start flag (`ic_race_flag`) for trip origin and a small car icon (`ic_car`) for live position.
+  - **Instant Branded Splash Screen**: Bypasses initial system splash delay to immediately display logo, app title, version `v2.0.0 (2)`, and developer credit: `Made with ❤️ by Sabuj`.
+  - **Speedometer Stats Card & Header Icons**: Stat headers feature dedicated vector icons (`ic_distance`, `ic_avg_speed`, `ic_max_speed`, `ic_timer`) with theme-adapted contrast typography (`#455A64` Light / `#CBD5E0` Dark).
   - **Stable Launcher Icon**: Dark/light mode independent launcher icon that maintains original colors across system themes and Android 13+ wallpaper tinting.
   - 24dp rounded cards with an **80/20 layout split** (content | centered delete action).
-  - Pastel gradients (Mint, Peach, Lavender, Blue) with tone-matched high-contrast typography.
   - Complete dark theme overrides (`values-night/` and `drawable-night/`).
   - Elevated, soft-bordered map frames (16dp radius).
 

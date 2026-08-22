@@ -521,16 +521,16 @@ Position:         Constrained to bottom of parent, centered horizontally
 Tab count:        3 (True Distance, Speedometer, Settings)
 Icon size:        24x24dp
 Label size:       11sp bold (inactive)
-Label visibility: Always shown mode (active open tab displays icon-only filled capsule pill since top screen title header exists; inactive tabs display crisp bold text labels underneath).
+Label visibility: Always shown mode (active open tab displays icon-only circular round background since top screen title header exists; inactive tabs display crisp bold text labels underneath with tight padding).
 
-Active tab (Filled Pill Capsule):
-  Indicator:      Material3 NavigationBar active indicator
-  Pill Fill:      primary_violet (#7C4DFF) rounded capsule
+Active tab (Circular Round Indicator):
+  Indicator:      Material3 NavigationBar active indicator (Widget.App.ActiveIndicator, 48x48dp round circle)
+  Pill Fill:      primary_violet (#7C4DFF) circular background (cornerSize="50%")
   Icon color:     text_on_primary (#FFFFFF)
   Label text:     Hidden / 0.1sp size (since screen header title is visible)
 
 Inactive tab:
-  Indicator:      None (icon + text label underneath)
+  Indicator:      None (icon + text label underneath with 1dp tight padding)
   Icon color:     nav_inactive_color (#2D3748 dark slate in Light mode / #E2E8F0 light slate in Dark mode)
   Label color:    nav_inactive_color (#2D3748 dark slate in Light mode / #E2E8F0 light slate in Dark mode)
 
