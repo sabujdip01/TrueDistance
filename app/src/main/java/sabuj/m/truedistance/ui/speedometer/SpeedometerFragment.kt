@@ -245,24 +245,43 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    private var startMarker: com.google.android.gms.maps.model.Marker? = null
+
+    private fun vectorToBitmapDescriptor(context: Context, @androidx.annotation.DrawableRes vectorResId: Int): BitmapDescriptor {
+        val drawable = androidx.core.content.ContextCompat.getDrawable(context, vectorResId)
+            ?: return BitmapDescriptorFactory.defaultMarker()
+        drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+        val bitmap = android.graphics.Bitmap.createBitmap(
+            drawable.intrinsicWidth,
+            drawable.intrinsicHeight,
+            android.graphics.Bitmap.Config.ARGB_8888
+        )
+        val canvas = android.graphics.Canvas(bitmap)
+        drawable.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
+    }
+
     private fun updateCurrentMarker(latLng: LatLng) {
         val map = googleMap ?: return
+        val carIcon = vectorToBitmapDescriptor(requireContext(), R.drawable.ic_car)
         if (currentMarker == null) {
             currentMarker = map.addMarker(
                 MarkerOptions()
                     .position(latLng)
                     .title(getString(R.string.you))
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                    .icon(carIcon)
+                    .anchor(0.5f, 0.5f)
             )
         } else {
             currentMarker?.position = latLng
+            currentMarker?.setIcon(carIcon)
         }
     }
 
     private fun updateMap(state: SpeedometerUiState) {
         val map = googleMap ?: return
 
-        // Update current location marker
+        // Update current location marker (small car icon)
         state.currentLocation?.let { latLng ->
             updateCurrentMarker(latLng)
 
@@ -271,6 +290,26 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18.5f))
                 isFirstFix = false
             }
+        }
+
+        // Add/update Start Flag marker when tracking starts
+        if (state.isTracking && state.pathPoints.isNotEmpty()) {
+            val startPoint = state.pathPoints.first()
+            if (startMarker == null) {
+                val flagIcon = vectorToBitmapDescriptor(requireContext(), R.drawable.ic_race_flag)
+                startMarker = map.addMarker(
+                    MarkerOptions()
+                        .position(startPoint)
+                        .title("Start")
+                        .icon(flagIcon)
+                        .anchor(0.5f, 0.5f)
+                )
+            } else {
+                startMarker?.position = startPoint
+            }
+        } else if (!state.isTracking) {
+            startMarker?.remove()
+            startMarker = null
         }
 
         // Update polyline path and auto-adjust camera to fit path + current location

@@ -230,8 +230,9 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
         // Tell the Maps SDK about UI overlays so bounds/camera calculations avoid them.
         val density = resources.displayMetrics.density
         val topPadding = (140 * density).toInt()    // ~140dp for distance card + margin
-        val bottomPadding = (16 * density).toInt()
-        map.setPadding(0, topPadding, 0, bottomPadding)
+        val bottomPadding = (100 * density).toInt() // ~100dp for bottom stop tracking button
+        val rightPadding = (64 * density).toInt()   // ~64dp for right-side 3-button map control stack
+        map.setPadding(32, topPadding, rightPadding, bottomPadding)
 
         // Draw markers and polyline using the latest known tracking state
         updateMap(viewModel.uiState.value)

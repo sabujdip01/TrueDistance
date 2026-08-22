@@ -148,11 +148,13 @@ class PastTripsAdapter(
                     val startPoint = points.first()
                     val endPoint = points.last()
 
+                    val flagIcon = vectorToBitmapDescriptor(context, R.drawable.ic_race_flag)
                     googleMap.addMarker(
                         MarkerOptions()
                             .position(startPoint)
                             .title("Start")
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                            .icon(flagIcon)
+                            .anchor(0.5f, 0.5f)
                     )
 
                     if (points.size > 1) {
@@ -206,6 +208,20 @@ class PastTripsAdapter(
         val mins = (totalSec % 3600) / 60
         val secs = totalSec % 60
         return String.format(Locale.US, "%02d:%02d:%02d", hrs, mins, secs)
+    }
+
+    private fun vectorToBitmapDescriptor(context: android.content.Context, @androidx.annotation.DrawableRes vectorResId: Int): BitmapDescriptor {
+        val drawable = androidx.core.content.ContextCompat.getDrawable(context, vectorResId)
+            ?: return BitmapDescriptorFactory.defaultMarker()
+        drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+        val bitmap = android.graphics.Bitmap.createBitmap(
+            drawable.intrinsicWidth,
+            drawable.intrinsicHeight,
+            android.graphics.Bitmap.Config.ARGB_8888
+        )
+        val canvas = android.graphics.Canvas(bitmap)
+        drawable.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
     object DiffCallback : DiffUtil.ItemCallback<PastTripListItem>() {

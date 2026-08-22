@@ -42,12 +42,12 @@ object DistanceCalculator {
         fun fmt(value: Double) = "%.${decimalPrecision}f".format(java.util.Locale.US, value)
 
         if (autoMetersUnder1km && safeMeters < 1000.0 && unit != UnitPreference.MILES) {
-            return String.format(java.util.Locale.US, "%03d M", safeMeters.toInt())
+            return String.format(java.util.Locale.US, "%d M", safeMeters.toInt())
         }
 
         if (autoMetersUnder1km && safeMeters < 1609.344 && unit == UnitPreference.MILES) {
             val feet = (safeMeters * 3.28084).toInt()
-            return String.format(java.util.Locale.US, "%03d FT", feet)
+            return String.format(java.util.Locale.US, "%d FT", feet)
         }
 
         return when (unit) {
@@ -59,7 +59,7 @@ object DistanceCalculator {
 
     /**
      * Formats speed:
-     * - Under 1 KM/H: 3-digit meters per hour ("%03d", unit = "M/H", e.g. 000 M/H, 450 M/H)
+     * - Under 1 KM/H: meters per hour ("%d", unit = "M/H", e.g. 0 M/H, 450 M/H)
      * - 1 KM/H and above: 2 decimal places ("%.2f", unit = "KM/H", e.g. 24.50 KM/H)
      */
     fun formatSpeedParts(
@@ -71,14 +71,14 @@ object DistanceCalculator {
             val speedMph = safeSpeedKmh * 0.621371
             if (speedMph < 1.0) {
                 val ftPerHour = (speedMph * 5280.0).toInt()
-                Pair(String.format(java.util.Locale.US, "%03d", ftPerHour), "FT/H")
+                Pair(String.format(java.util.Locale.US, "%d", ftPerHour), "FT/H")
             } else {
                 Pair(String.format(java.util.Locale.US, "%.2f", speedMph), "MPH")
             }
         } else {
             if (safeSpeedKmh < 1.0) {
                 val metersPerHour = (safeSpeedKmh * 1000.0).toInt()
-                Pair(String.format(java.util.Locale.US, "%03d", metersPerHour), "M/H")
+                Pair(String.format(java.util.Locale.US, "%d", metersPerHour), "M/H")
             } else {
                 Pair(String.format(java.util.Locale.US, "%.2f", safeSpeedKmh), "KM/H")
             }

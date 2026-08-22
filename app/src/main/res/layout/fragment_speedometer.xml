@@ -133,7 +133,7 @@
                 android:layout_height="wrap_content"
                 android:text="M/H"
                 android:textSize="13sp"
-                android:textColor="@color/text_gray_purple" />
+                android:textColor="@color/text_secondary_contrast" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
@@ -143,9 +143,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/bg_card_mint"
-        app:layout_constraintBottom_toTopOf="@id/controlsContainer"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_card_lavender"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavBarrier"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintWidth_max="600dp">
@@ -170,13 +170,15 @@
                     android:layout_weight="1"
                     android:text="@string/stat_distance"
                     android:textSize="14sp"
-                    android:textColor="@color/text_gray_purple" />
+                    android:drawableStart="@drawable/ic_distance"
+                    android:drawablePadding="6dp"
+                    android:textColor="@color/text_secondary_contrast" />
 
                 <TextView
                     android:id="@+id/distanceCoveredText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="000 M"
+                    android:text="0 M"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_charcoal" />
@@ -206,13 +208,15 @@
                         android:layout_height="wrap_content"
                         android:text="@string/stat_avg_speed"
                         android:textSize="12sp"
-                        android:textColor="@color/text_gray_purple" />
+                        android:drawableStart="@drawable/ic_avg_speed"
+                        android:drawablePadding="4dp"
+                        android:textColor="@color/text_secondary_contrast" />
 
                     <TextView
                         android:id="@+id/avgSpeedText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="000 M/H"
+                        android:text="0 M/H"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_charcoal" />
@@ -231,13 +235,15 @@
                         android:layout_height="wrap_content"
                         android:text="@string/stat_max_speed"
                         android:textSize="12sp"
-                        android:textColor="@color/text_gray_purple" />
+                        android:drawableStart="@drawable/ic_max_speed"
+                        android:drawablePadding="4dp"
+                        android:textColor="@color/text_secondary_contrast" />
 
                     <TextView
                         android:id="@+id/maxSpeedText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="000 M/H"
+                        android:text="0 M/H"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_charcoal" />
@@ -263,7 +269,9 @@
                         android:layout_height="wrap_content"
                         android:text="@string/stat_start_time"
                         android:textSize="12sp"
-                        android:textColor="@color/text_gray_purple" />
+                        android:drawableStart="@drawable/ic_timer"
+                        android:drawablePadding="4dp"
+                        android:textColor="@color/text_secondary_contrast" />
 
                     <TextView
                         android:id="@+id/startTimeText"

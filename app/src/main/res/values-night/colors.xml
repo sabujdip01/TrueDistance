@@ -43,4 +43,5 @@
     <color name="pill_dark">#E8E0DC</color>
     <color name="nav_inactive_label">#CBD5E0</color>
     <color name="nav_inactive_color">#E2E8F0</color>
+    <color name="text_secondary_contrast">#CBD5E0</color>
 </resources>

@@ -51,13 +51,24 @@
     <style name="Widget.App.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
         <item name="itemIconTint">@color/nav_item_color_state</item>
         <item name="itemTextColor">@color/nav_label_color_state</item>
+        <item name="itemActiveIndicatorStyle">@style/Widget.App.ActiveIndicator</item>
         <item name="itemTextAppearanceActive">@style/BottomNavActiveTextAppearance</item>
         <item name="itemTextAppearanceInactive">@style/BottomNavInactiveTextAppearance</item>
         <item name="backgroundTint">@null</item>
         <item name="elevation">0dp</item>
         <item name="labelVisibilityMode">labeled</item>
-        <item name="itemPaddingTop">4dp</item>
-        <item name="itemPaddingBottom">4dp</item>
+        <item name="itemPaddingTop">1dp</item>
+        <item name="itemPaddingBottom">1dp</item>
+    </style>
+
+    <style name="Widget.App.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:width">48dp</item>
+        <item name="android:height">48dp</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.App.RoundCircle</item>
+    </style>
+
+    <style name="ShapeAppearance.App.RoundCircle" parent="ShapeAppearance.Material3.Corner.Full">
+        <item name="cornerSize">50%</item>
     </style>
 
     <style name="BottomNavActiveTextAppearance">
@@ -72,7 +83,7 @@
     <!-- Splash Screen theme -->
     <style name="Theme.TrueDistance.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/background_soft</item>
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
         <item name="postSplashScreenTheme">@style/Theme.TrueDistance</item>
     </style>
 
