@@ -55,6 +55,7 @@ class SavedLocationAdapter(
         }
         holder.binding.nameText.setTextColor(primaryTextColor)
         holder.binding.addressText.setTextColor(secondaryTextColor)
+        holder.binding.deleteButton.imageTintList = android.content.res.ColorStateList.valueOf(primaryTextColor)
 
         holder.binding.root.setOnClickListener { onItemClick(item) }
         holder.binding.deleteButton.setOnClickListener { onDeleteClick(item) }

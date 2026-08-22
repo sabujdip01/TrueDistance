@@ -34,6 +34,8 @@ class HistoryAdapter(
     private var items: List<HistoryListItem> = emptyList()
     private val dateFormat = SimpleDateFormat("MMM dd h:mm a", Locale.getDefault())
 
+    fun getItemAt(position: Int): HistoryListItem? = items.getOrNull(position)
+
     fun submitList(newItems: List<HistoryListItem>) {
         items = newItems
         notifyDataSetChanged()
@@ -138,6 +140,7 @@ class HistoryAdapter(
 
             binding.destinationText.setTextColor(primaryTextColor)
             binding.trackedDistanceText.setTextColor(primaryTextColor)
+            binding.deleteButton.imageTintList = android.content.res.ColorStateList.valueOf(primaryTextColor)
 
             // Row 2: secondary color (lighter shade / 60% alpha)
             binding.startTimeText.setTextColor(secondaryTextColor)

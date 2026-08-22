@@ -16,7 +16,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import sabuj.m.truedistance.R
@@ -48,6 +50,40 @@ class HistoryFragment : Fragment() {
         )
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
+
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        ) {
+            override fun getSwipeDirs(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ): Int {
+                val position = viewHolder.bindingAdapterPosition
+                if (position == RecyclerView.NO_POSITION) return 0
+                val item = adapter.getItemAt(position)
+                return if (item is HistoryListItem.EntryRow) {
+                    super.getSwipeDirs(recyclerView, viewHolder)
+                } else {
+                    0
+                }
+            }
+
+            override fun onMove(
+                rv: RecyclerView,
+                vh: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ) = false
+
+            override fun onSwiped(vh: RecyclerView.ViewHolder, direction: Int) {
+                val position = vh.bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val item = adapter.getItemAt(position)
+                    if (item is HistoryListItem.EntryRow) {
+                        viewModel.delete(item.entry)
+                    }
+                }
+            }
+        }).attachToRecyclerView(binding.recyclerView)
 
         // §6.1.3 — "Clear All" in header overflow menu
         (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {

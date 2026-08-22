@@ -155,8 +155,7 @@
                 android:layout_gravity="center"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/delete"
-                android:src="@drawable/ic_delete"
-                app:tint="@color/error_coral" />
+                android:src="@drawable/ic_delete" />
         </FrameLayout>
 
     </LinearLayout>

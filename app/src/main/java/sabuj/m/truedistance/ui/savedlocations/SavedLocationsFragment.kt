@@ -76,7 +76,12 @@ class SavedLocationsFragment : Fragment() {
                                  target: androidx.recyclerview.widget.RecyclerView.ViewHolder) = false
 
             override fun onSwiped(vh: androidx.recyclerview.widget.RecyclerView.ViewHolder, direction: Int) {
-                viewModel.delete(adapter.currentList[vh.bindingAdapterPosition])
+                val pos = vh.bindingAdapterPosition
+                if (pos != androidx.recyclerview.widget.RecyclerView.NO_POSITION) {
+                    adapter.currentList.getOrNull(pos)?.let { location ->
+                        viewModel.delete(location)
+                    }
+                }
             }
         }).attachToRecyclerView(binding.recyclerView)
 

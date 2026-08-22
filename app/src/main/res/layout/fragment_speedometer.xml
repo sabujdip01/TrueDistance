@@ -7,18 +7,17 @@
     android:layout_height="match_parent"
     android:background="@color/background_soft">
 
-    <!-- Top Header: History Button -->
+    <!-- Top Header: History Button (aligned with DistanceFragment historyButton) -->
     <ImageButton
         android:id="@+id/historyButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/bg_icon_chip"
         android:contentDescription="@string/past_trips"
         android:src="@drawable/ic_history"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="@id/statsCard" />
 
     <!-- Map with soft rounded border and padding -->
     <androidx.cardview.widget.CardView
@@ -83,7 +82,7 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- Recenter FAB -->
+    <!-- Recenter FAB (hidden in favor of unified native map controls) -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/recenterButton"
         android:layout_width="wrap_content"
@@ -92,6 +91,7 @@
         android:layout_marginBottom="16dp"
         android:src="@drawable/ic_recenter"
         android:contentDescription="@string/recenter"
+        android:visibility="gone"
         app:fabSize="mini"
         app:backgroundTint="@color/card_white"
         app:tint="@color/primary_violet"

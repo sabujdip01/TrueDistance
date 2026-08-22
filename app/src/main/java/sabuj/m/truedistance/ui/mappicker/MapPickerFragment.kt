@@ -152,41 +152,43 @@ class MapPickerFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCall
                 locationButton.layoutParams is android.widget.RelativeLayout.LayoutParams
             ) {
                 val rlp = locationButton.layoutParams as android.widget.RelativeLayout.LayoutParams
+                val density = resources.displayMetrics.density
 
-                // Remove the default top-right anchoring
+                if (locationButton is android.widget.ImageView) {
+                    locationButton.setColorFilter(
+                        androidx.core.content.ContextCompat.getColor(requireContext(), R.color.primary_violet)
+                    )
+                }
+
                 rlp.addRule(android.widget.RelativeLayout.ALIGN_PARENT_TOP, 0)
-
-                // Anchor to bottom-right, same as the zoom controls
-                rlp.addRule(
-                    android.widget.RelativeLayout.ALIGN_PARENT_BOTTOM,
-                    android.widget.RelativeLayout.TRUE
-                )
+                rlp.addRule(android.widget.RelativeLayout.ALIGN_PARENT_BOTTOM, 0)
                 rlp.addRule(
                     android.widget.RelativeLayout.ALIGN_PARENT_END,
                     android.widget.RelativeLayout.TRUE
                 )
 
-                // Read the zoom controls' actual right margin and match it exactly
-                val zoomMarginEnd = if (zoomControls != null &&
-                    zoomControls.layoutParams is android.widget.RelativeLayout.LayoutParams
-                ) {
-                    (zoomControls.layoutParams as android.widget.RelativeLayout.LayoutParams).marginEnd
-                } else {
-                    0
-                }
+                if (zoomControls != null && zoomControls.layoutParams is android.widget.RelativeLayout.LayoutParams) {
+                    if (zoomControls.id == View.NO_ID) {
+                        zoomControls.id = View.generateViewId()
+                    }
+                    val zoomMarginEnd = (zoomControls.layoutParams as android.widget.RelativeLayout.LayoutParams).marginEnd
 
-                val density = resources.displayMetrics.density
-                // Place directly above the +/- zoom buttons
-                rlp.bottomMargin = (90 * density).toInt()
-                // Use the exact same right margin as the zoom controls
-                rlp.marginEnd = zoomMarginEnd
-                rlp.rightMargin = zoomMarginEnd
+                    rlp.addRule(android.widget.RelativeLayout.ABOVE, zoomControls.id)
+                    rlp.bottomMargin = (12 * density).toInt()
+                    rlp.marginEnd = zoomMarginEnd
+                    rlp.rightMargin = zoomMarginEnd
+                } else {
+                    rlp.addRule(
+                        android.widget.RelativeLayout.ALIGN_PARENT_BOTTOM,
+                        android.widget.RelativeLayout.TRUE
+                    )
+                    rlp.bottomMargin = (90 * density).toInt()
+                }
 
                 locationButton.layoutParams = rlp
             }
         }
 
-        // Two passes: immediate + delayed, since Maps SDK inflates controls asynchronously
         mapView.post(adjustPosition)
         mapView.postDelayed(adjustPosition, 300)
     }

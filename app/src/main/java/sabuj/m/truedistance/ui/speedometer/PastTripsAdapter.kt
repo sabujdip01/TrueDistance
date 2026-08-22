@@ -99,6 +99,7 @@ class PastTripsAdapter(
 
             binding.tripTitleText.setTextColor(primaryTextColor)
             binding.distanceText.setTextColor(primaryTextColor)
+            binding.deleteButton.imageTintList = android.content.res.ColorStateList.valueOf(primaryTextColor)
 
             binding.startTimeText.setTextColor(secondaryTextColor)
             binding.elapsedText.setTextColor(secondaryTextColor)
