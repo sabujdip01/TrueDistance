@@ -63,6 +63,9 @@
         <action
             android:id="@+id/action_speedometer_to_pastTrips"
             app:destination="@id/nav_pastTrips" />
+        <action
+            android:id="@+id/action_speedometer_to_savedLocations"
+            app:destination="@id/nav_savedLocations" />
     </fragment>
 
     <fragment

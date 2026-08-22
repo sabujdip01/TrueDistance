@@ -35,8 +35,12 @@
 - **Background Tracking**: Dedicated foreground services (`TrackingService`, `SpeedometerService`) with persistent notifications and synchronized action controls.
 - **Global Units & Precision**: Default **KM** (configurable to Miles or Both), with 3-digit meters (`000 M` / `000 M/H`) under 1 KM and 2 decimals (`%.2f KM` / `%.2f KM/H`) at or above 1 KM.
 - **Modern UI & Full Dark Mode**:
-  - **Material3 Floating Pill Navigation Bar**: Elevated floating card container with 36dp rounded corners, 12dp elevation shadow, and filled primary violet (`#7C4DFF`) active capsule pill with white icon/text and grey unselected icons.
-  - Smart tab reselection: Tapping any active bottom nav item pops back stack directly to the tab's root destination (`DistanceFragment`, `SpeedometerFragment`, `SettingsFragment`).
+  - **Compact Material3 Floating Pill Navigation Bar**: Sleek, less wide floating card container with 36dp rounded corners, 12dp elevation shadow, and `labelVisibilityMode="selected"` — only the currently open tab ("True Distance" / "Speedometer" / "Settings") shows its filled capsule pill and text label, while inactive tabs display icons only.
+  - Smart tab reselection: Tapping any active bottom nav item or switching tabs pops back stack directly to the tab's root destination (`DistanceFragment`, `SpeedometerFragment`, `SettingsFragment`).
+  - **Screen Headers & Unified Header Actions**: Each main tab features a Medium Big screen title header ("True Distance" / "Speedometer" / "Settings", 24sp bold) on the top-left, with Saved Locations (`ic_bookmark`) placed on the top-right BEFORE Trip History (`ic_history`) with clean padding.
+  - **Unified Header & Map Controls**: Identical top-right history icon chip button position across True Distance and Speedometer screens, and a standardized custom 3-button stack (`[Current Location]`, `[+] Zoom In`, `[-] Zoom Out`) anchored at bottom-right of all map views with 10dp vertical spacing and chip button styling (`bg_icon_chip.xml`).
+  - **Instant Custom Splash Screen**: Omitted the initial system splash delay to immediately display the branded splash screen with app title and dynamic version number.
+  - **Stable Launcher Icon**: Dark/light mode independent launcher icon that maintains original colors across system themes and Android 13+ wallpaper tinting.
   - 24dp rounded cards with an **80/20 layout split** (content | centered delete action).
   - Pastel gradients (Mint, Peach, Lavender, Blue) with tone-matched high-contrast typography.
   - Complete dark theme overrides (`values-night/` and `drawable-night/`).

@@ -25,6 +25,46 @@
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
+        <!-- Map controls stack: Current Location (top), Zoom + (mid), Zoom - (bottom) -->
+        <LinearLayout
+            android:id="@+id/mapControlsStack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp">
+
+            <ImageButton
+                android:id="@+id/btnMyLocation"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_icon_chip"
+                android:contentDescription="@string/recenter"
+                android:src="@drawable/ic_recenter"
+                app:tint="@color/primary_violet" />
+
+            <ImageButton
+                android:id="@+id/btnZoomIn"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_icon_chip"
+                android:contentDescription="Zoom In"
+                android:src="@drawable/ic_add"
+                app:tint="@color/primary_violet" />
+
+            <ImageButton
+                android:id="@+id/btnZoomOut"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_icon_chip"
+                android:contentDescription="Zoom Out"
+                android:src="@drawable/ic_minus"
+                app:tint="@color/primary_violet" />
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 
     <Button

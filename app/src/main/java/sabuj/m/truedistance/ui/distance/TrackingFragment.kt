@@ -121,6 +121,20 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
             findNavController().popBackStack()
         }
 
+        // Setup custom map control buttons
+        binding.btnZoomIn.setOnClickListener {
+            googleMap?.animateCamera(CameraUpdateFactory.zoomIn())
+        }
+        binding.btnZoomOut.setOnClickListener {
+            googleMap?.animateCamera(CameraUpdateFactory.zoomOut())
+        }
+        binding.btnMyLocation.setOnClickListener {
+            val loc = viewModel.uiState.value.currentLocation
+            if (loc != null) {
+                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 15f))
+            }
+        }
+
         // Observe tracking state: update distance text, stale indicator, and map
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -201,23 +215,19 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
 
-        // Enable +/- zoom control buttons (placed bottom-right by the Maps SDK)
-        map.uiSettings.isZoomControlsEnabled = true
+        // Disable native zoom controls & locate button in favor of our unified custom stack
+        map.uiSettings.isZoomControlsEnabled = false
+        map.uiSettings.isMyLocationButtonEnabled = false
 
-        // Enable the blue My Location dot and the native locate button.
-        // The button is repositioned to bottom-right so it clusters with the +/- buttons.
         if (LocationPermissionHelper.hasForegroundLocationPermission(requireContext())) {
             try {
-                map.isMyLocationEnabled = true                   // blue dot at current position
-                map.uiSettings.isMyLocationButtonEnabled = true  // locate button visible
-                repositionMyLocationButton()                     // move to bottom-right with +/-
+                map.isMyLocationEnabled = true
             } catch (_: SecurityException) {
                 // Permission revoked between check and map setup — safe to ignore
             }
         }
 
         // Tell the Maps SDK about UI overlays so bounds/camera calculations avoid them.
-        // Top padding accounts for the distance card; bottom for the stop button area.
         val density = resources.displayMetrics.density
         val topPadding = (140 * density).toInt()    // ~140dp for distance card + margin
         val bottomPadding = (16 * density).toInt()
@@ -225,106 +235,6 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
 
         // Draw markers and polyline using the latest known tracking state
         updateMap(viewModel.uiState.value)
-    }
-
-    // -----------------------------------------------------------------------------------------
-    // My Location Button Repositioning
-    // -----------------------------------------------------------------------------------------
-
-    /**
-     * Moves Google Maps' native "My Location" button from its default top-right position
-     * to the bottom-right corner, sitting directly above the +/- zoom controls.
-     *
-     * Applied twice — immediately via [View.post] and again after a 300ms delay — to handle
-     * the Maps SDK inflating map controls asynchronously after the first post() runs.
-     */
-    private fun repositionMyLocationButton() {
-        val mapFragment = childFragmentManager
-            .findFragmentById(R.id.mapContainer) as? SupportMapFragment
-        val mapView = mapFragment?.view ?: return
-
-        val adjustPosition = {
-            val locationButton = findMyLocationButton(mapView)
-            val zoomControls = findZoomControls(mapView)
-
-            if (locationButton != null &&
-                locationButton.layoutParams is android.widget.RelativeLayout.LayoutParams
-            ) {
-                val rlp = locationButton.layoutParams as android.widget.RelativeLayout.LayoutParams
-                val density = resources.displayMetrics.density
-
-                if (locationButton is android.widget.ImageView) {
-                    locationButton.setColorFilter(
-                        androidx.core.content.ContextCompat.getColor(requireContext(), R.color.primary_violet)
-                    )
-                }
-
-                rlp.addRule(android.widget.RelativeLayout.ALIGN_PARENT_TOP, 0)
-                rlp.addRule(android.widget.RelativeLayout.ALIGN_PARENT_BOTTOM, 0)
-                rlp.addRule(
-                    android.widget.RelativeLayout.ALIGN_PARENT_END,
-                    android.widget.RelativeLayout.TRUE
-                )
-
-                if (zoomControls != null && zoomControls.layoutParams is android.widget.RelativeLayout.LayoutParams) {
-                    if (zoomControls.id == View.NO_ID) {
-                        zoomControls.id = View.generateViewId()
-                    }
-                    val zoomMarginEnd = (zoomControls.layoutParams as android.widget.RelativeLayout.LayoutParams).marginEnd
-
-                    rlp.addRule(android.widget.RelativeLayout.ABOVE, zoomControls.id)
-                    rlp.bottomMargin = (12 * density).toInt()
-                    rlp.marginEnd = zoomMarginEnd
-                    rlp.rightMargin = zoomMarginEnd
-                } else {
-                    rlp.addRule(
-                        android.widget.RelativeLayout.ALIGN_PARENT_BOTTOM,
-                        android.widget.RelativeLayout.TRUE
-                    )
-                    rlp.bottomMargin = (90 * density).toInt()
-                }
-
-                locationButton.layoutParams = rlp
-            }
-        }
-
-        mapView.post(adjustPosition)
-        mapView.postDelayed(adjustPosition, 300)
-    }
-
-    private fun findMyLocationButton(view: View): View? {
-        if (view.contentDescription?.toString()?.contains("location", ignoreCase = true) == true ||
-            view.tag?.toString()?.contains("location", ignoreCase = true) == true ||
-            view.id == 2
-        ) {
-            return view
-        }
-        if (view is ViewGroup) {
-            for (i in 0 until view.childCount) {
-                val child = findMyLocationButton(view.getChildAt(i))
-                if (child != null) return child
-            }
-        }
-        return null
-    }
-
-    private fun findZoomControls(view: View): View? {
-        if (view is android.widget.LinearLayout && view.childCount == 2) {
-            val child0 = view.getChildAt(0)
-            val child1 = view.getChildAt(1)
-            if ((child0 is android.widget.ImageView || child0 is android.widget.ImageButton) &&
-                (child1 is android.widget.ImageView || child1 is android.widget.ImageButton)
-            ) {
-                return view
-            }
-        }
-        if (view is ViewGroup) {
-            for (i in 0 until view.childCount) {
-                val child = findZoomControls(view.getChildAt(i))
-                if (child != null) return child
-            }
-        }
-        return null
     }
 
     // -----------------------------------------------------------------------------------------

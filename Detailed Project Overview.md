@@ -57,7 +57,8 @@ The app uses a **Material3 Floating Pill Navigation Bar with 3 tabs** (36dp corn
 - Custom app icon with adaptive layers (`ic_launcher_foreground`, `ic_launcher_background`).
 
 ### 5.2 Splash Screen
-- Branded splash screen on cold start with 32sp bold title and version metadata.
+- Branded splash screen displaying app title (`32sp` bold) and dynamic version metadata (`v2.0.0 (2)`).
+- System splash delay omitted so custom splash screen layout renders immediately on app launch.
 - Theme-aware background (`background_soft`).
 
 ---
@@ -83,7 +84,8 @@ Layout:
   - **80% Left (Content, 20dp padding)**:
     - Row 1: Location Name (`17sp` bold, deep card color in light mode: `#00695C` Mint, `#6A1B9A` Lavender, `#BF360C` Peach).
     - Row 2: Address (`13sp`, same hue at 85% opacity in light mode).
-  - **20% Right (Action)**: Centered delete button (`36x36dp`).
+  - **20% Right (Action)**: Centered delete button (`36x36dp`) with icon tinted dynamically to match the header title color.
+  - **Swipe-to-Delete**: Swiping card left or right deletes the location entry.
 - Card backgrounds: Pastel 45° gradients cycling Mint / Lavender / Peach (24dp corner radius). In dark mode, deep desaturated gradients with high-contrast text (`text_charcoal` / `text_gray_purple`).
 - Floating Action Button (FAB) at bottom-right to add new location via Places search or Map picker.
 - Tapping card body sets destination on Main Screen.
@@ -95,7 +97,8 @@ Layout:
   - **80% Left (Content, 20dp padding)**:
     - Row 1: Destination Name (`17sp` bold) + Tracked Distance (`13sp`, initial distance − final distance) in deep card hue.
     - Row 2: Start Timestamp (`13sp`) | Stop Timestamp (`13sp`) | Elapsed Duration (`13sp`) in matching hue at 85% opacity.
-  - **20% Right (Action)**: Centered delete button (`36x36dp`).
+  - **20% Right (Action)**: Centered delete button (`36x36dp`) with icon tinted dynamically to match the header title color.
+  - **Swipe-to-Delete**: Swiping entry left or right deletes the history record (date headers excluded).
 - Card backgrounds: Pastel 45° gradients cycling Blue (`#BBDEFB` → `#E3F2FD`) / Peach (`#FFCCBC` → `#FFF3E0`) / Lavender (`#E1BEE7` → `#F3E5F5`). In dark mode, deep desaturated variants with high-contrast text.
 - **Expanded snapshot rows (Single-card exclusive expand)**:
   - Tapping an entry expands it and collapses any previously expanded card.
@@ -114,6 +117,10 @@ Layout:
 
 #### 6.1.4 Tracking Screen (full screen)
 - **Map Framing**: Map wrapped in a `CardView` with `16dp` corner radius, `12dp` margins, and `2dp` elevation for a modern soft border.
+- **Unified Map Controls Stack**: Anchored at bottom-right of map with 10dp vertical spacing using circular chip button backgrounds (`bg_icon_chip.xml`, `card_white` fill with 1dp stroke, `primary_violet` icon tint in light mode / `text_primary` in dark mode):
+  - Top: `[ Current Location ]` (`ic_recenter`)
+  - Mid: `[ + Zoom In ]` (`ic_add`)
+  - Bottom: `[ - Zoom Out ]` (`ic_minus`)
 - **Markers**:
   - **Current location**: Red marker dot / pin.
   - **Destination**: Green marker pin.
@@ -135,12 +142,13 @@ This tab contains two primary screens: the **Speedometer Screen** (live trip tra
 
 #### 6.2.1 Speedometer Screen (`SpeedometerFragment`)
 Layout structure (top to bottom):
-1. **Header Row**: History icon chip button (`@id/historyButton`) navigating to the Past Trips screen (`@id/action_speedometer_to_pastTrips`).
+1. **Header Row**: History icon chip button (`@id/historyButton`) aligned identically with `DistanceFragment` (`16dp` top margin, constrained to card end) for seamless position consistency when switching tabs.
 2. **Interactive Map**: Google Map inside a 16dp rounded `CardView` frame with 12dp margins:
    - **Initial Centering**: Loads user's current location immediately on map ready (`17f` zoom) with a Red pin marker.
    - **Trip Start Zoom**: On clicking Start, zooms tightly into the user's location at street level (`18.5f`).
    - **Breadcrumb Polyline**: Traveled path polyline (`#00796B` dark teal, 8px solid) drawn continuously as the user travels.
    - **Auto-Drag & Auto-Zoom Out**: Smoothly follows movement in real time. When the route expands (>15m), camera automatically scales and zooms out to fit the full path polyline and current location with top and bottom UI overlay padding.
+   - **Unified Map Controls**: Standardized native `+`, `-`, and `primary_violet` tinted `My Location` crosshair button stack anchored in bottom-right corner.
 3. **Floating Live Speed Counter**:
    - Glassmorphic card (`card_white_translucent`, 16dp radius, 4dp elevation) floating at the top of the map.
    - Large bold speed readout (`36sp` bold) with unit label (`KM/H`, `M/H`, or `MPH` per global Settings).

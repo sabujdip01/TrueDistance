@@ -121,6 +121,10 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun setupButtons() {
+        binding.savedLocationsButton.setOnClickListener {
+            findNavController().navigate(R.id.action_speedometer_to_savedLocations)
+        }
+
         binding.historyButton.setOnClickListener {
             findNavController().navigate(R.id.action_speedometer_to_pastTrips)
         }
@@ -143,10 +147,17 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
             android.widget.Toast.makeText(requireContext(), getString(R.string.trip_saved), android.widget.Toast.LENGTH_SHORT).show()
         }
 
-        binding.recenterButton.setOnClickListener {
+        // Custom map controls stack
+        binding.btnZoomIn.setOnClickListener {
+            googleMap?.animateCamera(CameraUpdateFactory.zoomIn())
+        }
+        binding.btnZoomOut.setOnClickListener {
+            googleMap?.animateCamera(CameraUpdateFactory.zoomOut())
+        }
+        binding.btnMyLocation.setOnClickListener {
             val loc = viewModel.uiState.value.currentLocation
             if (loc != null && googleMap != null) {
-                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 17f))
+                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 17.5f))
             } else {
                 fetchInitialLocation()
             }
@@ -178,13 +189,12 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
         googleMap = map
         map.uiSettings.isCompassEnabled = true
         map.uiSettings.isRotateGesturesEnabled = true
-        map.uiSettings.isZoomControlsEnabled = true
+        map.uiSettings.isZoomControlsEnabled = false
+        map.uiSettings.isMyLocationButtonEnabled = false
 
         if (sabuj.m.truedistance.utils.LocationPermissionHelper.hasForegroundLocationPermission(requireContext())) {
             try {
                 map.isMyLocationEnabled = true
-                map.uiSettings.isMyLocationButtonEnabled = true
-                repositionMyLocationButton()
             } catch (_: SecurityException) {}
         }
 
@@ -309,95 +319,6 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
         } else {
             polyline?.points = emptyList()
         }
-    }
-
-    private fun repositionMyLocationButton() {
-        val mapFragment = childFragmentManager
-            .findFragmentById(R.id.mapContainer) as? SupportMapFragment
-        val mapView = mapFragment?.view ?: return
-
-        val adjustPosition = {
-            val locationButton = findMyLocationButton(mapView)
-            val zoomControls = findZoomControls(mapView)
-
-            if (locationButton != null &&
-                locationButton.layoutParams is android.widget.RelativeLayout.LayoutParams
-            ) {
-                val rlp = locationButton.layoutParams as android.widget.RelativeLayout.LayoutParams
-                val density = resources.displayMetrics.density
-
-                if (locationButton is android.widget.ImageView) {
-                    locationButton.setColorFilter(
-                        ContextCompat.getColor(requireContext(), R.color.primary_violet)
-                    )
-                }
-
-                rlp.addRule(android.widget.RelativeLayout.ALIGN_PARENT_TOP, 0)
-                rlp.addRule(android.widget.RelativeLayout.ALIGN_PARENT_BOTTOM, 0)
-                rlp.addRule(
-                    android.widget.RelativeLayout.ALIGN_PARENT_END,
-                    android.widget.RelativeLayout.TRUE
-                )
-
-                if (zoomControls != null && zoomControls.layoutParams is android.widget.RelativeLayout.LayoutParams) {
-                    if (zoomControls.id == View.NO_ID) {
-                        zoomControls.id = View.generateViewId()
-                    }
-                    val zoomMarginEnd = (zoomControls.layoutParams as android.widget.RelativeLayout.LayoutParams).marginEnd
-
-                    rlp.addRule(android.widget.RelativeLayout.ABOVE, zoomControls.id)
-                    rlp.bottomMargin = (12 * density).toInt()
-                    rlp.marginEnd = zoomMarginEnd
-                    rlp.rightMargin = zoomMarginEnd
-                } else {
-                    rlp.addRule(
-                        android.widget.RelativeLayout.ALIGN_PARENT_BOTTOM,
-                        android.widget.RelativeLayout.TRUE
-                    )
-                    rlp.bottomMargin = (90 * density).toInt()
-                }
-
-                locationButton.layoutParams = rlp
-            }
-        }
-
-        mapView.post(adjustPosition)
-        mapView.postDelayed(adjustPosition, 300)
-    }
-
-    private fun findMyLocationButton(view: View): View? {
-        if (view.contentDescription?.toString()?.contains("location", ignoreCase = true) == true ||
-            view.tag?.toString()?.contains("location", ignoreCase = true) == true ||
-            view.id == 2
-        ) {
-            return view
-        }
-        if (view is ViewGroup) {
-            for (i in 0 until view.childCount) {
-                val child = findMyLocationButton(view.getChildAt(i))
-                if (child != null) return child
-            }
-        }
-        return null
-    }
-
-    private fun findZoomControls(view: View): View? {
-        if (view is android.widget.LinearLayout && view.childCount == 2) {
-            val child0 = view.getChildAt(0)
-            val child1 = view.getChildAt(1)
-            if ((child0 is android.widget.ImageView || child0 is android.widget.ImageButton) &&
-                (child1 is android.widget.ImageView || child1 is android.widget.ImageButton)
-            ) {
-                return view
-            }
-        }
-        if (view is ViewGroup) {
-            for (i in 0 until view.childCount) {
-                val child = findZoomControls(view.getChildAt(i))
-                if (child != null) return child
-            }
-        }
-        return null
     }
 
     override fun onDestroyView() {

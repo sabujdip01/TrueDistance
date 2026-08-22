@@ -20,18 +20,15 @@ import sabuj.m.truedistance.utils.GpsStatusHelper
 class SplashActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySplashBinding
-    private var keepSplash = true
     private var splashDone = false
     private var dialogShowing = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Install the splash screen BEFORE super.onCreate() so the
-        // Theme.SplashScreen → AppCompat theme transition happens correctly.
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        // Keep the system splash on screen for the initial delay
-        splashScreen.setKeepOnScreenCondition { keepSplash }
+        // Dismiss system splash immediately so custom layout (logo + title + version) shows directly
+        splashScreen.setKeepOnScreenCondition { false }
 
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -40,11 +37,7 @@ class SplashActivity : AppCompatActivity() {
         binding.versionText.text = getString(R.string.version_format, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
 
         lifecycleScope.launch {
-            // Hold the system splash for 1.5 seconds
-            delay(1500)
-            keepSplash = false
-
-            // Show our custom splash layout (with version) for another 1.5 seconds
+            // Show custom splash layout with logo, app title, and version for 1.5 seconds
             delay(1500)
             splashDone = true
             proceedIfLocationEnabled()

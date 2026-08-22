@@ -270,20 +270,23 @@ All spacing is based on a **4dp grid**. Common spacing values:
 |---|---|---|
 | Location selection card | `16dp` all sides | Main screen destination card |
 | Distance readout overlay | `16dp` all sides | Floating card on tracking map |
-| List item card (saved location) | `20dp` on 80% content area | 80/20 split: 80% content, 20% centered delete button |
-| List item card (history entry) | `20dp` on 80% content area | 80/20 split: 80% content, 20% centered delete button |
+| List item card (saved location) | `20dp` on 80% content area | 80/20 split: 80% content, 20% centered delete button. Swipe-to-delete enabled. Delete icon tinted to match header title color. |
+| List item card (history entry) | `20dp` on 80% content area | 80/20 split: 80% content, 20% centered delete button. Swipe-to-delete enabled (date headers excluded). Delete icon tinted to match header title color. |
+| List item card (past trip) | `20dp` on 80% content area | 80/20 split: 80% content, 20% centered delete button. Swipe-to-delete enabled. Delete icon tinted to match header title color. |
 | Settings content area | `16dp` all sides | Settings form padding |
 | Dialog content | `24dp` all sides | Alert dialogs |
 
-### 4.4 List Item Spacing
+### 4.4 List Item Spacing & Interactions
 
-| Property | Value |
-|---|---|
-| Vertical gap between list items | `6dp` (via marginVertical on each item) |
-| Horizontal margin of list items | `16dp` (via marginHorizontal on each item) |
-| RecyclerView top padding | `8dp` with `clipToPadding="false"` |
-| Section header top padding | `16dp` |
-| Section header bottom padding | `4dp` |
+| Property | Value | Notes |
+|---|---|---|
+| Vertical gap between list items | `6dp` | via marginVertical on each item |
+| Horizontal margin of list items | `16dp` | via marginHorizontal on each item |
+| RecyclerView top padding | `8dp` | with `clipToPadding="false"` |
+| Section header top padding | `16dp` | |
+| Section header bottom padding | `4dp` | |
+| Swipe-to-Delete Gesture | Left / Right Swipe | Supported across Saved Locations, History Entries, and Past Trips cards via ItemTouchHelper |
+| Delete Icon Tint | Dynamic Header Match | Delete button icon tint dynamically matches the card header text color (deep teal / deep purple / deep orange / deep blue) |
 
 ---
 
@@ -510,15 +513,15 @@ Content:          "Today", "Yesterday", "Older"
 Container:        CardView wrapper with 36dp rounded corners
 Elevation:        12dp card shadow
 Background:       card_white (#FFFFFF)
-Margin:           20dp horizontal, 20dp bottom
-Max width:        560dp
-Height:           64dp
+Margin:           32dp horizontal, 20dp bottom
+Max width:        340dp (compact floating pill)
+Height:           58dp
 Position:         Constrained to bottom of parent, centered horizontally
 
 Tab count:        3 (True Distance, Speedometer, Settings)
 Icon size:        24x24dp
 Label size:       12sp
-Label visibility: Always shown (labeled)
+Label visibility: Selected only (app:labelVisibilityMode="selected") — only currently active tab displays text label and filled capsule pill; inactive tabs display icons only.
 
 Active tab (Filled Pill Capsule):
   Indicator:      Material3 NavigationBar active indicator
@@ -527,9 +530,8 @@ Active tab (Filled Pill Capsule):
   Label color:    text_on_primary (#FFFFFF)
 
 Inactive tab:
-  Indicator:      None (circular icon-only layout)
+  Indicator:      None (icon-only layout without text label)
   Icon color:     text_gray_purple (#90A4AE)
-  Label color:    text_gray_purple (#90A4AE)
 
 Ripple:           primary_lavender at 15% opacity
 Tab Reselection:  Tapping active tab or switching tabs pops back stack directly to root fragment (DistanceFragment, SpeedometerFragment, SettingsFragment)

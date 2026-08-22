@@ -42,38 +42,56 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- Header row with Screen Name on left and Action Chips on right -->
+        <TextView
+            android:id="@+id/screenTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/true_distance"
+            android:textColor="@color/text_charcoal"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/noGpsBanner"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/savedLocationsButton" />
+
         <ImageButton
             android:id="@+id/savedLocationsButton"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="12dp"
             android:background="@drawable/bg_icon_chip"
             android:contentDescription="@string/saved_locations"
             android:src="@drawable/ic_bookmark"
             app:layout_constraintTop_toBottomOf="@id/noGpsBanner"
-            app:layout_constraintStart_toStartOf="@id/locationCard" />
+            app:layout_constraintEnd_toStartOf="@id/historyButton" />
 
         <ImageButton
             android:id="@+id/historyButton"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="20dp"
             android:background="@drawable/bg_icon_chip"
             android:contentDescription="@string/distance_history"
             android:src="@drawable/ic_history"
             app:layout_constraintTop_toBottomOf="@id/noGpsBanner"
-            app:layout_constraintEnd_toEndOf="@id/locationCard" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Location selection card, §6.1.1 -->
         <androidx.cardview.widget.CardView
             android:id="@+id/locationCard"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:layout_marginHorizontal="16dp"
             app:cardCornerRadius="20dp"
             app:cardElevation="4dp"
-            app:layout_constraintTop_toBottomOf="@id/savedLocationsButton"
+            app:cardBackgroundColor="@color/card_white"
+            app:layout_constraintTop_toBottomOf="@id/screenTitle"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintWidth_max="600dp">
