@@ -148,7 +148,7 @@ class PastTripsAdapter(
                     val startPoint = points.first()
                     val endPoint = points.last()
 
-                    val flagIcon = vectorToBitmapDescriptor(context, R.drawable.ic_race_flag)
+                    val flagIcon = vectorToBitmapDescriptor(binding.root.context, R.drawable.ic_race_flag)
                     googleMap.addMarker(
                         MarkerOptions()
                             .position(startPoint)
