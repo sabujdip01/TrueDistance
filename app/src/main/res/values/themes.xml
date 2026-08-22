@@ -50,23 +50,23 @@
 
     <style name="Widget.App.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
         <item name="itemIconTint">@color/nav_item_color_state</item>
-        <item name="itemTextColor">@color/nav_label_color_state</item>
+        <item name="itemTextColor">@color/nav_item_color_state</item>
         <item name="itemTextAppearanceActive">@style/BottomNavActiveTextAppearance</item>
         <item name="itemTextAppearanceInactive">@style/BottomNavInactiveTextAppearance</item>
         <item name="backgroundTint">@null</item>
         <item name="elevation">0dp</item>
-        <item name="labelVisibilityMode">labeled</item>
-        <item name="itemPaddingTop">4dp</item>
-        <item name="itemPaddingBottom">4dp</item>
+        <item name="labelVisibilityMode">selected</item>
+        <item name="itemPaddingTop">8dp</item>
+        <item name="itemPaddingBottom">8dp</item>
     </style>
 
     <style name="BottomNavActiveTextAppearance">
-        <item name="android:textSize">0.1sp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="BottomNavInactiveTextAppearance">
-        <item name="android:textSize">11sp</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">0.1sp</item>
     </style>
 
     <!-- Splash Screen theme -->
