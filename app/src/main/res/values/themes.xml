@@ -61,7 +61,7 @@
     </style>
 
     <style name="BottomNavActiveTextAppearance">
-        <item name="android:textSize">0sp</item>
+        <item name="android:textSize">0.1sp</item>
     </style>
 
     <style name="BottomNavInactiveTextAppearance">
