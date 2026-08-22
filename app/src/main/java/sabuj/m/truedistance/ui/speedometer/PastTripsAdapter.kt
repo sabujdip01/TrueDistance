@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
@@ -210,18 +211,20 @@ class PastTripsAdapter(
         return String.format(Locale.US, "%02d:%02d:%02d", hrs, mins, secs)
     }
 
-    private fun vectorToBitmapDescriptor(context: android.content.Context, @androidx.annotation.DrawableRes vectorResId: Int): BitmapDescriptor {
-        val drawable = androidx.core.content.ContextCompat.getDrawable(context, vectorResId)
-            ?: return BitmapDescriptorFactory.defaultMarker()
-        drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
-        val bitmap = android.graphics.Bitmap.createBitmap(
-            drawable.intrinsicWidth,
-            drawable.intrinsicHeight,
-            android.graphics.Bitmap.Config.ARGB_8888
-        )
-        val canvas = android.graphics.Canvas(bitmap)
-        drawable.draw(canvas)
-        return BitmapDescriptorFactory.fromBitmap(bitmap)
+    companion object {
+        private fun vectorToBitmapDescriptor(context: android.content.Context, @androidx.annotation.DrawableRes vectorResId: Int): BitmapDescriptor {
+            val drawable = androidx.core.content.ContextCompat.getDrawable(context, vectorResId)
+                ?: return BitmapDescriptorFactory.defaultMarker()
+            drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+            val bitmap = android.graphics.Bitmap.createBitmap(
+                drawable.intrinsicWidth,
+                drawable.intrinsicHeight,
+                android.graphics.Bitmap.Config.ARGB_8888
+            )
+            val canvas = android.graphics.Canvas(bitmap)
+            drawable.draw(canvas)
+            return BitmapDescriptorFactory.fromBitmap(bitmap)
+        }
     }
 
     object DiffCallback : DiffUtil.ItemCallback<PastTripListItem>() {

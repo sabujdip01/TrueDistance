@@ -1,6 +1,7 @@
 package sabuj.m.truedistance.ui.speedometer
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,6 +19,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
@@ -113,7 +115,7 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 if (location != null && googleMap != null) {
                     val latLng = LatLng(location.latitude, location.longitude)
-                    updateCurrentMarker(latLng)
+                    updateCurrentMarker(latLng, viewModel.uiState.value.isTracking)
                     googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17f))
                 }
             }
@@ -261,29 +263,47 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
-    private fun updateCurrentMarker(latLng: LatLng) {
+    private fun updateCurrentMarker(latLng: LatLng, isTracking: Boolean) {
         val map = googleMap ?: return
-        val carIcon = vectorToBitmapDescriptor(requireContext(), R.drawable.ic_car)
-        if (currentMarker == null) {
-            currentMarker = map.addMarker(
-                MarkerOptions()
-                    .position(latLng)
-                    .title(getString(R.string.you))
-                    .icon(carIcon)
-                    .anchor(0.5f, 0.5f)
-            )
+        if (isTracking) {
+            val carIcon = vectorToBitmapDescriptor(requireContext(), R.drawable.ic_car)
+            if (currentMarker == null) {
+                currentMarker = map.addMarker(
+                    MarkerOptions()
+                        .position(latLng)
+                        .title(getString(R.string.you))
+                        .icon(carIcon)
+                        .anchor(0.5f, 0.5f)
+                )
+            } else {
+                currentMarker?.position = latLng
+                currentMarker?.setIcon(carIcon)
+                currentMarker?.setAnchor(0.5f, 0.5f)
+            }
         } else {
-            currentMarker?.position = latLng
-            currentMarker?.setIcon(carIcon)
+            val redMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
+            if (currentMarker == null) {
+                currentMarker = map.addMarker(
+                    MarkerOptions()
+                        .position(latLng)
+                        .title(getString(R.string.you))
+                        .icon(redMarker)
+                        .anchor(0.5f, 1.0f)
+                )
+            } else {
+                currentMarker?.position = latLng
+                currentMarker?.setIcon(redMarker)
+                currentMarker?.setAnchor(0.5f, 1.0f)
+            }
         }
     }
 
     private fun updateMap(state: SpeedometerUiState) {
         val map = googleMap ?: return
 
-        // Update current location marker (small car icon)
+        // Update current location marker (Red marker before start, Small Car icon after start)
         state.currentLocation?.let { latLng ->
-            updateCurrentMarker(latLng)
+            updateCurrentMarker(latLng, state.isTracking)
 
             if (isFirstFix && state.isTracking) {
                 // On trip start: zoom to highest level (18.5f) centered on user location

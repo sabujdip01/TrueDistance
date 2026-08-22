@@ -269,7 +269,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/stat_start_time"
                         android:textSize="12sp"
-                        android:drawableStart="@drawable/ic_timer"
+                        android:drawableStart="@drawable/ic_clock"
                         android:drawablePadding="4dp"
                         android:textColor="@color/text_secondary_contrast" />
 
@@ -296,7 +296,9 @@
                         android:layout_height="wrap_content"
                         android:text="@string/stat_elapsed"
                         android:textSize="12sp"
-                        android:textColor="@color/text_gray_purple" />
+                        android:drawableStart="@drawable/ic_timer"
+                        android:drawablePadding="4dp"
+                        android:textColor="@color/text_secondary_contrast" />
 
                     <TextView
                         android:id="@+id/elapsedText"
