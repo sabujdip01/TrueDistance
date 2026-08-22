@@ -512,27 +512,27 @@ Content:          "Today", "Yesterday", "Older"
 ```
 Container:        CardView wrapper with 36dp rounded corners
 Elevation:        12dp card shadow
-Background:       card_white (#FFFFFF)
-Margin:           48dp horizontal, 20dp bottom
-Max width:        300dp (compact floating pill)
-Height:           58dp
+Background:       card_white (#FFFFFF light / #2A2826 dark)
+Margin:           40dp horizontal, 20dp bottom
+Max width:        320dp (compact floating pill)
+Height:           62dp
 Position:         Constrained to bottom of parent, centered horizontally
 
 Tab count:        3 (True Distance, Speedometer, Settings)
 Icon size:        24x24dp
 Label size:       11sp bold (inactive)
-Label visibility: Always shown mode with custom size (active tab displays icon-only filled capsule pill since top header title exists; inactive tabs display text labels visible in both Light and Dark modes).
+Label visibility: Always shown mode (active open tab displays icon-only filled capsule pill since top screen title header exists; inactive tabs display crisp bold text labels underneath).
 
 Active tab (Filled Pill Capsule):
   Indicator:      Material3 NavigationBar active indicator
   Pill Fill:      primary_violet (#7C4DFF) rounded capsule
   Icon color:     text_on_primary (#FFFFFF)
-  Label text:     Hidden / 0sp size (since screen header title is visible)
+  Label text:     Hidden / 0.1sp size (since screen header title is visible)
 
 Inactive tab:
   Indicator:      None (icon + text label underneath)
-  Icon color:     nav_inactive_label (#4A5568 light / #CBD5E0 dark)
-  Label color:    nav_inactive_label (#4A5568 light / #CBD5E0 dark)
+  Icon color:     nav_inactive_color (#2D3748 dark slate in Light mode / #E2E8F0 light slate in Dark mode)
+  Label color:    nav_inactive_color (#2D3748 dark slate in Light mode / #E2E8F0 light slate in Dark mode)
 
 Ripple:           primary_lavender at 15% opacity
 Tab Reselection:  Tapping active tab or switching tabs pops back stack directly to root fragment (DistanceFragment, SpeedometerFragment, SettingsFragment)
