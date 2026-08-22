@@ -7,10 +7,9 @@
 ---
 
 ## 1. Overview
-**True Distance** is an Android app that shows the straight-line ("as the crow flies")
+**True Distance** is an Android app (`v2.0.0 (2)`) that shows the straight-line ("as the crow flies")
 distance between the user's current location and a chosen destination, plotted live on
-Google Maps with markers and a connecting line. A secondary Speedometer feature is
-planned for a future release (placeholder in v1).
+Google Maps with markers and a connecting line, alongside a complete live Speedometer trip tracking system.
 
 ## 2. Core Concept
 - Get current location from system (GPS/network), tracked live.
@@ -19,6 +18,7 @@ planned for a future release (placeholder in v1).
   points on a Google Map.
 - Show markers on both points.
 - Continuously show the computed straight-line distance while tracking is active.
+- Speedometer: Record live trips with continuous breadcrumb polyline, floating speed counter, stats card, interactive notifications, and expandable past trip route snapshots.
 
 ---
 
@@ -28,21 +28,26 @@ planned for a future release (placeholder in v1).
 3. True Distance → Saved Locations
 4. True Distance → Distance History
 5. True Distance → Tracking Screen
-6. Speedometer → Speedometer Screen (V2)
-7. Speedometer → Past Trips Screen (V2)
-8. Settings (includes About sub-section: Privacy Policy, Version, C### 4. App Navigation Structure
+6. Speedometer → Speedometer Screen (V2 - Complete)
+7. Speedometer → Past Trips Screen (V2 - Complete)
+8. Settings (includes About sub-section: Privacy Policy, Version, Credits)
 
-The app uses a **floating bottom navigation bar with 3 tabs** (24dp corner radius, elevated card surface), visible across the main screens:
+---
+
+### 4. App Navigation Structure
+
+The app uses a **Material3 Floating Pill Navigation Bar with 3 tabs** (36dp corner radius CardView container with 12dp shadow elevation), visible across the main screens:
 
 | Icon | Tab Name | Purpose |
 |---|---|---|
-| 📍 (`ic_tab_distance`) | **True Distance** | Core feature — straight-line tracking & history |
-| ⏱️ (`ic_speedometer`) | **Speedometer** | Placeholder in V1, built in V2 |
-| ⚙️ (`ic_settings`) | **Settings** | App preferences, theming, and About section |
+| 📍 (`ic_tab_distance`) | **True Distance** | Core feature — straight-line tracking, saved locations & history |
+| ⏱️ (`ic_speedometer`) | **Speedometer** | Live trip tracking map, floating speed readout, stats card & past trips |
+| ⚙️ (`ic_settings`) | **Settings** | App preferences, theming, GPS mode, units, and About section |
 
-- Active tab is highlighted with `primary_violet` (`#7C4DFF` in light mode, `#B388FF` in dark mode).
-- Inactive tabs use `text_gray_purple` (`#90A4AE` / `#8A8480`).
-- Floating card style: 16dp horizontal/bottom margin, 24dp corner radius, 8dp elevation.
+- **Active Tab Style**: Filled primary violet (`#7C4DFF`) capsule pill indicator with white icon/text (`text_on_primary`).
+- **Inactive Tab Style**: Circular icon-only layout in secondary grey (`#90A4AE`).
+- **Smart Reselection**: Tapping the active tab or switching tabs automatically pops the back stack back to the tab's root destination (`DistanceFragment`, `SpeedometerFragment`, `SettingsFragment`).
+- **Floating Pill Container**: 20dp horizontal/bottom margin, 36dp corner radius, 12dp card shadow.
 
 ---
 

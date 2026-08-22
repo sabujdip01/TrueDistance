@@ -504,16 +504,15 @@ Text:             14sp, Bold, text_secondary color
 Content:          "Today", "Yesterday", "Older"
 ```
 
-### 7.3 Bottom Navigation Bar
+### 7.3 Material3 Floating Pill Navigation Bar
 
 ```
-Shape:            Rounded rectangle
-Corner radius:    24dp
+Container:        CardView wrapper with 36dp rounded corners
+Elevation:        12dp card shadow
 Background:       card_white (#FFFFFF)
-Elevation:        8dp
-Margin:           16dp horizontal, 16dp bottom
-Max width:        600dp
-Height:           wrap_content (Material default ~56dp + label)
+Margin:           20dp horizontal, 20dp bottom
+Max width:        560dp
+Height:           64dp
 Position:         Constrained to bottom of parent, centered horizontally
 
 Tab count:        3 (True Distance, Speedometer, Settings)
@@ -521,17 +520,19 @@ Icon size:        24x24dp
 Label size:       12sp
 Label visibility: Always shown (labeled)
 
-Active tab:
-  Icon color:     primary_violet (#7C4DFF)
-  Label color:    primary_violet (#7C4DFF)
+Active tab (Filled Pill Capsule):
+  Indicator:      Material3 NavigationBar active indicator
+  Pill Fill:      primary_violet (#7C4DFF) rounded capsule
+  Icon color:     text_on_primary (#FFFFFF)
+  Label color:    text_on_primary (#FFFFFF)
 
 Inactive tab:
+  Indicator:      None (circular icon-only layout)
   Icon color:     text_gray_purple (#90A4AE)
   Label color:    text_gray_purple (#90A4AE)
 
 Ripple:           primary_lavender at 15% opacity
-Active indicator: Material3 default pill (optional) or color-only
-Badge (V2):       Small 8dp circle, primary_violet, positioned top-right of icon
+Tab Reselection:  Tapping active tab or switching tabs pops back stack directly to root fragment (DistanceFragment, SpeedometerFragment, SettingsFragment)
 ```
 
 ### 7.4 Search / Input Fields
@@ -896,20 +897,67 @@ Switch row:       Horizontal — label (weight 1) + Switch
 Spinner row:      Label above, Spinner below
 ```
 
-### 8.7 Speedometer Screen (V1 Placeholder)
+### 8.7 Speedometer Screen (V2 Feature — Complete)
 
 ```
 Root:             ConstraintLayout
-Background:       background_soft (#F9F4F8)
+Background:       background_soft (#F9F4F8 / #1C1B1A)
 
-Layout:
+Header:           History icon chip button (@id/historyButton) navigating to Past Trips
+
+Layout (top to bottom):
 +-------------------------------------+
-|                                     |
-|                                     |
-|          Coming Soon                |  <- Centered, 18sp, text_secondary
-|                                     |
-|                                     |
+|  [History Chip]                     |  <- Top-left/right icon chip
+|  +-- Map Card (16dp radius) ------+ |
+|  |    +-- Speed Overlay card --+  | |
+|  |    |        000 M/H         |  | |  <- 36sp bold live speed, glass card
+|  |    +------------------------+  | |     3-digit M/H (< 1 KM/H) / 2-decimal KM/H
+|  |                                | |
+|  |          GOOGLE MAP            | |  <- SupportMapFragment inside CardView
+|  |  (17f on load -> 18.5f start)  | |     12dp margin, 2dp elevation
+|  |  (breadcrumb polyline #00796B) | |     auto-drag & auto-zoom out bounds
+|  |                                | |
+|  |                         [R]    | |  <- Recenter FAB, bottom-right of map
+|  +--------------------------------+ |
 +-------------------------------------+
+|  +-- Gradient Stats Card (24dp) --+ |
+|  |  Distance Covered      000 M   | |  <- 3-digit M (< 1 KM) / 2-decimal KM
+|  |  Avg Speed           000 M/H   | |  <- Deadband filtered at 0.6 m/s
+|  |  Max Speed           000 M/H   | |  <- Spike filtered max speed
+|  |  Start Time         08:05:00   | |  <- Time hh:mm:ss a
+|  |  Elapsed Time       00:05:23   | |  <- Duration HH:MM:SS
+|  +--------------------------------+ |
++-------------------------------------+
+|  +--------------------------------+ |
+|  |  [ START ] / [PAUSE]  [ STOP ] | |  <- Control buttons (primary violet)
+|  +--------------------------------+ |
++-------------------------------------+
+
+Trip Stop Action: Displays "Trip Saved" toast notification, resets stats card to initial zero values, clears polyline, and preserves red current location marker.
+```
+
+### 8.8 Past Trips Screen (V2 Feature — Complete)
+
+```
+Root:             ConstraintLayout
+Background:       background_soft (#F9F4F8 / #1C1B1A)
+
+Header:           Title "Past Trips", back arrow, overflow menu ("Clear All")
+
+Layout (80% Content | 20% Centered Delete):
++-------------------------------------+
+|  +-- Mint gradient (80% | 20%) ---+ |
+|  |  Aug 21 8:05 PM     000 M   | X| |  <- Row 1: Date/Time (17sp) + Distance (13sp)
+|  |  08:05:00  05m 23s  Avg 000 M/H| |  <- Row 2: Start time | Elapsed | Avg Speed
+|  |  ------------------------------+ |
+|  |  Max Speed: 000 M/H              |  <- Expanded View: Max Speed & Ended TS
+|  |  +-- Map Snapshot Card --------+ |  <- Embedded Google Map snapshot
+|  |  |   Start (Green) / End (Red) | |     Route polyline, auto-fitted bounds
+|  |  +-----------------------------+ |
+|  +--------------------------------+ |
++-------------------------------------+
+
+Expand/collapse:  Single-card exclusive expand showing route map snapshot.
 ```
 
 ### 8.8 Map Picker Screen

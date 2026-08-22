@@ -1,6 +1,6 @@
 # True Distance
 
-> Privacy-first Android app for live straight-line ("as the crow flies") distance tracking to any destination on Google Maps.
+> Privacy-first Android app for live straight-line ("as the crow flies") distance tracking to any destination on Google Maps and live Speedometer trip recording.
 
 ---
 
@@ -17,19 +17,30 @@
   - Auto-fitting camera bounds with dynamic padding for UI overlays.
   - Glassmorphic distance overlay with 36sp bold numerals.
   - Auto-arrival detection (≤ 10m) with "Destination Reached" celebration dialog.
+- **Speedometer & Live Trip Tracking (V2)**:
+  - Immediate initial location fetch and centering on map ready (`17f` zoom).
+  - High street-level zoom on trip start (`18.5f`).
+  - Continuous breadcrumb route polyline (`#00796B`, 8px).
+  - Dynamic camera auto-dragging and auto-zooming out with UI overlay padding.
+  - Stationary GPS noise deadband filtering (`0.6 m/s`) to eliminate stationary speed/distance jitter.
+  - Interactive foreground service notification with live Speed, Distance, Elapsed time, and synced Pause/Resume and Stop controls.
+- **Past Trips History (V2)**:
+  - 80/20 card layout with single-card exclusive expansion.
+  - Embedded Google Map route snapshot with Start (Green) and End (Red) markers, route polyline, Max Speed, and End timestamp.
 - **Saved Locations**: Save favorite destinations locally with customizable names and addresses.
 - **Distance History & Time-Based Snapshots**:
   - Auto-saved trip history grouped by date (**Today / Yesterday / Older**).
   - Card preview: Destination name, tracked distance (`initial − final`), start/stop timestamps, and elapsed time.
   - **Single-expand 3-column table**: Displays interval snapshots (`Elapsed Mark` | `Clock Time` | `Distance`) derived post-hoc from raw GPS fixes across 4 duration tiers (A–D).
-- **Background Tracking**: Foreground service with ongoing status bar notification and synchronized Stop controls.
-- **Global Units & Precision**: Default **KM** (configurable to Miles or Both), with auto-meters under 1 km and customizable decimal precision.
+- **Background Tracking**: Dedicated foreground services (`TrackingService`, `SpeedometerService`) with persistent notifications and synchronized action controls.
+- **Global Units & Precision**: Default **KM** (configurable to Miles or Both), with 3-digit meters (`000 M` / `000 M/H`) under 1 KM and 2 decimals (`%.2f KM` / `%.2f KM/H`) at or above 1 KM.
 - **Modern UI & Full Dark Mode**:
+  - **Material3 Floating Pill Navigation Bar**: Elevated floating card container with 36dp rounded corners, 12dp elevation shadow, and filled primary violet (`#7C4DFF`) active capsule pill with white icon/text and grey unselected icons.
+  - Smart tab reselection: Tapping any active bottom nav item pops back stack directly to the tab's root destination (`DistanceFragment`, `SpeedometerFragment`, `SettingsFragment`).
   - 24dp rounded cards with an **80/20 layout split** (content | centered delete action).
   - Pastel gradients (Mint, Peach, Lavender, Blue) with tone-matched high-contrast typography.
   - Complete dark theme overrides (`values-night/` and `drawable-night/`).
   - Elevated, soft-bordered map frames (16dp radius).
-  - Floating bottom navigation bar.
 
 ---
 
@@ -41,26 +52,27 @@
 | 🗺️ **Tracking Screen** | Full map tracking view with soft border, glassmorphic readout, recenter FAB, and stop action. |
 | 🔖 **Saved Locations** | Full list of stored destinations with 80/20 card layout and add FAB. |
 | 🕒 **Distance History** | Date-grouped trip log with single-expand 3-column interval snapshots. |
-| ⏱️ **Speedometer** | Placeholder in V1 (full live trip stats & breadcrumb trail in V2). |
+| ⏱️ **Speedometer** | Live trip tracking map with floating speed readout, stats card, dynamic camera auto-fit, and interactive notification. |
+| 📜 **Past Trips** | Speedometer trip history with single-card expandable route map snapshots. |
 | ⚙️ **Settings** | Theme (Light/Dark/System), Units, GPS accuracy, update frequency, and About info. |
 
 ---
 
 ## 🛠️ Tech Stack & Architecture
 
-- **Language & Runtime**: Kotlin & Coroutines / StateFlow
+- **Language & Runtime**: Kotlin & Coroutines / StateFlow / Hilt Dependency Injection
 - **Architecture**: Clean MVVM + Repository Pattern
-- **Persistence**: Room Database (SQLite) with local-only storage (no login, no cloud dependency)
+- **Persistence**: Room Database v2 (SQLite) with local-only storage (no login, no cloud dependency)
 - **Mapping & Location**: Google Maps SDK, Google Places API, FusedLocationProviderClient
-- **Background Work**: Android Foreground Service with notification channels
-- **UI Framework**: Android Jetpack, View Binding, Material Components with DayNight theming
+- **Background Work**: Android Foreground Service with notification channels (`tracking_channel`, `speedometer_channel`)
+- **UI Framework**: Android Jetpack, View Binding, Material3 Components with DayNight theming
 
 ---
 
 ## 📋 Roadmap
 
 - **V1 (Completed)**: Core True Distance tracking, Saved Locations, Distance History with time-based tier snapshots, Settings, and full Dark Mode.
-- **V2 (Completed)**: Speedometer live tracking with breadcrumb polyline, floating speed counter, stats card, foreground service with interactive notifications, and Past Trips screen with expandable route map snapshots.
+- **V2 (Completed - Current `v2.0.0 (2)`)**: Speedometer live trip tracking, breadcrumb polyline, dynamic camera auto-fit bounds, stationary noise filtering, interactive notification, Past Trips expandable map snapshots, and Material3 floating pill navigation bar.
 - **V3 (Upcoming)**: Home-screen widgets (4×2), App shortcuts, sticky notification toggles, and auto-pause.
 
 ---

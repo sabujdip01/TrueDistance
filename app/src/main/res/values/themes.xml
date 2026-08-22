@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Main app theme — Light mode base -->
-    <style name="Theme.TrueDistance" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.TrueDistance" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary_violet</item>
         <item name="colorPrimaryVariant">@color/primary_violet_dark</item>
         <item name="colorSecondary">@color/primary_lavender</item>
         <item name="android:windowBackground">@color/background_soft</item>
+
+        <!-- Material3 nav bar active indicator pill color roles -->
+        <!-- colorSecondaryContainer = pill fill, colorOnSecondaryContainer = icon/text on pill -->
+        <item name="colorSecondaryContainer">@color/primary_violet</item>
+        <item name="colorOnSecondaryContainer">@color/text_on_primary</item>
 
         <!-- Transparent status bar with dark icons -->
         <item name="android:statusBarColor">@android:color/transparent</item>
@@ -43,11 +48,14 @@
         <item name="android:textColor">@color/primary_violet</item>
     </style>
 
-    <style name="Widget.App.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+    <style name="Widget.App.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
         <item name="itemIconTint">@color/nav_item_color_state</item>
         <item name="itemTextColor">@color/nav_item_color_state</item>
         <item name="backgroundTint">@null</item>
-        <item name="elevation">8dp</item>
+        <item name="elevation">0dp</item>
+        <item name="labelVisibilityMode">labeled</item>
+        <item name="itemPaddingTop">0dp</item>
+        <item name="itemPaddingBottom">0dp</item>
     </style>
 
     <!-- Splash Screen theme -->

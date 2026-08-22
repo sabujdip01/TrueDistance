@@ -17,21 +17,33 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomNav" />
+        app:layout_constraintBottom_toTopOf="@id/navCardWrapper" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNav"
+    <!-- Floating pill nav container with elevation shadow -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/navCardWrapper"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/bg_bottom_nav"
-        app:menu="@menu/bottom_nav_menu"
-        app:itemRippleColor="@color/primary_lavender"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="20dp"
+        app:cardCornerRadius="36dp"
+        app:cardElevation="12dp"
+        app:cardBackgroundColor="@color/card_white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintWidth_max="600dp"
-        style="@style/Widget.App.BottomNavigationView" />
+        app:layout_constraintWidth_max="560dp">
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNav"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:background="@android:color/transparent"
+            app:menu="@menu/bottom_nav_menu"
+            app:itemRippleColor="@color/primary_lavender"
+            style="@style/Widget.App.BottomNavigationView" />
+
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

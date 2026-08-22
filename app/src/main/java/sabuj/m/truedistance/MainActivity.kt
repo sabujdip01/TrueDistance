@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -17,6 +19,13 @@ class MainActivity : AppCompatActivity() {
     private val requestNotificationPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { /* no-op either way; background tracking still works, notification just won't show */ }
+
+    // Tab root destinations — maps each bottom nav item to its root fragment
+    private val tabRoots = mapOf(
+        R.id.nav_distance   to R.id.nav_distance,
+        R.id.nav_speedometer to R.id.nav_speedometer,
+        R.id.nav_settings   to R.id.nav_settings
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +41,31 @@ class MainActivity : AppCompatActivity() {
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
         bottomNav.setupWithNavController(navController)
+
+        // Pop back to the tab's root destination when the already-selected tab is tapped again
+        bottomNav.setOnItemReselectedListener { item ->
+            tabRoots[item.itemId]?.let { rootId ->
+                navController.popBackStack(rootId, inclusive = false)
+            }
+        }
+
+        // When switching tabs, always navigate cleanly to the selected tab's root.
+        // We do NOT use saveState/restoreState — that caused the tab to restore
+        // a previous sub-page (e.g. Saved Locations) instead of landing on the root.
+        bottomNav.setOnItemSelectedListener { item ->
+            val rootId = tabRoots[item.itemId] ?: return@setOnItemSelectedListener false
+            navController.navigate(
+                rootId,
+                null,
+                NavOptions.Builder()
+                    .setLaunchSingleTop(true)
+                    // Pop everything back to the graph start before navigating,
+                    // ensuring no stale sub-destinations remain on the back stack.
+                    .setPopUpTo(navController.graph.startDestinationId, inclusive = false)
+                    .build()
+            )
+            true
+        }
 
         if (intent?.getStringExtra("NAVIGATE_TO") == "speedometer") {
             bottomNav.selectedItemId = R.id.nav_speedometer

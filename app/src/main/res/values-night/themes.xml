@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Dark mode overrides — inherits everything from base Theme.TrueDistance -->
-    <style name="Theme.TrueDistance" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.TrueDistance" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary_violet</item>
         <item name="colorPrimaryVariant">@color/primary_violet_dark</item>
         <item name="colorSecondary">@color/primary_lavender</item>
