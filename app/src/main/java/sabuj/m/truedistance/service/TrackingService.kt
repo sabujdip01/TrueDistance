@@ -128,9 +128,13 @@ class TrackingService : LifecycleService() {
 
         staleCheckJob = lifecycleScope.launch {
             while (true) {
-                kotlinx.coroutines.delay(5_000)
-                val stale = lastFixAt != 0L && System.currentTimeMillis() - lastFixAt > 20_000
-                stateHolder.update { it.copy(staleFix = stale) }
+                kotlinx.coroutines.delay(2_000)
+                val gpsEnabled = sabuj.m.truedistance.utils.GpsStatusHelper.isLocationEnabled(this@TrackingService)
+                val timeSinceLastFix = if (lastFixAt != 0L) System.currentTimeMillis() - lastFixAt else 0L
+                val stale = !gpsEnabled || (lastFixAt != 0L && timeSinceLastFix > 8_000)
+                if (stateHolder.state.value.staleFix != stale) {
+                    stateHolder.update { it.copy(staleFix = stale) }
+                }
             }
         }
     }
