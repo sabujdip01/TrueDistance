@@ -87,8 +87,10 @@ class SettingsFragment : Fragment() {
                 R.id.btnThemeDark -> Pair(ThemeMode.DARK, androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES)
                 else -> Pair(ThemeMode.SYSTEM, androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
             }
-            androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(nightMode)
             viewModel.setTheme(mode)
+            if (androidx.appcompat.app.AppCompatDelegate.getDefaultNightMode() != nightMode) {
+                androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(nightMode)
+            }
         }
 
         // GPS Accuracy Pill Toggle Selector
@@ -129,7 +131,9 @@ class SettingsFragment : Fragment() {
             UnitPreference.MILES -> R.id.btnUnitMiles
             else -> R.id.btnUnitKm
         }
-        binding.unitToggleGroup.check(unitButtonId)
+        if (binding.unitToggleGroup.checkedButtonId != unitButtonId) {
+            binding.unitToggleGroup.check(unitButtonId)
+        }
 
         // Theme Toggle State
         val themeButtonId = when (state.theme) {
@@ -137,7 +141,9 @@ class SettingsFragment : Fragment() {
             ThemeMode.LIGHT -> R.id.btnThemeLight
             ThemeMode.DARK -> R.id.btnThemeDark
         }
-        binding.themeToggleGroup.check(themeButtonId)
+        if (binding.themeToggleGroup.checkedButtonId != themeButtonId) {
+            binding.themeToggleGroup.check(themeButtonId)
+        }
 
         // GPS Accuracy Toggle State
         val accButtonId = when (state.gpsAccuracyMode) {
@@ -145,7 +151,9 @@ class SettingsFragment : Fragment() {
             GpsAccuracyMode.BALANCED -> R.id.btnAccBalanced
             GpsAccuracyMode.DEVICE_ONLY -> R.id.btnAccDevice
         }
-        binding.accuracyToggleGroup.check(accButtonId)
+        if (binding.accuracyToggleGroup.checkedButtonId != accButtonId) {
+            binding.accuracyToggleGroup.check(accButtonId)
+        }
 
         // Frequency Toggle State
         val freqButtonId = when (state.updateFrequencySeconds) {
@@ -155,11 +163,17 @@ class SettingsFragment : Fragment() {
             10 -> R.id.btnFreq10s
             else -> R.id.btnFreq1s
         }
-        binding.frequencyToggleGroup.check(freqButtonId)
+        if (binding.frequencyToggleGroup.checkedButtonId != freqButtonId) {
+            binding.frequencyToggleGroup.check(freqButtonId)
+        }
 
         // Switch States
-        binding.autoMetersSwitch.isChecked = state.autoMetersUnder1km
-        binding.backgroundTrackingSwitch.isChecked = state.backgroundTrackingEnabled
+        if (binding.autoMetersSwitch.isChecked != state.autoMetersUnder1km) {
+            binding.autoMetersSwitch.isChecked = state.autoMetersUnder1km
+        }
+        if (binding.backgroundTrackingSwitch.isChecked != state.backgroundTrackingEnabled) {
+            binding.backgroundTrackingSwitch.isChecked = state.backgroundTrackingEnabled
+        }
 
         isApplyingState = false
     }

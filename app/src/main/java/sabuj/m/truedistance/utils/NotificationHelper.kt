@@ -43,7 +43,9 @@ object NotificationHelper {
     ): android.app.Notification {
         val contentIntent = PendingIntent.getActivity(
             context, 0,
-            Intent(context, MainActivity::class.java),
+            Intent(context, MainActivity::class.java).apply {
+                putExtra("NAVIGATE_TO", "tracking")
+            },
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/background_soft">
 
-    <!-- Screen Title Header -->
+    <!-- Screen Title Header & Clear All Action Chip -->
     <TextView
         android:id="@+id/screenTitle"
         android:layout_width="0dp"
@@ -20,6 +20,19 @@
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/clearAllButton" />
+
+    <ImageButton
+        android:id="@+id/clearAllButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/bg_icon_chip"
+        android:contentDescription="@string/clear_all"
+        android:src="@drawable/ic_delete"
+        app:tint="@color/primary_violet"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView

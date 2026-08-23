@@ -85,25 +85,16 @@ class HistoryFragment : Fragment() {
             }
         }).attachToRecyclerView(binding.recyclerView)
 
-        // §6.1.3 — "Clear All" in header overflow menu
-        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.history_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                if (menuItem.itemId == R.id.action_clear_all) {
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(R.string.clear_all_history_title)
-                        .setMessage(R.string.clear_all_history_message)
-                        .setPositiveButton(R.string.clear) { _, _ -> viewModel.clearAll() }
-                        .setNegativeButton(R.string.cancel, null)
-                        .show()
-                    return true
-                }
-                return false
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        // §6.1.3 — "Clear All" action chip in header
+        binding.clearAllButton.setOnClickListener {
+            if (adapter.itemCount == 0) return@setOnClickListener
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.clear_all_history_title)
+                .setMessage(R.string.clear_all_history_message)
+                .setPositiveButton(R.string.clear) { _, _ -> viewModel.clearAll() }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

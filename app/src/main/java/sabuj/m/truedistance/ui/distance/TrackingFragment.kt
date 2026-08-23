@@ -118,6 +118,7 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
         binding.stopButton.setOnClickListener {
             viewModel.stopTracking()
             sharedDestinationViewModel.requestClearDestination()
+            android.widget.Toast.makeText(requireContext(), getString(R.string.trip_saved), android.widget.Toast.LENGTH_SHORT).show()
             findNavController().popBackStack()
         }
 
@@ -149,6 +150,9 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
                     // Tracking stopped externally (e.g. notification Stop button) — go back
                     if (!state.isTracking && currentMarker != null && !state.destinationReached) {
                         sharedDestinationViewModel.requestClearDestination()
+                        context?.let { ctx ->
+                            android.widget.Toast.makeText(ctx, getString(R.string.trip_saved), android.widget.Toast.LENGTH_SHORT).show()
+                        }
                         findNavController().popBackStack()
                         return@collect
                     }
@@ -373,21 +377,6 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
             startDelay = 200
             interpolator = OvershootInterpolator(2.5f)
             start()
-        }
-    }
-
-    // -----------------------------------------------------------------------------------------
-    // Background Tracking Guard
-    // -----------------------------------------------------------------------------------------
-
-    /**
-     * §6.1.4 / §6.3.1 — If the user has "Background Tracking" disabled in Settings and
-     * navigates away from this screen, stop the service rather than continuing silently.
-     */
-    override fun onStop() {
-        super.onStop()
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.stopIfBackgroundTrackingDisabled()
         }
     }
 

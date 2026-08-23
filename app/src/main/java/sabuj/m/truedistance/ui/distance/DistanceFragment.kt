@@ -37,6 +37,9 @@ class DistanceFragment : Fragment() {
     private val sharedDestinationViewModel: SharedDestinationViewModel by activityViewModels()
     private val mapPickerViewModel: MapPickerViewModel by activityViewModels()
 
+    @javax.inject.Inject
+    lateinit var trackingStateHolder: sabuj.m.truedistance.service.TrackingStateHolder
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -46,6 +49,14 @@ class DistanceFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // If tracking is already running in background, restore tracking screen immediately
+        if (trackingStateHolder.state.value.isTracking) {
+            findNavController().navigate(
+                sabuj.m.truedistance.R.id.action_distance_to_tracking
+            )
+            return
+        }
 
         binding.savedLocationsButton.setOnClickListener {
             findNavController().navigate(
@@ -115,6 +126,7 @@ class DistanceFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
                     binding.startTrackingButton.isEnabled = state.isStartEnabled
+                    binding.startTrackingButton.alpha = if (state.isStartEnabled) 1.0f else 0.4f
                     binding.toLabel.text = state.selectedDestination?.let {
                         "To: ${it.name}"
                     } ?: "To: (Choose a Destination)"

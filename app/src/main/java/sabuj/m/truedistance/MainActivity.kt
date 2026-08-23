@@ -9,6 +9,10 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,6 +28,9 @@ class MainActivity : AppCompatActivity() {
     @javax.inject.Inject
     lateinit var settingsRepository: sabuj.m.truedistance.repository.SettingsRepository
 
+    @javax.inject.Inject
+    lateinit var trackingStateHolder: sabuj.m.truedistance.service.TrackingStateHolder
+
     // Tab root destinations — maps each bottom nav item to its root fragment
     private val tabRoots = mapOf(
         R.id.nav_distance   to R.id.nav_distance,
@@ -34,19 +41,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        lifecycleScope.launchWhenCreated {
-            settingsRepository.theme.collect { mode ->
-                val nightMode = when (mode) {
-                    sabuj.m.truedistance.database.ThemeMode.LIGHT -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
-                    sabuj.m.truedistance.database.ThemeMode.DARK -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
-                    sabuj.m.truedistance.database.ThemeMode.SYSTEM -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                }
-                if (androidx.appcompat.app.AppCompatDelegate.getDefaultNightMode() != nightMode) {
-                    androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(nightMode)
-                }
-            }
-        }
 
         if (android.os.Build.VERSION.SDK_INT >= 33) {
             requestNotificationPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
@@ -66,35 +60,55 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // When switching tabs, always navigate cleanly to the selected tab's root.
-        // We do NOT use saveState/restoreState — that caused the tab to restore
-        // a previous sub-page (e.g. Saved Locations) instead of landing on the root.
+        // When switching tabs, navigate cleanly to the selected tab's root.
         bottomNav.setOnItemSelectedListener { item ->
             val rootId = tabRoots[item.itemId] ?: return@setOnItemSelectedListener false
+            val targetDestination = if (item.itemId == R.id.nav_distance && trackingStateHolder.state.value.isTracking) {
+                R.id.nav_tracking
+            } else {
+                rootId
+            }
+
             navController.navigate(
-                rootId,
+                targetDestination,
                 null,
                 NavOptions.Builder()
                     .setLaunchSingleTop(true)
-                    // Pop everything back to the graph start before navigating,
-                    // ensuring no stale sub-destinations remain on the back stack.
                     .setPopUpTo(navController.graph.startDestinationId, inclusive = false)
                     .build()
             )
             true
         }
 
-        if (intent?.getStringExtra("NAVIGATE_TO") == "speedometer") {
-            bottomNav.selectedItemId = R.id.nav_speedometer
+        if (savedInstanceState != null) {
+            val savedTab = savedInstanceState.getInt("KEY_SELECTED_TAB", -1)
+            if (savedTab != -1 && savedTab != bottomNav.selectedItemId) {
+                bottomNav.selectedItemId = savedTab
+            }
+        } else {
+            handleNavigationIntent(intent, bottomNav)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+        if (bottomNav != null) {
+            outState.putInt("KEY_SELECTED_TAB", bottomNav.selectedItemId)
         }
     }
 
     override fun onNewIntent(intent: android.content.Intent?) {
         super.onNewIntent(intent)
         setIntent(intent)
-        if (intent?.getStringExtra("NAVIGATE_TO") == "speedometer") {
-            val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
-            bottomNav.selectedItemId = R.id.nav_speedometer
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+        handleNavigationIntent(intent, bottomNav)
+    }
+
+    private fun handleNavigationIntent(intent: android.content.Intent?, bottomNav: BottomNavigationView) {
+        when (intent?.getStringExtra("NAVIGATE_TO")) {
+            "speedometer" -> bottomNav.selectedItemId = R.id.nav_speedometer
+            "tracking" -> bottomNav.selectedItemId = R.id.nav_distance
         }
     }
 }

@@ -47,7 +47,7 @@
     - Dedicated vector icons beside every setting option (`ic_distance`, `ic_theme`, `ic_timer`, `ic_avg_speed`, `ic_clock`, `ic_privacy`, `ic_github`, `ic_developer`).
     - **In-App Privacy Policy Dialog**: Built-in `MaterialAlertDialogBuilder` displaying privacy terms cleanly without launching external browser windows.
     - **Open Source Repository Link**: GitHub icon link opening `https://github.com/sabujdip01/TrueDistance.git`.
-    - **Developer Credit Link**: `Made with ❤️ by sabujdip` hyperlinked to `https://about.me/sabujdip01`.
+    - **Developer Credit Link**: `Made with ❤️ by Sabuj Mondal` (`About Me →`) hyperlinked to `https://about.me/sabujdip01`.
   - **Stable Launcher Icon**: Dark/light mode independent launcher icon that maintains original colors across system themes and Android 13+ wallpaper tinting.
   - 24dp rounded cards with an **80/20 layout split** (content | centered delete action).
   - Complete dark theme overrides (`values-night/` and `drawable-night/`).

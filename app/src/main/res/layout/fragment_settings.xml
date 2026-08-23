@@ -489,7 +489,7 @@
                         android:layout_weight="1"
                         android:drawableStart="@drawable/ic_developer"
                         android:drawablePadding="10dp"
-                        android:text="Made with ❤️ by sabujdip"
+                        android:text="Made with ❤️ by Sabuj Mondal"
                         android:textColor="@color/text_charcoal"
                         android:textSize="15sp"
                         android:textStyle="bold" />
@@ -497,7 +497,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="about.me/sabujdip01"
+                        android:text="About Me →"
                         android:textColor="@color/primary_violet"
                         android:textSize="13sp"
                         android:textStyle="bold" />
