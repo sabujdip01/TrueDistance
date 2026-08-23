@@ -74,27 +74,26 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         app:selectionRequired="true"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Pill"
                         app:singleSelection="true">
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnUnitKm"
                             style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
                             android:layout_height="44dp"
                             android:layout_weight="1"
                             android:text="Kilometers (KM / M)"
-                            android:textSize="12sp"
-                            app:cornerRadius="22dp" />
+                            android:textSize="12sp" />
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnUnitMiles"
                             style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
                             android:layout_height="44dp"
                             android:layout_weight="1"
                             android:text="Miles (MI / FT)"
-                            android:textSize="12sp"
-                            app:cornerRadius="22dp" />
+                            android:textSize="12sp" />
                     </com.google.android.material.button.MaterialButtonToggleGroup>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -130,37 +129,35 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         app:selectionRequired="true"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Pill"
                         app:singleSelection="true">
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnThemeSystem"
                             style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
                             android:layout_height="44dp"
                             android:layout_weight="1"
                             android:text="@string/theme_system"
-                            android:textSize="12sp"
-                            app:cornerRadius="22dp" />
+                            android:textSize="12sp" />
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnThemeLight"
                             style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
                             android:layout_height="44dp"
                             android:layout_weight="1"
                             android:text="@string/theme_light"
-                            android:textSize="12sp"
-                            app:cornerRadius="22dp" />
+                            android:textSize="12sp" />
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnThemeDark"
                             style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
                             android:layout_height="44dp"
                             android:layout_weight="1"
                             android:text="@string/theme_dark"
-                            android:textSize="12sp"
-                            app:cornerRadius="22dp" />
+                            android:textSize="12sp" />
                     </com.google.android.material.button.MaterialButtonToggleGroup>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -230,37 +227,35 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         app:selectionRequired="true"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Pill"
                         app:singleSelection="true">
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnAccHigh"
                             style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
                             android:layout_height="44dp"
                             android:layout_weight="1"
                             android:text="@string/accuracy_high"
-                            android:textSize="11sp"
-                            app:cornerRadius="22dp" />
+                            android:textSize="11sp" />
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnAccBalanced"
                             style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
                             android:layout_height="44dp"
                             android:layout_weight="1"
                             android:text="@string/accuracy_balanced"
-                            android:textSize="11sp"
-                            app:cornerRadius="22dp" />
+                            android:textSize="11sp" />
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnAccDevice"
                             style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
                             android:layout_height="44dp"
                             android:layout_weight="1"
                             android:text="@string/accuracy_device_only"
-                            android:textSize="11sp"
-                            app:cornerRadius="22dp" />
+                            android:textSize="11sp" />
                     </com.google.android.material.button.MaterialButtonToggleGroup>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -296,47 +291,44 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         app:selectionRequired="true"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Pill"
                         app:singleSelection="true">
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnFreq1s"
                             style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
                             android:layout_height="44dp"
                             android:layout_weight="1"
                             android:text="1s"
-                            android:textSize="12sp"
-                            app:cornerRadius="22dp" />
+                            android:textSize="12sp" />
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnFreq3s"
                             style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
                             android:layout_height="44dp"
                             android:layout_weight="1"
                             android:text="3s"
-                            android:textSize="12sp"
-                            app:cornerRadius="22dp" />
+                            android:textSize="12sp" />
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnFreq5s"
                             style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
                             android:layout_height="44dp"
                             android:layout_weight="1"
                             android:text="5s"
-                            android:textSize="12sp"
-                            app:cornerRadius="22dp" />
+                            android:textSize="12sp" />
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnFreq10s"
                             style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
                             android:layout_height="44dp"
                             android:layout_weight="1"
                             android:text="10s"
-                            android:textSize="12sp"
-                            app:cornerRadius="22dp" />
+                            android:textSize="12sp" />
                     </com.google.android.material.button.MaterialButtonToggleGroup>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

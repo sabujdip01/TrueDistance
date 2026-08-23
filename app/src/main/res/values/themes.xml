@@ -36,6 +36,10 @@
         <item name="cornerSize">24dp</item>
     </style>
 
+    <style name="ShapeAppearance.App.Pill" parent="ShapeAppearance.Material3.Corner.Full">
+        <item name="cornerSize">22dp</item>
+    </style>
+
     <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button">
         <item name="cornerRadius">12dp</item>
         <item name="backgroundTint">@color/primary_violet</item>

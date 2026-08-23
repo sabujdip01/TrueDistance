@@ -564,16 +564,18 @@ Dropdown style:
   Divider:        None (items separated by padding)
 ```
 
-### 7.5 Spinners (Settings)
+### 7.5 Pill Toggle Groups (Settings)
 
 ```
-Width:            match_parent
-Height:           wrap_content
-Background:       Default Material spinner
-Text size:        14sp
-Text color:       text_charcoal
-Dropdown style:   Default Material popup
-Items:            String arrays from resources
+Component:        com.google.android.material.button.MaterialButtonToggleGroup
+Shape:            ShapeAppearance.App.Pill (22dp corner radius)
+Height:           44dp per button
+Single Selection: true
+Selection Req:    true
+Button Style:     Widget.Material3.Button.OutlinedButton
+Active State:     Filled primary_violet (#7C4DFF) with text_on_primary (#FFFFFF)
+Inactive State:   Transparent with text_charcoal / text_slate stroke
+Groups:           Units (KM/Miles), Theme (System/Light/Dark), GPS Accuracy (High/Balanced/Device), Update Frequency (1s/3s/5s/10s)
 ```
 
 ### 7.6 Switches (Settings)
