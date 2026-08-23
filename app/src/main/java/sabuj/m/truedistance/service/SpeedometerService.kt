@@ -6,8 +6,11 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -115,13 +118,17 @@ class SpeedometerService : LifecycleService() {
         startTimerLoop()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun startLocationTracking() {
         trackingJob?.cancel()
         trackingJob = lifecycleScope.launch {
-            val accuracyMode = settingsRepository.gpsAccuracyMode.first()
-            val intervalSeconds = settingsRepository.updateFrequencySeconds.first()
-
-            locationHelper.observeLocation(intervalSeconds, accuracyMode).collect { location ->
+            combine(
+                settingsRepository.gpsAccuracyMode,
+                settingsRepository.updateFrequencySeconds
+            ) { acc, freq -> Pair(acc, freq) }
+                .flatMapLatest { (accuracyMode, intervalSeconds) ->
+                    locationHelper.observeLocation(intervalSeconds, accuracyMode)
+                }.collect { location ->
                 val currentLatLng = LatLng(location.latitude, location.longitude)
                 val now = System.currentTimeMillis()
 

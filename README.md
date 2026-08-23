@@ -33,15 +33,21 @@
   - Card preview: Destination name, tracked distance (`initial − final`), start/stop timestamps, and elapsed time.
   - **Single-expand 3-column table**: Displays interval snapshots (`Elapsed Mark` | `Clock Time` | `Distance`) derived post-hoc from raw GPS fixes across 4 duration tiers (A–D).
 - **Background Tracking**: Dedicated foreground services (`TrackingService`, `SpeedometerService`) with persistent notifications and synchronized action controls.
-- **Global Units & Precision**: Default **KM** (configurable to Miles or Both), with meters formatted cleanly without leading zeros (`87 M` / `187 M` under 1 KM) and 2 decimals (`%.2f KM` / `%.2f KM/H`) at or above 1 KM.
+- **Global Units & Precision**: Default **Kilometers (KM / M)** (configurable to **Miles (MI / FT)**), with meters formatted cleanly without leading zeros (`87 M` / `187 M` under 1 KM) and 2 decimals (`%.2f KM` / `%.2f KM/H`) at or above 1 KM.
 - **Modern UI & Full Dark Mode**:
-  - **Compact Material3 Floating Navigation Bar**: Ultra-sleek compact floating container (max width 320dp) with 36dp rounded corners and 12dp elevation shadow. Active screen displays a non-overflowing small circular round background (`36dp x 36dp`), while inactive tabs display crisp, high-contrast bold text labels underneath with tight padding (`#2D3748` dark slate in Light mode / `#E2E8F0` light slate in Dark mode).
+  - **Compact Material3 Floating Navigation Bar**: Sleek floating pill container (36dp rounded corners, 12dp elevation shadow) matching modern messenger navigation aesthetics. Selected tab displays a soft lavender pill indicator (`#EDE7F6` light / `#3B2D54` dark) with accent violet icon and bold text label (`#7C4DFF` light / `#B388FF` dark), while inactive tabs display existing charcoal/slate icons and regular non-bold text labels (`#2D3748` light / `#E2E8F0` dark) with centered vertical alignment.
   - Smart tab reselection: Tapping any active bottom nav item or switching tabs pops back stack directly to the tab's root destination (`DistanceFragment`, `SpeedometerFragment`, `SettingsFragment`).
   - **Screen Headers & Clean Whitespace**: Every screen (True Distance, Speedometer, Settings, Saved Locations, Distance History, Map Picker, Live Tracking, Past Trips) features a prominent 24sp bold title page header with generous whitespace separation above cards.
   - **Unified Map Controls Stack & Padding**: Standardized custom 3-button stack (`[Current Location]`, `[+] Zoom In`, `[-] Zoom Out`) anchored at bottom-right of all map views with 10dp vertical spacing and camera viewport padding ensuring start/end markers are never obscured by buttons.
   - **Race Flag & Car Map Markers**: Speedometer map initially renders a standard Red Pin marker; upon pressing Start, the origin transforms into a checkered race flag (`ic_race_flag`) and current location is marked with a small car icon (`ic_car`).
   - **Instant Branded Splash Screen**: Bypasses initial system splash delay to immediately display logo, app title, version `v2.0.0 (2)`, and developer credit: `Made with ❤️ by Sabuj`.
-  - **Speedometer Stats Card & Header Icons**: Stat headers (Distance, Avg Speed, Max Speed, Start Time, Elapsed Time) feature dedicated vector icons (`ic_distance`, `ic_avg_speed`, `ic_max_speed`, `ic_timer`) with theme-adapted contrast typography (`#455A64` Light / `#CBD5E0` Dark).
+  - **Speedometer Stats Card & Header Icons**: Stat headers (Distance, Avg Speed, Max Speed, Start Time, Elapsed Time) feature dedicated vector icons (`ic_distance`, `ic_avg_speed`, `ic_max_speed`, `ic_clock`, `ic_timer`) with theme-adapted contrast typography (`#455A64` Light / `#CBD5E0` Dark).
+  - **Revamped Elevated Settings Screen**:
+    - Interactive Pill Toggle Selector Groups (`MaterialButtonToggleGroup`) with drop shadows for **Unit Preference** (`Kilometers (KM / M)` / `Miles (MI / FT)`), **App Theme** (`System` / `Light` / `Dark` with instant night mode application), **GPS Accuracy Mode** (`High` / `Balanced` / `Device`), and **Update Frequency** (`1s` / `3s` / `5s` / `10s`).
+    - Dedicated vector icons beside every setting option (`ic_distance`, `ic_theme`, `ic_timer`, `ic_avg_speed`, `ic_clock`, `ic_privacy`, `ic_github`, `ic_developer`).
+    - **In-App Privacy Policy Dialog**: Built-in `MaterialAlertDialogBuilder` displaying privacy terms cleanly without launching external browser windows.
+    - **Open Source Repository Link**: GitHub icon link opening `https://github.com/sabujdip01/TrueDistance.git`.
+    - **Developer Credit Link**: `Made with ❤️ by sabujdip` hyperlinked to `https://about.me/sabujdip01`.
   - **Stable Launcher Icon**: Dark/light mode independent launcher icon that maintains original colors across system themes and Android 13+ wallpaper tinting.
   - 24dp rounded cards with an **80/20 layout split** (content | centered delete action).
   - Complete dark theme overrides (`values-night/` and `drawable-night/`).

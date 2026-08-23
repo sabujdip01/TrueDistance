@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import sabuj.m.truedistance.database.HistoryEntry
 import sabuj.m.truedistance.repository.HistoryRepository
@@ -17,26 +19,49 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
+data class HistoryUiState(
+    val items: List<HistoryListItem> = emptyList(),
+    val unit: sabuj.m.truedistance.database.UnitPreference = sabuj.m.truedistance.database.UnitPreference.KM,
+    val decimalPrecision: Int = 2,
+    val autoMetersUnder1km: Boolean = true
+)
+
 /** §6.1.3 Distance History Screen ViewModel — grouping, expand/collapse, delete. */
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
-    private val repository: HistoryRepository
+    private val repository: HistoryRepository,
+    private val settingsRepository: sabuj.m.truedistance.repository.SettingsRepository
 ) : ViewModel() {
 
     private val expandedIds = MutableStateFlow<Set<String>>(emptySet())
+    private val snapshotCache = MutableStateFlow<Map<String, List<DistanceSnapshotFormatter.DisplayRow>>>(emptyMap())
 
-    private val _items = MutableStateFlow<List<HistoryListItem>>(emptyList())
-    val items: StateFlow<List<HistoryListItem>> = _items.asStateFlow()
+    val uiState: StateFlow<HistoryUiState> = combine(
+        repository.observeAll(),
+        expandedIds,
+        snapshotCache,
+        settingsRepository.unit,
+        settingsRepository.decimalPrecision,
+        settingsRepository.autoMetersUnder1km
+    ) { args: Array<Any?> ->
+        val entries = args[0] as List<HistoryEntry>
+        val expanded = args[1] as Set<String>
+        val snapshots = args[2] as Map<String, List<DistanceSnapshotFormatter.DisplayRow>>
+        val unit = args[3] as sabuj.m.truedistance.database.UnitPreference
+        val precision = args[4] as Int
+        val autoMeters = args[5] as Boolean
 
-    init {
-        viewModelScope.launch {
-            combine(repository.observeAll(), expandedIds) { entries, expanded ->
-                entries to expanded
-            }.collect { (entries, expanded) ->
-                _items.value = buildListItems(entries, expanded)
-            }
-        }
-    }
+        HistoryUiState(
+            items = buildListItems(entries, expanded, snapshots),
+            unit = unit,
+            decimalPrecision = precision,
+            autoMetersUnder1km = autoMeters
+        )
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        HistoryUiState()
+    )
 
     fun toggleExpanded(entryId: String) {
         viewModelScope.launch {
@@ -45,19 +70,15 @@ class HistoryViewModel @Inject constructor(
             // Only one card can be expanded at a time
             expandedIds.value = if (isNowExpanding) setOf(entryId) else emptySet()
 
-            if (isNowExpanding) {
-                // Load snapshots lazily and re-render this entry's rows.
+            if (isNowExpanding && !snapshotCache.value.containsKey(entryId)) {
+                // Load snapshots lazily and cache for reactive re-rendering.
                 val entry = repository.getById(entryId) ?: return@launch
                 val snapshots = repository.getSnapshots(entryId)
                 val endedAt = entry.endedAt ?: System.currentTimeMillis()
                 val rows = DistanceSnapshotFormatter.buildDisplayRows(
                     snapshots, entry.startedAt, endedAt
                 )
-                _items.value = _items.value.map { item ->
-                    if (item is HistoryListItem.EntryRow && item.entry.id == entryId) {
-                        item.copy(expanded = true, snapshotRows = rows)
-                    } else item
-                }
+                snapshotCache.value = snapshotCache.value + (entryId to rows)
             }
         }
     }
@@ -73,7 +94,8 @@ class HistoryViewModel @Inject constructor(
     /** §6.1.3 — groups entries into Today / Yesterday / Older date-header sections. */
     private fun buildListItems(
         entries: List<HistoryEntry>,
-        expanded: Set<String>
+        expanded: Set<String>,
+        snapshots: Map<String, List<DistanceSnapshotFormatter.DisplayRow>>
     ): List<HistoryListItem> {
         val today = startOfDay(System.currentTimeMillis())
         val yesterday = today - DAY_MILLIS
@@ -94,7 +116,8 @@ class HistoryViewModel @Inject constructor(
             sectionEntries.forEach { entry ->
                 result += HistoryListItem.EntryRow(
                     entry = entry,
-                    expanded = entry.id in expanded
+                    expanded = entry.id in expanded,
+                    snapshotRows = snapshots[entry.id].orEmpty()
                 )
             }
         }

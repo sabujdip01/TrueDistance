@@ -510,29 +510,29 @@ Content:          "Today", "Yesterday", "Older"
 ### 7.3 Material3 Floating Pill Navigation Bar
 
 ```
-Container:        CardView wrapper with 36dp rounded corners
-Elevation:        12dp card shadow
+Container:        CardView wrapper with 32dp rounded corners
+Elevation:        10dp card shadow
 Background:       card_white (#FFFFFF light / #2A2826 dark)
-Margin:           40dp horizontal, 20dp bottom
-Max width:        320dp (compact floating pill)
-Height:           62dp
+Margin:           24dp horizontal, 16dp bottom
+Max width:        350dp (compact floating pill)
+Height:           58dp
 Position:         Constrained to bottom of parent, centered horizontally
 
 Tab count:        3 (True Distance, Speedometer, Settings)
 Icon size:        24x24dp
-Label size:       11sp bold (inactive)
-Label visibility: Always shown mode (active open tab displays icon-only circular round background since top screen title header exists; inactive tabs display crisp bold text labels underneath with tight padding).
+Label size:       11sp (includeFontPadding=false)
+Label visibility: Always shown mode (labeled)
 
-Active tab (Circular Round Indicator):
-  Indicator:      Material3 NavigationBar active indicator (Widget.App.ActiveIndicator, 48x48dp round circle)
-  Pill Fill:      primary_violet (#7C4DFF) circular background (cornerSize="50%")
-  Icon color:     text_on_primary (#FFFFFF)
-  Label text:     Hidden / 0.1sp size (since screen header title is visible)
+Active tab (Enclosed Pill Background + Accent Tint):
+  Background:     bg_nav_item_selected (Soft lavender rounded capsule enclosing both icon and label)
+  Pill Fill:      nav_active_indicator_bg (#F0EBF8 in Light mode / #3B2D54 in Dark mode)
+  Icon color:     primary_violet (#7C4DFF in Light mode / #B388FF in Dark mode)
+  Label text:     11sp bold, primary_violet (#7C4DFF in Light mode / #B388FF in Dark mode)
 
 Inactive tab:
-  Indicator:      None (icon + text label underneath with 1dp tight padding)
-  Icon color:     nav_inactive_color (#2D3748 dark slate in Light mode / #E2E8F0 light slate in Dark mode)
-  Label color:    nav_inactive_color (#2D3748 dark slate in Light mode / #E2E8F0 light slate in Dark mode)
+  Background:     Transparent (no pill)
+  Icon color:     nav_inactive_color (#2D3748 in Light mode / #E2E8F0 in Dark mode)
+  Label text:     11sp regular/non-bold, nav_inactive_color (#2D3748 in Light mode / #E2E8F0 in Dark mode)
 
 Ripple:           primary_lavender at 15% opacity
 Tab Reselection:  Tapping active tab or switching tabs pops back stack directly to root fragment (DistanceFragment, SpeedometerFragment, SettingsFragment)

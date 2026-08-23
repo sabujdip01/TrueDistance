@@ -8,6 +8,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -20,6 +21,9 @@ class MainActivity : AppCompatActivity() {
         ActivityResultContracts.RequestPermission()
     ) { /* no-op either way; background tracking still works, notification just won't show */ }
 
+    @javax.inject.Inject
+    lateinit var settingsRepository: sabuj.m.truedistance.repository.SettingsRepository
+
     // Tab root destinations — maps each bottom nav item to its root fragment
     private val tabRoots = mapOf(
         R.id.nav_distance   to R.id.nav_distance,
@@ -30,6 +34,19 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        lifecycleScope.launchWhenCreated {
+            settingsRepository.theme.collect { mode ->
+                val nightMode = when (mode) {
+                    sabuj.m.truedistance.database.ThemeMode.LIGHT -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
+                    sabuj.m.truedistance.database.ThemeMode.DARK -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
+                    sabuj.m.truedistance.database.ThemeMode.SYSTEM -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                }
+                if (androidx.appcompat.app.AppCompatDelegate.getDefaultNightMode() != nightMode) {
+                    androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(nightMode)
+                }
+            }
+        }
 
         if (android.os.Build.VERSION.SDK_INT >= 33) {
             requestNotificationPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)

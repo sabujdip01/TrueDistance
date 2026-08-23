@@ -6,12 +6,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import sabuj.m.truedistance.BuildConfig
@@ -21,7 +21,7 @@ import sabuj.m.truedistance.database.ThemeMode
 import sabuj.m.truedistance.database.UnitPreference
 import sabuj.m.truedistance.databinding.FragmentSettingsBinding
 
-/** §6.3 Settings — Preferences (§6.3.1) + About (§6.3.2). */
+/** §6.3 Settings — Preferences (§6.3.1) + About (§6.3.2) with Pill Toggles & Custom In-App Actions. */
 @AndroidEntryPoint
 class SettingsFragment : Fragment() {
 
@@ -29,7 +29,7 @@ class SettingsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: SettingsViewModel by viewModels()
-    private var isApplyingState = false // guards against feedback loops while binding spinners
+    private var isApplyingState = false // guards against feedback loops while binding UI
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -41,7 +41,6 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupSpinners()
         setupListeners()
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -54,45 +53,66 @@ class SettingsFragment : Fragment() {
             R.string.version_format, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE
         )
 
-        binding.privacyPolicyRow.setOnClickListener {
-            // TODO: point at the actual hosted privacy policy URL once published
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com/privacy")))
+        // In-App Privacy Policy Dialog
+        binding.privacyPolicyCard.setOnClickListener {
+            showInAppPrivacyPolicyDialog()
         }
-    }
 
-    private fun setupSpinners() {
-        binding.themeSpinner.adapter = ArrayAdapter(
-            requireContext(), android.R.layout.simple_spinner_dropdown_item,
-            arrayOf(getString(R.string.theme_light), getString(R.string.theme_dark), getString(R.string.theme_system))
-        )
-        binding.unitSpinner.adapter = ArrayAdapter(
-            requireContext(), android.R.layout.simple_spinner_dropdown_item,
-            arrayOf(getString(R.string.unit_km), getString(R.string.unit_miles), getString(R.string.unit_both))
-        )
-        binding.accuracySpinner.adapter = ArrayAdapter(
-            requireContext(), android.R.layout.simple_spinner_dropdown_item,
-            arrayOf(getString(R.string.accuracy_high), getString(R.string.accuracy_balanced), getString(R.string.accuracy_device_only))
-        )
-        binding.frequencySpinner.adapter = ArrayAdapter(
-            requireContext(), android.R.layout.simple_spinner_dropdown_item,
-            arrayOf("1s", "3s", "5s", "10s")
-        )
+        // Open Source Repository (GitHub link)
+        binding.githubCard.setOnClickListener {
+            openUrl("https://github.com/sabujdip01/TrueDistance.git")
+        }
+
+        // Developer Credit (about.me link)
+        binding.developerCreditCard.setOnClickListener {
+            openUrl("https://about.me/sabujdip01")
+        }
     }
 
     private fun setupListeners() {
-        binding.themeSpinner.onItemSelectedListener = onSelected { index ->
-            viewModel.setTheme(ThemeMode.entries[index])
-        }
-        binding.unitSpinner.onItemSelectedListener = onSelected { index ->
-            viewModel.setUnit(UnitPreference.entries[index])
-        }
-        binding.accuracySpinner.onItemSelectedListener = onSelected { index ->
-            viewModel.setGpsAccuracyMode(GpsAccuracyMode.entries[index])
-        }
-        binding.frequencySpinner.onItemSelectedListener = onSelected { index ->
-            viewModel.setUpdateFrequencySeconds(listOf(1, 3, 5, 10)[index])
+        // Unit Pill Toggle Selector (KM / Miles)
+        binding.unitToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (!isChecked || isApplyingState) return@addOnButtonCheckedListener
+            when (checkedId) {
+                R.id.btnUnitKm -> viewModel.setUnit(UnitPreference.KM)
+                R.id.btnUnitMiles -> viewModel.setUnit(UnitPreference.MILES)
+            }
         }
 
+        // Theme Pill Toggle Selector (System / Light / Dark)
+        binding.themeToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (!isChecked || isApplyingState) return@addOnButtonCheckedListener
+            val (mode, nightMode) = when (checkedId) {
+                R.id.btnThemeLight -> Pair(ThemeMode.LIGHT, androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO)
+                R.id.btnThemeDark -> Pair(ThemeMode.DARK, androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES)
+                else -> Pair(ThemeMode.SYSTEM, androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+            }
+            androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(nightMode)
+            viewModel.setTheme(mode)
+        }
+
+        // GPS Accuracy Pill Toggle Selector
+        binding.accuracyToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (!isChecked || isApplyingState) return@addOnButtonCheckedListener
+            when (checkedId) {
+                R.id.btnAccHigh -> viewModel.setGpsAccuracyMode(GpsAccuracyMode.HIGH)
+                R.id.btnAccBalanced -> viewModel.setGpsAccuracyMode(GpsAccuracyMode.BALANCED)
+                R.id.btnAccDevice -> viewModel.setGpsAccuracyMode(GpsAccuracyMode.DEVICE_ONLY)
+            }
+        }
+
+        // Update Frequency Pill Toggle Selector
+        binding.frequencyToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (!isChecked || isApplyingState) return@addOnButtonCheckedListener
+            when (checkedId) {
+                R.id.btnFreq1s -> viewModel.setUpdateFrequencySeconds(1)
+                R.id.btnFreq3s -> viewModel.setUpdateFrequencySeconds(3)
+                R.id.btnFreq5s -> viewModel.setUpdateFrequencySeconds(5)
+                R.id.btnFreq10s -> viewModel.setUpdateFrequencySeconds(10)
+            }
+        }
+
+        // Auto-meters & Background tracking switches
         binding.autoMetersSwitch.setOnCheckedChangeListener { _, checked ->
             if (!isApplyingState) viewModel.setAutoMetersUnder1km(checked)
         }
@@ -103,22 +123,76 @@ class SettingsFragment : Fragment() {
 
     private fun applyState(state: SettingsUiState) {
         isApplyingState = true
-        binding.themeSpinner.setSelection(ThemeMode.entries.indexOf(state.theme))
-        binding.unitSpinner.setSelection(UnitPreference.entries.indexOf(state.unit))
-        binding.accuracySpinner.setSelection(GpsAccuracyMode.entries.indexOf(state.gpsAccuracyMode))
-        binding.frequencySpinner.setSelection(listOf(1, 3, 5, 10).indexOf(state.updateFrequencySeconds).coerceAtLeast(0))
+
+        // Unit Toggle State
+        val unitButtonId = when (state.unit) {
+            UnitPreference.MILES -> R.id.btnUnitMiles
+            else -> R.id.btnUnitKm
+        }
+        binding.unitToggleGroup.check(unitButtonId)
+
+        // Theme Toggle State
+        val themeButtonId = when (state.theme) {
+            ThemeMode.SYSTEM -> R.id.btnThemeSystem
+            ThemeMode.LIGHT -> R.id.btnThemeLight
+            ThemeMode.DARK -> R.id.btnThemeDark
+        }
+        binding.themeToggleGroup.check(themeButtonId)
+
+        // GPS Accuracy Toggle State
+        val accButtonId = when (state.gpsAccuracyMode) {
+            GpsAccuracyMode.HIGH -> R.id.btnAccHigh
+            GpsAccuracyMode.BALANCED -> R.id.btnAccBalanced
+            GpsAccuracyMode.DEVICE_ONLY -> R.id.btnAccDevice
+        }
+        binding.accuracyToggleGroup.check(accButtonId)
+
+        // Frequency Toggle State
+        val freqButtonId = when (state.updateFrequencySeconds) {
+            1 -> R.id.btnFreq1s
+            3 -> R.id.btnFreq3s
+            5 -> R.id.btnFreq5s
+            10 -> R.id.btnFreq10s
+            else -> R.id.btnFreq1s
+        }
+        binding.frequencyToggleGroup.check(freqButtonId)
+
+        // Switch States
         binding.autoMetersSwitch.isChecked = state.autoMetersUnder1km
         binding.backgroundTrackingSwitch.isChecked = state.backgroundTrackingEnabled
+
         isApplyingState = false
     }
 
-    private fun onSelected(onSelect: (Int) -> Unit) =
-        object : android.widget.AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (!isApplyingState) onSelect(position)
-            }
-            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
-        }
+    private fun showInAppPrivacyPolicyDialog() {
+        val policyText = """
+            True Distance Privacy Policy
+
+            1. Location Data:
+            True Distance uses precise device GPS location solely to compute distance, speed, and navigation routes. Location data is processed locally on your device and is never uploaded, sold, or shared with third parties.
+
+            2. Storage:
+            Your saved locations and trip history are stored securely in a local Room database on your device.
+
+            3. Foreground Services:
+            Foreground services with persistent notifications are utilized exclusively to maintain continuous location updates while tracking trips in the background.
+
+            4. Contact & Support:
+            For queries or feedback, visit https://about.me/sabujdip01
+        """.trimIndent()
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Privacy Policy")
+            .setMessage(policyText)
+            .setPositiveButton("Close", null)
+            .show()
+    }
+
+    private fun openUrl(url: String) {
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        } catch (_: Exception) { }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

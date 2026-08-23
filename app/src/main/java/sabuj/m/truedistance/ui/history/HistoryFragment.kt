@@ -107,10 +107,15 @@ class HistoryFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.items.collect { items ->
-                    adapter.submitList(items)
+                viewModel.uiState.collect { state ->
+                    adapter.updateUnitSettings(
+                        state.unit,
+                        state.decimalPrecision,
+                        state.autoMetersUnder1km
+                    )
+                    adapter.submitList(state.items)
                     binding.emptyState.visibility =
-                        if (items.isEmpty()) View.VISIBLE else View.GONE
+                        if (state.items.isEmpty()) View.VISIBLE else View.GONE
                 }
             }
         }

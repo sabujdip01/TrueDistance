@@ -7,7 +7,10 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import sabuj.m.truedistance.database.DistanceSnapshot
@@ -67,6 +70,7 @@ class TrackingService : LifecycleService() {
         return START_STICKY
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun startTracking(name: String, destLat: Double, destLng: Double) {
         destinationName = name
         startedAt = System.currentTimeMillis()
@@ -85,10 +89,13 @@ class TrackingService : LifecycleService() {
         )
 
         trackingJob = lifecycleScope.launch {
-            val accuracyMode = settingsRepository.gpsAccuracyMode.first()
-            val intervalSeconds = settingsRepository.updateFrequencySeconds.first()
-
-            locationHelper.observeLocation(intervalSeconds, accuracyMode).collect { location ->
+            combine(
+                settingsRepository.gpsAccuracyMode,
+                settingsRepository.updateFrequencySeconds
+            ) { acc, freq -> Pair(acc, freq) }
+                .flatMapLatest { (accuracyMode, intervalSeconds) ->
+                    locationHelper.observeLocation(intervalSeconds, accuracyMode)
+                }.collect { location ->
                 lastFixAt = System.currentTimeMillis()
                 val distance = DistanceCalculator.haversineMeters(
                     location.latitude, location.longitude, destLat, destLng

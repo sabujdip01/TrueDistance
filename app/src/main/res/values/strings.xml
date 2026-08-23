@@ -42,7 +42,7 @@
     <string name="unit_km">Kilometers</string>
     <string name="unit_miles">Miles</string>
     <string name="unit_both">Both</string>
-    <string name="auto_meters_under_1km">Show meters under 1 km</string>
+    <string name="auto_meters_under_1km">Show Meters under 1 KM</string>
     <string name="gps_accuracy_mode">GPS Accuracy</string>
     <string name="accuracy_high">High Accuracy</string>
     <string name="accuracy_balanced">Balanced</string>

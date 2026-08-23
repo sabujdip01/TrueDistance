@@ -51,35 +51,36 @@
     <style name="Widget.App.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
         <item name="itemIconTint">@color/nav_item_color_state</item>
         <item name="itemTextColor">@color/nav_label_color_state</item>
-        <item name="itemActiveIndicatorStyle">@style/Widget.App.ActiveIndicator</item>
+        <item name="itemBackground">@drawable/bg_nav_item_selector</item>
+        <item name="itemActiveIndicatorStyle">@style/Widget.App.ActiveIndicator.None</item>
         <item name="itemTextAppearanceActive">@style/BottomNavActiveTextAppearance</item>
         <item name="itemTextAppearanceInactive">@style/BottomNavInactiveTextAppearance</item>
         <item name="backgroundTint">@null</item>
         <item name="elevation">0dp</item>
         <item name="labelVisibilityMode">labeled</item>
-        <item name="itemPaddingTop">0dp</item>
+        <item name="itemPaddingTop">7dp</item>
         <item name="itemPaddingBottom">0dp</item>
+        <item name="itemRippleColor">@color/primary_lavender</item>
     </style>
 
-    <style name="Widget.App.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
-        <item name="android:width">36dp</item>
-        <item name="android:height">36dp</item>
-        <item name="marginHorizontal">0dp</item>
-        <item name="shapeAppearance">@style/ShapeAppearance.App.RoundCircle</item>
-    </style>
-
-    <style name="ShapeAppearance.App.RoundCircle" parent="ShapeAppearance.Material3.Corner.Full">
-        <item name="cornerSize">50%</item>
+    <style name="Widget.App.ActiveIndicator.None" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:width">0dp</item>
+        <item name="android:height">0dp</item>
+        <item name="android:color">@android:color/transparent</item>
     </style>
 
     <style name="BottomNavActiveTextAppearance">
-        <item name="android:textSize">0.1sp</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:lineSpacingExtra">-2dp</item>
     </style>
 
     <style name="BottomNavInactiveTextAppearance">
-        <item name="android:textSize">10.5sp</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">normal</item>
         <item name="android:includeFontPadding">false</item>
+        <item name="android:lineSpacingExtra">-2dp</item>
     </style>
 
     <!-- Splash Screen theme -->
