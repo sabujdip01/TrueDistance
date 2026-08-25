@@ -16,11 +16,20 @@ import kotlinx.coroutines.launch
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
-/** §4 App Navigation Structure, §5.2 Splash Screen */
+/**
+ * MainActivity is the primary host activity for True Distance.
+ *
+ * Responsibilities:
+ * 1. Hosts the Jetpack Navigation NavHostFragment controlling tab graphs.
+ * 2. Manages the elevated BottomNavigationView floating capsule.
+ * 3. Handles tab reselection (pops back stack to tab root).
+ * 4. Preserves active tab state across configuration changes (theme changes / screen rotations).
+ * 5. Routes incoming notification intents to the appropriate screen (Speedometer / Tracking).
+ */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    // §10 Permissions — POST_NOTIFICATIONS needed for background tracking notification
+    // Notification permission launcher for Android 13+ (API 33+) foreground service notifications
     private val requestNotificationPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { /* no-op either way; background tracking still works, notification just won't show */ }
@@ -42,6 +51,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Request POST_NOTIFICATIONS on Android 13+ for foreground tracking notifications
         if (android.os.Build.VERSION.SDK_INT >= 33) {
             requestNotificationPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
         }
@@ -60,9 +70,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // When switching tabs, navigate cleanly to the selected tab's root.
+        // Clean tab switching: navigate cleanly to the destination without stacking stale screens
         bottomNav.setOnItemSelectedListener { item ->
             val rootId = tabRoots[item.itemId] ?: return@setOnItemSelectedListener false
+            
+            // If True Distance is selected and a trip is currently active, route directly to TrackingFragment
             val targetDestination = if (item.itemId == R.id.nav_distance && trackingStateHolder.state.value.isTracking) {
                 R.id.nav_tracking
             } else {
@@ -80,6 +92,7 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
+        // Restore tab selection after activity recreation (e.g., theme toggle) or handle initial intent
         if (savedInstanceState != null) {
             val savedTab = savedInstanceState.getInt("KEY_SELECTED_TAB", -1)
             if (savedTab != -1 && savedTab != bottomNav.selectedItemId) {
@@ -92,6 +105,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        // Preserve selected bottom nav tab across configuration changes
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
         if (bottomNav != null) {
             outState.putInt("KEY_SELECTED_TAB", bottomNav.selectedItemId)
@@ -105,6 +119,9 @@ class MainActivity : AppCompatActivity() {
         handleNavigationIntent(intent, bottomNav)
     }
 
+    /**
+     * Handles external navigation intents, such as tapping status bar foreground service notifications.
+     */
     private fun handleNavigationIntent(intent: android.content.Intent?, bottomNav: BottomNavigationView) {
         when (intent?.getStringExtra("NAVIGATE_TO")) {
             "speedometer" -> bottomNav.selectedItemId = R.id.nav_speedometer

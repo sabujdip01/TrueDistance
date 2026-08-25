@@ -26,7 +26,16 @@ import sabuj.m.truedistance.ui.distance.DestinationSelection
 import sabuj.m.truedistance.ui.mappicker.MapPickerViewModel
 import sabuj.m.truedistance.utils.PlacesAutocompleteAdapter
 
-/** §6.1.2 Saved Locations Screen — list + swipe-to-delete + add via search/map pick. */
+/**
+ * §6.1.2 Saved Locations Screen — Manages bookmarked destinations list with swipe-to-delete,
+ * direct destination selection return to DistanceFragment, and adding bookmarks via search or map pin.
+ *
+ * Capabilities:
+ * 1. Displays saved bookmarks with rotating card gradients (Mint, Lavender, Peach, Blue).
+ * 2. Tapping a location selects it and pops back to prefill the main distance screen.
+ * 3. Swipe gestures (left/right) or explicit delete button deletes bookmarks from Room DB.
+ * 4. FAB triggers dialog to add bookmark via Google Places autocomplete or interactive Map Picker.
+ */
 @AndroidEntryPoint
 class SavedLocationsFragment : Fragment() {
 

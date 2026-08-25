@@ -14,11 +14,20 @@ import sabuj.m.truedistance.repository.SettingsRepository
 import sabuj.m.truedistance.repository.TripRepository
 import javax.inject.Inject
 
+/**
+ * §6.2.2 Past Trip List Item model.
+ *
+ * @property trip Underlying [Trip] database entity.
+ * @property isExpanded Whether the lite-mode map snapshot is currently expanded.
+ */
 data class PastTripListItem(
     val trip: Trip,
     val isExpanded: Boolean
 )
 
+/**
+ * §6.2.2 Past Trips UI State — Combines trip list with active measurement unit preferences.
+ */
 data class PastTripsUiState(
     val items: List<PastTripListItem> = emptyList(),
     val unit: sabuj.m.truedistance.database.UnitPreference = sabuj.m.truedistance.database.UnitPreference.KM,
@@ -26,6 +35,10 @@ data class PastTripsUiState(
     val autoMetersUnder1km: Boolean = true
 )
 
+/**
+ * §6.2.2 Past Trips ViewModel — Manages trip list observation, single-card accordion expansion,
+ * and trip record deletion.
+ */
 @HiltViewModel
 class PastTripsViewModel @Inject constructor(
     private val tripRepository: TripRepository,

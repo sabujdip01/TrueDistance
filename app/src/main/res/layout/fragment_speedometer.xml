@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/background_soft">
 
-    <!-- Header row with Screen Name on left and History Action Chip on right -->
+    <!-- Header: Screen Title on left and History Shortcut Chip on right -->
     <TextView
         android:id="@+id/screenTitle"
         android:layout_width="0dp"
@@ -22,6 +22,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/historyButton" />
 
+    <!-- Header Action Chip: Past Trips History Shortcut -->
     <ImageButton
         android:id="@+id/historyButton"
         android:layout_width="48dp"
@@ -34,7 +35,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Map with soft rounded border and whitespace margin from header -->
+    <!-- §6.2.1 Google Map Container Card Frame -->
     <androidx.cardview.widget.CardView
         android:id="@+id/mapCard"
         android:layout_width="0dp"
@@ -56,7 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <!-- Map controls stack: Current Location (top), Zoom + (mid), Zoom - (bottom) -->
+        <!-- Floating Map Controls Stack: My Location, Zoom In, Zoom Out -->
         <LinearLayout
             android:id="@+id/mapControlsStack"
             android:layout_width="wrap_content"
@@ -97,7 +98,7 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- Floating Live Speed Counter Overlay -->
+    <!-- §6.2.2 Floating Live Speed Readout Glassmorphism Card Overlay -->
     <androidx.cardview.widget.CardView
         android:id="@+id/speedOverlayCard"
         android:layout_width="wrap_content"
@@ -118,6 +119,7 @@
             android:paddingVertical="12dp"
             android:gravity="center">
 
+            <!-- Real-time Speed Number -->
             <TextView
                 android:id="@+id/speedText"
                 android:layout_width="wrap_content"
@@ -127,6 +129,7 @@
                 android:textStyle="bold"
                 android:textColor="@color/text_charcoal" />
 
+            <!-- Speed Unit Label (KM/H or MPH) -->
             <TextView
                 android:id="@+id/speedUnitText"
                 android:layout_width="wrap_content"
@@ -137,7 +140,7 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- Gradient Stats Card -->
+    <!-- §6.2.3 Lavender Gradient Trip Statistics Card -->
     <FrameLayout
         android:id="@+id/statsCard"
         android:layout_width="0dp"

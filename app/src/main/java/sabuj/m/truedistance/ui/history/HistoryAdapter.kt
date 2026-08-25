@@ -21,7 +21,8 @@ private const val TYPE_HEADER = 0
 private const val TYPE_ENTRY = 1
 
 /**
- * §6.1.3 — History list adapter with date headers + expandable entry cards.
+ * §6.1.3 Distance History Adapter — Sectioned RecyclerView adapter rendering sticky date group headers
+ * and 80/20 card rows with rotating gradient backgrounds, dynamic contrast typography, and lazy snapshot expansion.
  */
 class HistoryAdapter(
     private val onEntryClick: (HistoryEntry) -> Unit,

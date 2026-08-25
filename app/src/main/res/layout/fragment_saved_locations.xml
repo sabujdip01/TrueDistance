@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- §6.1.2 Saved Locations Screen -->
+<!-- §6.1.2 Saved Locations Screen — RecyclerView list of bookmarks, swipe-to-delete, and Add Location FAB -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -22,6 +22,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- §6.1.2 Saved Locations RecyclerView List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
@@ -35,6 +36,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintWidth_max="600dp" />
 
+    <!-- Empty State Placeholder (Shown when no locations are saved) -->
     <TextView
         android:id="@+id/emptyState"
         android:layout_width="wrap_content"
@@ -47,6 +49,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- §6.1.2 Floating Action Button: Add New Saved Location -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addButton"
         android:layout_width="wrap_content"

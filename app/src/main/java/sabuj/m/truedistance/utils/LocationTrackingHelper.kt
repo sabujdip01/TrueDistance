@@ -14,15 +14,22 @@ import kotlinx.coroutines.flow.callbackFlow
 import sabuj.m.truedistance.database.GpsAccuracyMode
 
 /**
- * §6.1.4 / §6.2.1 — continuous location listener (not a one-shot fetch), per §12
- * Tech Notes. Interval + accuracy mode both come from Settings (§6.3.1).
+ * §6.1.4 / §6.2.1 — LocationTrackingHelper wraps Google FusedLocationProviderClient into a cold Coroutine Flow.
+ *
+ * Responsibilities:
+ * 1. Maps application GpsAccuracyMode settings into Google Play Services Priority levels.
+ * 2. Emits continuous Location fixes at the requested intervalSeconds frequency.
+ * 3. Handles clean registration and unregistration of LocationCallback upon Flow completion/cancellation.
  */
 class LocationTrackingHelper(private val context: Context) {
 
     private val fusedClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
 
-    @SuppressLint("MissingPermission") // caller must check LocationPermissionHelper first
+    /**
+     * Observes real-time location stream as a reactive Kotlin Flow.
+     */
+    @SuppressLint("MissingPermission") // Checked upstream by LocationPermissionHelper
     fun observeLocation(
         intervalSeconds: Int,
         accuracyMode: GpsAccuracyMode
@@ -30,7 +37,7 @@ class LocationTrackingHelper(private val context: Context) {
         val priority = when (accuracyMode) {
             GpsAccuracyMode.HIGH -> Priority.PRIORITY_HIGH_ACCURACY
             GpsAccuracyMode.BALANCED -> Priority.PRIORITY_BALANCED_POWER_ACCURACY
-            GpsAccuracyMode.DEVICE_ONLY -> Priority.PRIORITY_HIGH_ACCURACY // GPS-only handled via provider filtering upstream
+            GpsAccuracyMode.DEVICE_ONLY -> Priority.PRIORITY_HIGH_ACCURACY
         }
 
         val request = LocationRequest.Builder(priority, intervalSeconds * 1000L)

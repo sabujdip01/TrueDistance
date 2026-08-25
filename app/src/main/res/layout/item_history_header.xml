@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- §6.1.3 Sticky Date Grouping Header for Distance History (e.g. "Today", "Yesterday", "24 Aug 2026") -->
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/headerLabel"
     android:layout_width="match_parent"

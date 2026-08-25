@@ -16,6 +16,16 @@ import sabuj.m.truedistance.service.SpeedometerService
 import sabuj.m.truedistance.service.TrackingService
 import javax.inject.Inject
 
+/**
+ * TrueDistanceApp is the custom Application subclass for the app.
+ *
+ * Responsibilities:
+ * 1. Initializes the Google Places API SDK with the configured Maps API Key.
+ * 2. Pre-applies the saved theme (Light / Dark / System) on cold app startup before any UI inflation.
+ * 3. Tracks global Activity lifecycle transitions to detect when the entire application is backgrounded.
+ * 4. Gracefully auto-stops TrackingService and SpeedometerService when the app is minimized if Background Tracking
+ *    is disabled in Settings, while ignoring transient configuration changes (such as device rotations).
+ */
 @HiltAndroidApp
 class TrueDistanceApp : Application() {
 
@@ -27,6 +37,8 @@ class TrueDistanceApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        // Initialize Google Places SDK
         try {
             if (!Places.isInitialized()) {
                 Log.d("TrueDistanceApp", "Initializing Places SDK with key: ${BuildConfig.MAPS_API_KEY.take(5)}...")
@@ -36,6 +48,7 @@ class TrueDistanceApp : Application() {
             Log.e("TrueDistanceApp", "Error initializing Places SDK", e)
         }
 
+        // Apply saved theme preference on cold startup
         CoroutineScope(Dispatchers.Main.immediate).launch {
             try {
                 val mode = settingsRepository.theme.first()
@@ -50,11 +63,12 @@ class TrueDistanceApp : Application() {
             } catch (_: Exception) {}
         }
 
+        // Register global activity lifecycle callbacks to monitor whole-app foreground/background status
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
             override fun onActivityStarted(activity: Activity) {
                 if (++runningActivities == 1 && !isChangingConfigurations) {
-                    // App brought to foreground
+                    // Application brought to foreground
                 }
             }
             override fun onActivityResumed(activity: Activity) {}
@@ -62,18 +76,18 @@ class TrueDistanceApp : Application() {
             override fun onActivityStopped(activity: Activity) {
                 isChangingConfigurations = activity.isChangingConfigurations
                 if (--runningActivities == 0 && !isChangingConfigurations) {
-                    // Entire application sent to background (Home button / App switch)
+                    // Entire application sent to background (Home button / Task switch / Screen lock)
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
                             val bgEnabled = settingsRepository.backgroundTrackingEnabled.first()
                             if (!bgEnabled) {
-                                // Stop True Distance tracking service
+                                // Background tracking disabled: stop active True Distance session
                                 val trackingStopIntent = Intent(applicationContext, TrackingService::class.java).apply {
                                     action = TrackingService.ACTION_STOP
                                 }
                                 startService(trackingStopIntent)
 
-                                // Stop Speedometer service
+                                // Background tracking disabled: stop active Speedometer session
                                 val speedometerStopIntent = Intent(applicationContext, SpeedometerService::class.java).apply {
                                     action = SpeedometerService.ACTION_STOP
                                 }

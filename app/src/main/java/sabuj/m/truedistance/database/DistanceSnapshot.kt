@@ -6,7 +6,15 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.util.UUID
 
-/** §8 Data Model — DistanceSnapshot, feeds §6.1.3 interval rows */
+/**
+ * §8 Data Model — Room Entity representing a time-stamped distance sample recorded during tracking.
+ *
+ * @property id Unique UUID string primary key.
+ * @property historyEntryId Foreign key linking sample to parent [HistoryEntry].
+ * @property timestamp Epoch timestamp when the sample was recorded.
+ * @property elapsedPercent Percentage progress of the tracking session.
+ * @property distanceMeters Remaining straight-line distance in meters at this snapshot.
+ */
 @Entity(
     tableName = "distance_snapshots",
     foreignKeys = [

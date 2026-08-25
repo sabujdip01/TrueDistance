@@ -21,7 +21,23 @@ import sabuj.m.truedistance.database.ThemeMode
 import sabuj.m.truedistance.database.UnitPreference
 import sabuj.m.truedistance.databinding.FragmentSettingsBinding
 
-/** §6.3 Settings — Preferences (§6.3.1) + About (§6.3.2) with Pill Toggles & Custom In-App Actions. */
+/**
+ * §6.3 Settings Screen — User preferences configuration (§6.3.1) and About application information (§6.3.2).
+ *
+ * Configurable Settings:
+ * - Measurement Units: Pill toggle selector (KM vs Miles)
+ * - App Appearance Theme: Pill toggle selector (System Default, Light Mode, Dark Mode)
+ * - GPS Accuracy: Pill toggle selector (High Accuracy, Balanced Power, Device Only)
+ * - Location Frequency: Pill toggle selector (1s, 3s, 5s, 10s updates)
+ * - Auto-Meters switch: Toggles displaying distances under 1km as meters
+ * - Background Tracking switch: Enables/disables continuous location polling in foreground service
+ *
+ * About True Distance:
+ * - Version readout with versionCode and versionName from BuildConfig
+ * - In-app Privacy Policy dialog
+ * - Open source GitHub repository shortcut link
+ * - Developer profile external link
+ */
 @AndroidEntryPoint
 class SettingsFragment : Fragment() {
 
@@ -29,7 +45,7 @@ class SettingsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: SettingsViewModel by viewModels()
-    private var isApplyingState = false // guards against feedback loops while binding UI
+    private var isApplyingState = false // Guards against recursive feedback loops while applying StateFlow
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -43,12 +59,14 @@ class SettingsFragment : Fragment() {
 
         setupListeners()
 
+        // Observe reactive preferences and bind pill toggles and switches
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state -> applyState(state) }
             }
         }
 
+        // Display app version from Gradle BuildConfig
         binding.versionText.text = getString(
             R.string.version_format, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE
         )
@@ -69,6 +87,9 @@ class SettingsFragment : Fragment() {
         }
     }
 
+    /**
+     * Attaches change listeners to pill toggle groups and material switches.
+     */
     private fun setupListeners() {
         // Unit Pill Toggle Selector (KM / Miles)
         binding.unitToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->

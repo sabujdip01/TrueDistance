@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- History card: 80% content | 20% delete button -->
+<!-- §6.1.3 Distance History Card Item: 80% Content area | 20% Centered Delete Button, with Expandable Distance Snapshots -->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root"
@@ -8,6 +8,7 @@
     android:layout_marginHorizontal="16dp"
     android:layout_marginVertical="6dp">
 
+    <!-- Card Background (Cycles Mint, Lavender, Peach, Blue gradients) -->
     <LinearLayout
         android:id="@+id/root_container"
         android:layout_width="match_parent"
@@ -15,7 +16,7 @@
         android:background="@drawable/bg_card_lavender"
         android:orientation="horizontal">
 
-        <!-- LEFT 80%: Content -->
+        <!-- LEFT 80%: History Content Area -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -23,7 +24,7 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- Row 1: Location Name + Tracked Distance -->
+            <!-- Row 1: Destination Name + Final Tracked Distance Badge -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -48,7 +49,7 @@
                     android:layout_marginStart="8dp" />
             </LinearLayout>
 
-            <!-- Row 2: Start Time | Stop Time | Elapsed -->
+            <!-- Row 2: Start Time | Stop Time | Elapsed Duration -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -82,7 +83,7 @@
                     android:gravity="end" />
             </LinearLayout>
 
-            <!-- Expanded: snapshot rows -->
+            <!-- Expandable Section: Distance Snapshots at configured time tiers -->
             <LinearLayout
                 android:id="@+id/snapshotContainer"
                 android:layout_width="match_parent"
@@ -93,7 +94,7 @@
 
         </LinearLayout>
 
-        <!-- RIGHT 20%: Delete button centered -->
+        <!-- RIGHT 20%: Centered Delete Action Button -->
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"

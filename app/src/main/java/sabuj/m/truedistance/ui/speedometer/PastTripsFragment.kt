@@ -24,7 +24,8 @@ import sabuj.m.truedistance.R
 import sabuj.m.truedistance.databinding.FragmentPastTripsBinding
 
 /**
- * §6.2.2 — Past Trips Screen listing completed Speedometer trips.
+ * §6.2.2 Past Trips Screen — RecyclerView list of completed Speedometer trips with swipe-to-delete,
+ * single-card accordion expandable lite-mode map snapshot, and Clear All confirmation dialog.
  */
 @AndroidEntryPoint
 class PastTripsFragment : Fragment(), MenuProvider {

@@ -9,20 +9,19 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 /**
- * §6.1.1b / §6.1.2 — shared picked-point holder for the "pick on map" flow, used by
- * both Main Screen destination picking and Saved Locations "add via map" flow.
- * Activity-scoped so the picker Fragment and its caller can exchange a result
- * without Safe Args (LatLng needs a wrapper to be nav-arg-friendly anyway).
+ * §6.1.1b / §6.1.2 — Activity-scoped ViewModel holding coordinates selected from the interactive Map Picker.
  */
 @HiltViewModel
 class MapPickerViewModel @Inject constructor() : ViewModel() {
     private val _pickedPoint = MutableStateFlow<LatLng?>(null)
     val pickedPoint: StateFlow<LatLng?> = _pickedPoint.asStateFlow()
 
+    /** Stores the user-selected pinpoint coordinate. */
     fun setPickedPoint(point: LatLng) {
         _pickedPoint.value = point
     }
 
+    /** Consumes and clears the picked coordinate exactly once. */
     fun consume(): LatLng? {
         val point = _pickedPoint.value
         _pickedPoint.value = null

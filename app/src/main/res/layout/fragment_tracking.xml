@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Tracking Screen — map with soft border + distance card overlay + Stop button -->
+<!-- §6.1.4 Live Tracking Screen — Rounded Map Card, Glassmorphism Distance Overlay, Floating Controls, and Stop Button -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -22,7 +22,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Map with soft rounded border and padding -->
+    <!-- §6.1.4 Rounded Map Card Container -->
     <androidx.cardview.widget.CardView
         android:id="@+id/mapCard"
         android:layout_width="0dp"
@@ -37,13 +37,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <!-- Google Maps SDK Fragment -->
         <fragment
             android:id="@+id/mapContainer"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <!-- Map controls stack: Current Location (top), Zoom + (mid), Zoom - (bottom) -->
+        <!-- §6.1.4 Map Controls Stack: Recenter / My Location (top), Zoom In (mid), Zoom Out (bottom) -->
         <LinearLayout
             android:id="@+id/mapControlsStack"
             android:layout_width="wrap_content"
@@ -53,6 +54,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp">
 
+            <!-- My Location / Recenter Floating Button -->
             <ImageButton
                 android:id="@+id/btnMyLocation"
                 android:layout_width="44dp"
@@ -62,6 +64,7 @@
                 android:src="@drawable/ic_recenter"
                 app:tint="@color/primary_violet" />
 
+            <!-- Zoom In Action Button -->
             <ImageButton
                 android:id="@+id/btnZoomIn"
                 android:layout_width="44dp"
@@ -72,6 +75,7 @@
                 android:src="@drawable/ic_add"
                 app:tint="@color/primary_violet" />
 
+            <!-- Zoom Out Action Button -->
             <ImageButton
                 android:id="@+id/btnZoomOut"
                 android:layout_width="44dp"
@@ -84,7 +88,7 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- Distance readout overlay -->
+    <!-- §6.1.4 Distance Readout Glassmorphism Card Overlay -->
     <androidx.cardview.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -104,6 +108,7 @@
             android:padding="16dp"
             android:gravity="center">
 
+            <!-- Primary Live Distance Text Readout -->
             <TextView
                 android:id="@+id/distanceText"
                 android:layout_width="wrap_content"
@@ -112,6 +117,7 @@
                 android:textStyle="bold"
                 android:textColor="@color/text_charcoal" />
 
+            <!-- Stale / Signal Loss Warning Indicator -->
             <TextView
                 android:id="@+id/staleIndicator"
                 android:layout_width="wrap_content"
@@ -125,7 +131,7 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- Stop Tracking button -->
+    <!-- Bottom Controls Bar: Stop Tracking Action -->
     <LinearLayout
         android:id="@+id/controlsBar"
         android:layout_width="0dp"

@@ -8,7 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import sabuj.m.truedistance.database.SavedLocation
 import sabuj.m.truedistance.databinding.ItemSavedLocationBinding
 
-/** §6.1.2 — list rows: name + address, delete icon, tap to select as destination. */
+/**
+ * §6.1.2 Saved Location Adapter — RecyclerView ListAdapter rendering bookmarked locations
+ * with rotating pastel gradient cards, dynamic contrast text, and selection/delete actions.
+ */
 class SavedLocationAdapter(
     private val onItemClick: (SavedLocation) -> Unit,
     private val onDeleteClick: (SavedLocation) -> Unit

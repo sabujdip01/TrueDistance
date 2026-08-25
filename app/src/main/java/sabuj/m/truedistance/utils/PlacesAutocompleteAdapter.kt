@@ -16,7 +16,8 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import java.util.concurrent.TimeUnit
 
 /**
- * Custom adapter for AutoCompleteTextView to fetch predictions from Google Places SDK.
+ * §6.1.1a — Custom Filterable ArrayAdapter for AutoCompleteTextView to fetch live place predictions
+ * from the Google Places SDK and retrieve latitude/longitude details on selection.
  */
 class PlacesAutocompleteAdapter(context: Context) :
     ArrayAdapter<AutocompletePrediction>(context, android.R.layout.simple_expandable_list_item_1),

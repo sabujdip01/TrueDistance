@@ -10,13 +10,19 @@ import sabuj.m.truedistance.MainActivity
 import sabuj.m.truedistance.R
 import sabuj.m.truedistance.service.TrackingService
 
-/** §6.1.4 / §14.1 — persistent tracking notification with live distance. */
+/**
+ * §6.1.4 / §14.1 — NotificationHelper manages notification channels and builds interactive foreground
+ * notifications for True Distance point-to-point tracking and Speedometer trip recording.
+ */
 object NotificationHelper {
     const val CHANNEL_ID = "tracking_channel"
     const val SPEEDOMETER_CHANNEL_ID = "speedometer_channel"
     const val NOTIFICATION_ID = 1001
     const val SPEEDOMETER_NOTIFICATION_ID = 1002
 
+    /**
+     * Creates notification channels with LOW importance (no intrusive popup sound) for background tracking services.
+     */
     fun createChannel(context: Context) {
         val manager = context.getSystemService(NotificationManager::class.java)
 

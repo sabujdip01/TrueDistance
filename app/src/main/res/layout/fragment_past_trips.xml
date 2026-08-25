@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- §6.2.2 Past Trips Screen -->
+<!-- §6.2.2 Past Trips Screen — RecyclerView list of saved trips, swipe-to-delete, and Clear All action -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/background_soft">
 
-    <!-- Screen Title Header & Clear All Action Chip -->
+    <!-- Screen Title Header -->
     <TextView
         android:id="@+id/screenTitle"
         android:layout_width="0dp"
@@ -22,6 +22,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/clearAllButton" />
 
+    <!-- Header Action Chip: Clear All Trips with confirmation dialog -->
     <ImageButton
         android:id="@+id/clearAllButton"
         android:layout_width="48dp"
@@ -35,6 +36,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- §6.2.2 Past Trips List RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
@@ -48,6 +50,7 @@
         app:layout_constraintTop_toBottomOf="@id/screenTitle"
         app:layout_constraintWidth_max="600dp" />
 
+    <!-- Empty State Placeholder (Visible when no trips recorded) -->
     <TextView
         android:id="@+id/emptyState"
         android:layout_width="wrap_content"

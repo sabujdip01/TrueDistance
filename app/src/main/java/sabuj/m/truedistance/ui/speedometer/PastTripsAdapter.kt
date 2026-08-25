@@ -29,7 +29,8 @@ import java.util.Date
 import java.util.Locale
 
 /**
- * §6.2.2 — Past Trips Adapter with 80/20 card layout and expandable map snapshot.
+ * §6.2.2 Past Trips Adapter — RecyclerView ListAdapter rendering past speedometer trips
+ * with 80/20 card layout, rotating gradient themes, and expandable lite-mode Google Map polyline snapshots.
  */
 class PastTripsAdapter(
     private val onItemClick: (Trip) -> Unit,

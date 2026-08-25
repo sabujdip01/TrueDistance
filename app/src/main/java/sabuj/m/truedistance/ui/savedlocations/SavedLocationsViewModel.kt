@@ -17,15 +17,22 @@ import java.util.Locale
 import java.util.UUID
 import javax.inject.Inject
 
-/** §6.1.2 Saved Locations Screen ViewModel */
+/**
+ * §6.1.2 Saved Locations Screen ViewModel — Manages list of bookmarked destinations,
+ * geocoding resolution for street addresses, and deletion operations.
+ */
 @HiltViewModel
 class SavedLocationsViewModel @Inject constructor(
     private val repository: SavedLocationRepository
 ) : ViewModel() {
 
+    /** StateFlow emitting the list of all saved locations. */
     val savedLocations: StateFlow<List<SavedLocation>> = repository.observeAll()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    /**
+     * Adds a newly bookmarked location directly with coordinates.
+     */
     fun addLocation(name: String, address: String, latitude: Double, longitude: Double) {
         viewModelScope.launch {
             repository.save(
@@ -40,7 +47,9 @@ class SavedLocationsViewModel @Inject constructor(
         }
     }
 
-    /** §6.1.2 — "Add via search" using Geocoder (interim ahead of Places Autocomplete). */
+    /**
+     * §6.1.2 — Adds a location by searching and geocoding an address query.
+     */
     fun addFromAddress(query: String, context: Context, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             val result = withContext(Dispatchers.IO) {
@@ -61,7 +70,9 @@ class SavedLocationsViewModel @Inject constructor(
         }
     }
 
-    /** §6.1.2 — "Add via map pick": reverse-geocode a tapped point for a name. */
+    /**
+     * §6.1.2 — Adds a location from a map coordinate, reverse-geocoding to resolve street address.
+     */
     fun addFromPoint(latitude: Double, longitude: Double, name: String, context: Context) {
         viewModelScope.launch {
             val address = withContext(Dispatchers.IO) {
@@ -79,6 +90,9 @@ class SavedLocationsViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Deletes a saved bookmark from the repository.
+     */
     fun delete(location: SavedLocation) {
         viewModelScope.launch {
             repository.delete(location)

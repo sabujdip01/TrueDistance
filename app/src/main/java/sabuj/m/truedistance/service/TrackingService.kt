@@ -70,6 +70,17 @@ class TrackingService : LifecycleService() {
         return START_STICKY
     }
 
+    /**
+     * Initiates a live point-to-point tracking session to the specified coordinates.
+     *
+     * Steps:
+     * 1. Resets stale state from previous tracking sessions.
+     * 2. Launches foreground notification with persistent live distance readout.
+     * 3. Subscribes to live Location updates reacting dynamically to GPS accuracy and frequency settings.
+     * 4. Persists raw GPS distance snapshots to Room database.
+     * 5. Checks for automatic destination arrival (within ~10m).
+     * 6. Starts an active watchdog job checking for GPS loss / provider disable every 2s.
+     */
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun startTracking(name: String, destLat: Double, destLng: Double) {
         destinationName = name
@@ -83,11 +94,13 @@ class TrackingService : LifecycleService() {
             it.copy(destination = destination, destinationName = name, isTracking = true)
         }
 
+        // Elevate service to Android foreground service with persistent status bar notification
         startForeground(
             NotificationHelper.NOTIFICATION_ID,
             NotificationHelper.buildNotification(this, name, "…", sticky = true)
         )
 
+        // Reactive location subscription adapting live to user preferences
         trackingJob = lifecycleScope.launch {
             combine(
                 settingsRepository.gpsAccuracyMode,
@@ -105,6 +118,7 @@ class TrackingService : LifecycleService() {
                 val autoMeters = settingsRepository.autoMetersUnder1km.first()
                 val formatted = DistanceCalculator.format(distance, unit, precision, autoMeters)
 
+                // Update shared state holder observed by TrackingFragment UI
                 stateHolder.update {
                     it.copy(
                         currentLocation = LatLng(location.latitude, location.longitude),
@@ -126,6 +140,7 @@ class TrackingService : LifecycleService() {
             }
         }
 
+        // Active watchdog loop: checks every 2s if Location service is disabled or fix is stale (>8s)
         staleCheckJob = lifecycleScope.launch {
             while (true) {
                 kotlinx.coroutines.delay(2_000)

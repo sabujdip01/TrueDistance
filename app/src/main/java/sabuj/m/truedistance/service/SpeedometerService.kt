@@ -27,9 +27,15 @@ import java.util.UUID
 import javax.inject.Inject
 
 /**
- * §6.2 / §12 — Foreground service for live Speedometer trip tracking.
- * Calculates live speed, distance, elapsed time, average/max speed with spike filtering,
- * and maintains the GPS breadcrumb path.
+ * §6.2 / §12 — SpeedometerService is the dedicated Android foreground service for live trip tracking.
+ *
+ * Responsibilities:
+ * 1. Computes live speed, total distance covered, elapsed timer, and average/max speed.
+ * 2. Applies spike filtering via SpeedSpikeFilter to eliminate GPS jump anomalies.
+ * 3. Records path coordinates for live breadcrumb polyline rendering on Google Maps.
+ * 4. Publishes real-time state to SpeedometerStateHolder for reactive UI updates.
+ * 5. Maintains an interactive status bar foreground notification with live stats, Pause/Resume, and Stop actions.
+ * 6. Serializes and persists completed trips with full polyline JSON to Room database.
  */
 @AndroidEntryPoint
 class SpeedometerService : LifecycleService() {
@@ -66,6 +72,7 @@ class SpeedometerService : LifecycleService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
 
+        // Handle incoming action intents from UI and notification drawer buttons
         when (intent?.action) {
             ACTION_START -> {
                 startTrip()
@@ -84,6 +91,12 @@ class SpeedometerService : LifecycleService() {
         return START_STICKY
     }
 
+    /**
+     * Initializes and starts a new trip session:
+     * - Resets all counters, filters, and timer states.
+     * - Starts the foreground service with ongoing status bar notification.
+     * - Launches location observation and timer coroutines.
+     */
     private fun startTrip() {
         tripId = UUID.randomUUID().toString()
         startedAt = System.currentTimeMillis()
@@ -107,6 +120,7 @@ class SpeedometerService : LifecycleService() {
             )
         }
 
+        // Elevate to foreground service with interactive status bar notification
         startForeground(
             NotificationHelper.SPEEDOMETER_NOTIFICATION_ID,
             NotificationHelper.buildSpeedometerNotification(
@@ -118,6 +132,10 @@ class SpeedometerService : LifecycleService() {
         startTimerLoop()
     }
 
+    /**
+     * Subscribes to live GPS updates reacting dynamically to accuracy & interval preferences.
+     * Filters speeds, accumulates distance, and updates polyline points.
+     */
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun startLocationTracking() {
         trackingJob?.cancel()
@@ -170,6 +188,7 @@ class SpeedometerService : LifecycleService() {
                     0.0
                 }
 
+                // Push updated metrics to UI state holder
                 stateHolder.update {
                     it.copy(
                         currentSpeedMps = currentSpeedMps,
@@ -185,6 +204,9 @@ class SpeedometerService : LifecycleService() {
         }
     }
 
+    /**
+     * Ticks every second to accumulate active elapsed time and recompute average speed.
+     */
     private fun startTimerLoop() {
         timerJob?.cancel()
         timerJob = lifecycleScope.launch {
@@ -215,6 +237,9 @@ class SpeedometerService : LifecycleService() {
         }
     }
 
+    /**
+     * Freezes trip tracking and zeros out instantaneous speed while preserving distance and elapsed time.
+     */
     private fun pauseTrip() {
         isPaused = true
         currentSpeedMps = 0.0
@@ -222,6 +247,9 @@ class SpeedometerService : LifecycleService() {
         updateNotification()
     }
 
+    /**
+     * Resumes an active trip session.
+     */
     private fun resumeTrip() {
         isPaused = false
         lastTickTime = System.currentTimeMillis()
@@ -229,6 +257,9 @@ class SpeedometerService : LifecycleService() {
         updateNotification()
     }
 
+    /**
+     * Refreshes the foreground notification with formatted live speed, distance, and timer.
+     */
     private fun updateNotification() {
         val speedKmh = currentSpeedMps * 3.6
         val speedFormatted = DistanceCalculator.formatSpeedString(speedKmh, sabuj.m.truedistance.database.UnitPreference.KM)
@@ -244,6 +275,10 @@ class SpeedometerService : LifecycleService() {
         )
     }
 
+    /**
+     * Finalizes the trip, serializes the breadcrumb polyline to JSON, saves to Room database,
+     * removes the foreground notification, and stops the service.
+     */
     private fun stopTrip() {
         lifecycleScope.launch {
             trackingJob?.cancel()
@@ -260,6 +295,7 @@ class SpeedometerService : LifecycleService() {
             val startPoint = pathPoints.firstOrNull()
             val endPoint = pathPoints.lastOrNull()
 
+            // Serialize recorded breadcrumb points to JSON array
             val pointsJson = JSONArray().apply {
                 pathPoints.forEach { pt ->
                     put(JSONObject().apply {
@@ -284,6 +320,7 @@ class SpeedometerService : LifecycleService() {
                 pathPointsJson = pointsJson
             )
 
+            // Persist completed trip to Room database
             tripRepository.saveTrip(trip)
 
             val savedLoc = lastLocation
@@ -304,6 +341,9 @@ class SpeedometerService : LifecycleService() {
         }
     }
 
+    /**
+     * Helper to format milliseconds to HH:MM:SS string.
+     */
     private fun formatElapsed(millis: Long): String {
         val totalSec = millis / 1000
         val hrs = totalSec / 3600

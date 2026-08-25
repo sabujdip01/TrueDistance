@@ -19,6 +19,9 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
+/**
+ * §6.1.3 History UI State — Encapsulates sectioned list items, measurement unit, precision, and auto-meters settings.
+ */
 data class HistoryUiState(
     val items: List<HistoryListItem> = emptyList(),
     val unit: sabuj.m.truedistance.database.UnitPreference = sabuj.m.truedistance.database.UnitPreference.KM,
@@ -26,7 +29,10 @@ data class HistoryUiState(
     val autoMetersUnder1km: Boolean = true
 )
 
-/** §6.1.3 Distance History Screen ViewModel — grouping, expand/collapse, delete. */
+/**
+ * §6.1.3 Distance History Screen ViewModel — Manages date grouping ("Today", "Yesterday", "Older"),
+ * single-card accordion expansion, lazy snapshot loading, and session deletions.
+ */
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
     private val repository: HistoryRepository,

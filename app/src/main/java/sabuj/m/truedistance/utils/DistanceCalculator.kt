@@ -6,11 +6,17 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-/** §7 / §8 — Haversine straight-line distance + unit formatting (§6.3.1). */
+/**
+ * §7 / §8 — Mathematical calculations for great-circle spherical distance via Haversine formula,
+ * arrival threshold evaluation, and unit formatting according to user settings.
+ */
 object DistanceCalculator {
 
     private const val EARTH_RADIUS_METERS = 6_371_000.0
 
+    /**
+     * Calculates the great-circle distance in meters between two coordinates using the Haversine formula.
+     */
     fun haversineMeters(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
         val dLat = Math.toRadians(lat2 - lat1)
         val dLng = Math.toRadians(lng2 - lng1)
@@ -21,6 +27,9 @@ object DistanceCalculator {
         return EARTH_RADIUS_METERS * c
     }
 
+    /**
+     * Determines whether remaining distance has reached within arrival threshold (default 10 meters).
+     */
     fun isDestinationReached(distanceMeters: Double, thresholdMeters: Double = 10.0): Boolean =
         distanceMeters <= thresholdMeters
 

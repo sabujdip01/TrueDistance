@@ -20,6 +20,9 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
+/**
+ * §6.2 Speedometer UI State — Encapsulates live trip metrics, speed readouts, breadcrumb paths, and GPS stale signal flag.
+ */
 data class SpeedometerUiState(
     val isTracking: Boolean = false,
     val isPaused: Boolean = false,
@@ -35,6 +38,10 @@ data class SpeedometerUiState(
     val staleFix: Boolean = false
 )
 
+/**
+ * §6.2 Speedometer ViewModel — Connects [SpeedometerService] state via [SpeedometerStateHolder]
+ * with user preferences and provides trip control commands (Start, Pause, Resume, Stop).
+ */
 @HiltViewModel
 class SpeedometerViewModel @Inject constructor(
     private val stateHolder: SpeedometerStateHolder,

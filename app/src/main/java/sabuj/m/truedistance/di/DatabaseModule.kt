@@ -13,10 +13,14 @@ import sabuj.m.truedistance.database.SavedLocationDao
 import sabuj.m.truedistance.database.TrueDistanceDatabase
 import javax.inject.Singleton
 
+/**
+ * Dagger Hilt dependency injection module for Room database and DAO instances.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
+    /** Provides singleton instance of [TrueDistanceDatabase]. */
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): TrueDistanceDatabase =
@@ -28,18 +32,22 @@ object DatabaseModule {
         .fallbackToDestructiveMigration()
         .build()
 
+    /** Provides [SavedLocationDao] instance. */
     @Provides
     fun provideSavedLocationDao(db: TrueDistanceDatabase): SavedLocationDao =
         db.savedLocationDao()
 
+    /** Provides [HistoryEntryDao] instance. */
     @Provides
     fun provideHistoryEntryDao(db: TrueDistanceDatabase): HistoryEntryDao =
         db.historyEntryDao()
 
+    /** Provides [DistanceSnapshotDao] instance. */
     @Provides
     fun provideDistanceSnapshotDao(db: TrueDistanceDatabase): DistanceSnapshotDao =
         db.distanceSnapshotDao()
 
+    /** Provides [TripDao] instance. */
     @Provides
     fun provideTripDao(db: TrueDistanceDatabase): sabuj.m.truedistance.database.TripDao =
         db.tripDao()

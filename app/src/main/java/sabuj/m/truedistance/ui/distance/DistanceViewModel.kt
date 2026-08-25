@@ -16,7 +16,15 @@ import sabuj.m.truedistance.repository.SavedLocationRepository
 import java.util.Locale
 import javax.inject.Inject
 
-/** §6.1.1 Main Screen ViewModel */
+/**
+ * Destination selection data transfer model representing a chosen target point.
+ *
+ * @property name User-facing place or location name.
+ * @property address Formatted street address or coordinate label.
+ * @property latitude Target latitude coordinate.
+ * @property longitude Target longitude coordinate.
+ * @property savedLocationId Optional ID if chosen from saved bookmarks.
+ */
 data class DestinationSelection(
     val name: String,
     val address: String,
@@ -25,6 +33,9 @@ data class DestinationSelection(
     val savedLocationId: String? = null
 )
 
+/**
+ * §6.1.1 Distance UI State — Encapsulates saved bookmarks, current selection, button enablement, and search status.
+ */
 data class DistanceUiState(
     val savedLocations: List<SavedLocation> = emptyList(),
     val selectedDestination: DestinationSelection? = null,
@@ -33,6 +44,10 @@ data class DistanceUiState(
     val searchError: String? = null
 )
 
+/**
+ * §6.1.1 Distance Screen ViewModel — Manages destination selection from Places SDK autocomplete,
+ * saved bookmarks dropdown, and interactive map picker coordinate reverse-geocoding.
+ */
 @HiltViewModel
 class DistanceViewModel @Inject constructor(
     private val savedLocationRepository: SavedLocationRepository

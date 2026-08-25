@@ -38,6 +38,13 @@ import sabuj.m.truedistance.utils.DistanceCalculator
 /**
  * §6.2 Speedometer Screen — Live trip tracking with map, floating live speed readout,
  * statistics card, and Start / Pause / Stop controls.
+ *
+ * Responsibilities:
+ * 1. Hosts the interactive Google Map instance with blue live location marker and breadcrumb polyline.
+ * 2. Provides floating live speed readout and trip statistics (max speed, avg speed, distance, elapsed timer).
+ * 3. Controls trip state transitions (Start, Pause, Resume, Stop) via SpeedometerService.
+ * 4. Displays unified zoom and my-location controls anchored in the bottom-right corner.
+ * 5. Provides shortcut to Past Trips history screen.
  */
 @AndroidEntryPoint
 class SpeedometerFragment : Fragment(), OnMapReadyCallback {
@@ -54,6 +61,7 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var fusedLocationClient: com.google.android.gms.location.FusedLocationProviderClient
 
+    // Permission request contract for runtime location permissions
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -75,6 +83,7 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Initialize SupportMapFragment asynchronously
         val mapFragment = childFragmentManager.findFragmentById(R.id.mapContainer) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
 
@@ -83,6 +92,9 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
         checkPermissions()
     }
 
+    /**
+     * Checks if location permissions are granted; prompts user if missing.
+     */
     private fun checkPermissions() {
         val fine = ContextCompat.checkSelfPermission(
             requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
@@ -102,6 +114,9 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    /**
+     * Queries last known device location to center the map before a trip starts.
+     */
     @android.annotation.SuppressLint("MissingPermission")
     private fun fetchInitialLocation() {
         val fine = ContextCompat.checkSelfPermission(
@@ -122,15 +137,21 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    /**
+     * Sets up click listeners for trip controls, history navigation, and map zoom buttons.
+     */
     private fun setupButtons() {
+        // Navigate to Past Trips history screen
         binding.historyButton.setOnClickListener {
             findNavController().navigate(R.id.action_speedometer_to_pastTrips)
         }
 
+        // Start Trip action
         binding.startTripButton.setOnClickListener {
             checkPermissionsAndStart()
         }
 
+        // Pause / Resume Trip action
         binding.pauseResumeButton.setOnClickListener {
             val state = viewModel.uiState.value
             if (state.isPaused) {
@@ -140,12 +161,13 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
             }
         }
 
+        // Stop Trip action: saves trip and displays confirmation toast
         binding.stopTripButton.setOnClickListener {
             viewModel.stopTrip(requireContext())
             android.widget.Toast.makeText(requireContext(), getString(R.string.trip_saved), android.widget.Toast.LENGTH_SHORT).show()
         }
 
-        // Custom map controls stack
+        // Unified floating map controls stack
         binding.btnZoomIn.setOnClickListener {
             googleMap?.animateCamera(CameraUpdateFactory.zoomIn())
         }

@@ -24,7 +24,10 @@ import kotlinx.coroutines.launch
 import sabuj.m.truedistance.R
 import sabuj.m.truedistance.databinding.FragmentHistoryBinding
 
-/** §6.1.3 Distance History Screen — grouped list, expand for interval snapshots. */
+/**
+ * §6.1.3 Distance History Screen — Sectioned tracking history list with sticky date headers,
+ * swipe-to-delete gesture handler, single-card accordion expansion, and Clear All confirmation dialog.
+ */
 @AndroidEntryPoint
 class HistoryFragment : Fragment() {
 

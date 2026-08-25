@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- §6.1.1 Main Screen — responsive per §12.4, ConstraintLayout, no fixed dp widths -->
+<!-- §6.1.1 Main True Distance Screen — Destination selection, Search Autocomplete, and Start Tracking -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- §11.1 / §11.2 — no-internet / no-GPS banners, hidden by default -->
+        <!-- §11.1 No Internet Warning Banner (Gone by default) -->
         <TextView
             android:id="@+id/noInternetBanner"
             android:layout_width="0dp"
@@ -26,6 +26,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- §11.2 No GPS / Location Disabled Warning Banner (Gone by default) -->
         <TextView
             android:id="@+id/noGpsBanner"
             android:layout_width="0dp"
@@ -42,7 +43,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Header row with Screen Name on left and Action Chips on right -->
+        <!-- Screen Header Title -->
         <TextView
             android:id="@+id/screenTitle"
             android:layout_width="0dp"
@@ -57,6 +58,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/savedLocationsButton" />
 
+        <!-- Header Action Chip: Saved Locations Shortcut -->
         <ImageButton
             android:id="@+id/savedLocationsButton"
             android:layout_width="48dp"
@@ -69,6 +71,7 @@
             app:layout_constraintTop_toBottomOf="@id/noGpsBanner"
             app:layout_constraintEnd_toStartOf="@id/historyButton" />
 
+        <!-- Header Action Chip: Distance History Shortcut -->
         <ImageButton
             android:id="@+id/historyButton"
             android:layout_width="48dp"
@@ -81,7 +84,7 @@
             app:layout_constraintTop_toBottomOf="@id/noGpsBanner"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Location selection card, §6.1.1 -->
+        <!-- §6.1.1 Main Location & Destination Selection Card -->
         <androidx.cardview.widget.CardView
             android:id="@+id/locationCard"
             android:layout_width="0dp"
@@ -102,13 +105,14 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- Destination input: search box + map-pick icon + saved dropdown -->
+                <!-- Destination Input Bar: Places Autocomplete + Map Picker + Saved Locations Dropdown -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
 
+                    <!-- Places Autocomplete Search Input -->
                     <AutoCompleteTextView
                         android:id="@+id/destinationSearchBox"
                         android:layout_width="0dp"
@@ -121,6 +125,7 @@
                         android:textColorHint="@color/text_secondary"
                         android:importantForAutofill="no" />
 
+                    <!-- Map Picker Action Button -->
                     <ImageButton
                         android:id="@+id/mapPickButton"
                         android:layout_width="40dp"
@@ -130,6 +135,7 @@
                         android:contentDescription="@string/pick_on_map"
                         android:src="@drawable/ic_map_pin" />
 
+                    <!-- Saved Locations Quick Selection Dropdown Button -->
                     <ImageButton
                         android:id="@+id/savedLocationDropdown"
                         android:layout_width="40dp"
@@ -140,6 +146,7 @@
                         android:src="@drawable/ic_chevron_down" />
                 </LinearLayout>
 
+                <!-- Current Location Origin Label -->
                 <TextView
                     android:id="@+id/fromLabel"
                     android:layout_width="wrap_content"
@@ -148,6 +155,7 @@
                     android:text="@string/from_current_location"
                     android:textStyle="bold" />
 
+                <!-- Selected Destination Destination Label -->
                 <TextView
                     android:id="@+id/toLabel"
                     android:layout_width="wrap_content"
@@ -155,6 +163,7 @@
                     android:layout_marginTop="4dp"
                     android:text="@string/to_choose_destination" />
 
+                <!-- Start Tracking Action Button (Disabled until destination selected) -->
                 <Button
                     android:id="@+id/startTrackingButton"
                     android:layout_width="match_parent"

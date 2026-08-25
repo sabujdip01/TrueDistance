@@ -7,13 +7,12 @@ import java.util.Locale
 import kotlin.math.abs
 
 /**
- * Time-Based Distance History Log (per time-based-log.md spec).
+ * Time-Based Distance History Log Formatter.
  *
- * Builds display rows for a completed trip's expanded history card.
- * Each row has three columns:
- *   1. Elapsed label: "+0:00 (Start)", "+2:30", "+5:00 (End)"
+ * Builds formatted 3-column display rows for an expanded history session card:
+ *   1. Elapsed time label: "+0:00 (Start)", "+2:30", "+5:00 (End)"
  *   2. Clock time:    "9:45 AM"
- *   3. Distance:      formatted by caller
+ *   3. Distance:      raw distance in meters for formatting by caller per unit settings
  */
 object DistanceSnapshotFormatter {
 

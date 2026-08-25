@@ -24,8 +24,16 @@ import sabuj.m.truedistance.utils.NetworkStatusHelper
 import sabuj.m.truedistance.utils.PlacesAutocompleteAdapter
 
 /**
- * §6.1.1 — Main Screen: destination selection + Start Tracking.
- * Search uses Google Places Autocomplete (§6.1.1a).
+ * §6.1.1 — DistanceFragment is the main entry screen for True Distance.
+ *
+ * Responsibilities:
+ * 1. Supports 3 destination input mechanisms:
+ *    - Google Places SDK autocomplete search (§6.1.1a).
+ *    - Interactive map picker selection (§6.1.1b).
+ *    - Quick selection dropdown from Saved Locations (§6.1.1c).
+ * 2. Manages Start Tracking button visual and functional state (disabled with alpha 0.4 until destination is chosen).
+ * 3. Monitors real-time Network and GPS hardware availability via top warning banners.
+ * 4. Automatically restores the live TrackingFragment if a session is already in progress.
  */
 @AndroidEntryPoint
 class DistanceFragment : Fragment() {
@@ -58,18 +66,21 @@ class DistanceFragment : Fragment() {
             return
         }
 
+        // Navigate to Saved Locations screen
         binding.savedLocationsButton.setOnClickListener {
             findNavController().navigate(
                 sabuj.m.truedistance.R.id.action_distance_to_savedLocations
             )
         }
 
+        // Navigate to Distance History screen
         binding.historyButton.setOnClickListener {
             findNavController().navigate(
                 sabuj.m.truedistance.R.id.action_distance_to_history
             )
         }
 
+        // Set up Google Places Autocomplete search adapter
         val autocompleteAdapter = PlacesAutocompleteAdapter(requireContext())
         binding.destinationSearchBox.setAdapter(autocompleteAdapter)
         binding.destinationSearchBox.setOnItemClickListener { _, _, position, _ ->
@@ -82,6 +93,7 @@ class DistanceFragment : Fragment() {
             }
         }
 
+        // Start Tracking: passes destination coordinates to TrackingFragment
         binding.startTrackingButton.setOnClickListener {
             viewModel.uiState.value.selectedDestination?.let {
                 sharedDestinationViewModel.setDestination(it)
@@ -91,7 +103,7 @@ class DistanceFragment : Fragment() {
             }
         }
 
-        // §6.1.1a — search via Geocoder on IME "search" action
+        // Fallback search via Geocoder on keyboard IME "Search" action
         binding.destinationSearchBox.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE) {
                 val query = binding.destinationSearchBox.text?.toString().orEmpty()
@@ -100,14 +112,14 @@ class DistanceFragment : Fragment() {
             } else false
         }
 
-        // §6.1.1b — map-tap picker
+        // Open Map Picker screen to tap and choose a location
         binding.mapPickButton.setOnClickListener {
             findNavController().navigate(
                 sabuj.m.truedistance.R.id.action_distance_to_mapPicker
             )
         }
 
-        // §6.1.1c — quick-select dropdown from Saved Locations
+        // Quick-select dropdown menu from user's Saved Locations
         binding.savedLocationDropdown.setOnClickListener { anchor ->
             val locations = viewModel.uiState.value.savedLocations
             if (locations.isEmpty()) return@setOnClickListener
@@ -122,6 +134,7 @@ class DistanceFragment : Fragment() {
             popup.show()
         }
 
+        // Collect UI state: enable/disable start button and update selected destination label
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
@@ -138,8 +151,7 @@ class DistanceFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        // §11.1/§11.2 — no-internet / no-GPS banners, re-checked whenever this
-        // screen becomes visible (e.g., returning from system settings).
+        // Check hardware status banners (No Internet / No GPS)
         val hasInternet = NetworkStatusHelper.isConnected(requireContext())
         val hasLocation = GpsStatusHelper.isLocationEnabled(requireContext())
         binding.noInternetBanner.visibility = if (!hasInternet) View.VISIBLE else View.GONE
@@ -154,12 +166,12 @@ class DistanceFragment : Fragment() {
             binding.destinationSearchBox.setText("")
         }
 
-        // §6.1.1b — consume a point picked on MapPickerFragment, if any.
+        // Consume a point picked on MapPickerFragment
         mapPickerViewModel.consume()?.let { latLng ->
             viewModel.selectPickedPoint(latLng.latitude, latLng.longitude, requireContext())
         }
 
-        // Consume destination set by SavedLocationsFragment (tap on saved location)
+        // Consume destination set by SavedLocationsFragment
         sharedDestinationViewModel.destination.value?.let { dest ->
             viewModel.selectDestination(dest)
             sharedDestinationViewModel.clear()

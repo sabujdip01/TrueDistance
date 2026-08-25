@@ -15,9 +15,8 @@ import sabuj.m.truedistance.service.TrackingStateHolder
 import javax.inject.Inject
 
 /**
- * §6.1.4 — thin wrapper around TrackingService: starts/stops the foreground service
- * and exposes its published TrackingStateHolder state to the UI. Actual location
- * tracking + Room writes live in the service so they survive backgrounding (§12).
+ * §6.1.4 Tracking Screen ViewModel — Bridges [TrackingFragment] with [TrackingService] via [TrackingStateHolder],
+ * handling service startup, synchronous state reset, stopping, and background tracking policy enforcement.
  */
 @HiltViewModel
 class TrackingViewModel @Inject constructor(
@@ -26,6 +25,7 @@ class TrackingViewModel @Inject constructor(
     private val stateHolder: TrackingStateHolder
 ) : ViewModel() {
 
+    /** Exposes reactive tracking metrics from [TrackingStateHolder]. */
     val uiState: StateFlow<TrackingState> = stateHolder.state
 
     fun startTracking(destinationName: String, destLat: Double, destLng: Double, savedLocationId: String?) {

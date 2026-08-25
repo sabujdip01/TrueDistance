@@ -1,6 +1,8 @@
 package sabuj.m.truedistance.database
 
-/** §8 Data Model — AppSettings, stored via DataStore (see SettingsRepository) */
+/**
+ * §8 Data Model — Preferences DataStore keys and domain enumerations for True Distance.
+ */
 object AppSettingsKeys {
     const val THEME = "theme"
     const val UNIT = "unit"
@@ -11,6 +13,11 @@ object AppSettingsKeys {
     const val BACKGROUND_TRACKING_ENABLED = "background_tracking_enabled"
 }
 
+/** Supported application theme appearance modes. */
 enum class ThemeMode { LIGHT, DARK, SYSTEM }
+
+/** Measurement unit preference for distances and speeds. */
 enum class UnitPreference { KM, MILES, BOTH }
+
+/** Hardware GPS positioning accuracy configurations. */
 enum class GpsAccuracyMode { HIGH, BALANCED, DEVICE_ONLY }
