@@ -14,14 +14,16 @@
 - **Visual Map Tracking**:
   - Live current location marker (Red) & static destination marker (Green).
   - Solid dark teal polyline (`#00796B`) connecting both points.
-  - Auto-fitting camera bounds with dynamic padding for UI overlays.
+  - Auto-fitting camera bounds with dynamic padding for UI overlays and control stacks.
+  - **WhatsApp-Style Recenter & Overview**: Tapping Recenter zooms tightly to current location (`17.5f`) and reveals a Return-to-Overview button (`ic_undo`); tapping Return-to-Overview frames both markers and lines with overlay-safe padding.
   - Glassmorphic distance overlay with 36sp bold numerals.
   - Auto-arrival detection (≤ 10m) with "Destination Reached" celebration dialog.
 - **Speedometer & Live Trip Tracking (V2)**:
   - Immediate initial location fetch and centering on map ready (`17f` zoom).
   - High street-level zoom on trip start (`18.5f`).
   - Continuous breadcrumb route polyline (`#00796B`, 8px).
-  - Dynamic camera auto-dragging and auto-zooming out with UI overlay padding.
+  - Dynamic camera auto-dragging and auto-zooming out with UI overlay padding and control stack clearance.
+  - **WhatsApp-Style Recenter & Overview**: Smoothly toggle between full route overview framing and tight user location follow mode.
   - Stationary GPS noise deadband filtering (`0.6 m/s`) to eliminate stationary speed/distance jitter.
   - Interactive foreground service notification with live Speed, Distance, Elapsed time, and synced Pause/Resume and Stop controls.
 - **Past Trips History (V2)**:
@@ -43,8 +45,9 @@
   - **Instant Branded Splash Screen**: Bypasses initial system splash delay to immediately display logo, app title, version `v2.0.0 (2)`, and developer credit: `Made with ❤️ by Sabuj`.
   - **Speedometer Stats Card & Header Icons**: Stat headers (Distance, Avg Speed, Max Speed, Start Time, Elapsed Time) feature dedicated vector icons (`ic_distance`, `ic_avg_speed`, `ic_max_speed`, `ic_clock`, `ic_timer`) with theme-adapted contrast typography (`#455A64` Light / `#CBD5E0` Dark).
   - **Revamped Elevated Settings Screen**:
-    - Interactive Pill Toggle Selector Groups (`MaterialButtonToggleGroup`) with drop shadows for **Unit Preference** (`Kilometers (KM / M)` / `Miles (MI / FT)`), **App Theme** (`System` / `Light` / `Dark` with instant night mode application), **GPS Accuracy Mode** (`High` / `Balanced` / `Device`), and **Update Frequency** (`1s` / `3s` / `5s` / `10s`).
-    - Dedicated vector icons beside every setting option (`ic_distance`, `ic_theme`, `ic_timer`, `ic_avg_speed`, `ic_clock`, `ic_privacy`, `ic_github`, `ic_developer`).
+    - Interactive Pill Toggle Selector Groups (`MaterialButtonToggleGroup`) with drop shadows for **Unit Preference** (`Kilometers (KM / M)` / `Miles (MI / FT)`), **App Theme** (`System` / `Light` / `Dark` with instant night mode application), **GPS Accuracy Mode** (`High` / `Balanced` / `Device`), and **Update Frequency** (`1s` / `2s` / `3s` / `5s`).
+    - **Keep Screen On Toggle**: Persistent toggle switch that keeps the device screen active during navigation and trip tracking.
+    - Dedicated vector icons beside every setting option (`ic_distance`, `ic_theme`, `ic_timer`, `ic_avg_speed`, `ic_clock`, `ic_screen`, `ic_privacy`, `ic_github`, `ic_developer`).
     - **In-App Privacy Policy Dialog**: Built-in `MaterialAlertDialogBuilder` displaying privacy terms cleanly without launching external browser windows.
     - **Open Source Repository Link**: GitHub icon link opening `https://github.com/sabujdip01/TrueDistance.git`.
     - **Developer Credit Link**: `Made with ❤️ by Sabuj Mondal` (`About Me →`) hyperlinked to `https://about.me/sabujdip01`.
@@ -80,11 +83,13 @@
 
 ---
 
-## 📋 Roadmap
+## 💡 Future Improvement Ideas
 
-- **V1 (Completed)**: Core True Distance tracking, Saved Locations, Distance History with time-based tier snapshots, Settings, and full Dark Mode.
-- **V2 (Completed - Current `v2.0.0 (2)`)**: Speedometer live trip tracking, breadcrumb polyline, dynamic camera auto-fit bounds, stationary noise filtering, interactive notification, Past Trips expandable map snapshots, and Material3 floating pill navigation bar.
-- **V3 (Upcoming)**: Home-screen widgets (4×2), App shortcuts, sticky notification toggles, and auto-pause.
+- **Home Screen Widget (4×2)**: Live distance and destination card on Android home screen.
+- **App Shortcuts**: Quick launcher shortcuts for True Distance and Speedometer.
+- **Auto-Pause When Stationary**: Automatic pause detection when vehicle/user is stopped.
+- **Removable Notification Toggle**: Settings switch to allow dismissing foreground tracking notifications.
+- **Landscape Mode & Tablet Split-Screen**: Responsive landscape UI with side-by-side map and telemetry cards for dashboard car mounts and tablets.
 
 ---
 

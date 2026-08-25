@@ -32,11 +32,12 @@ class SavedLocationAdapter(
         holder.binding.nameText.text = item.name
         holder.binding.addressText.text = item.address
         
-        // Cycle through pastel gradients (mint/lavender/peach per spec §2.1)
-        val backgroundRes = when (position % 3) {
+        // Cycle through pastel gradients (mint/lavender/peach/blue)
+        val backgroundRes = when (position % 4) {
             0 -> sabuj.m.truedistance.R.drawable.bg_card_mint
             1 -> sabuj.m.truedistance.R.drawable.bg_card_lavender
-            else -> sabuj.m.truedistance.R.drawable.bg_card_peach
+            2 -> sabuj.m.truedistance.R.drawable.bg_card_peach
+            else -> sabuj.m.truedistance.R.drawable.bg_card_blue
         }
         holder.binding.rootContainer.setBackgroundResource(backgroundRes)
 
@@ -48,10 +49,11 @@ class SavedLocationAdapter(
             val sec = androidx.core.content.ContextCompat.getColor(ctx, sabuj.m.truedistance.R.color.text_gray_purple)
             prim to sec
         } else {
-            val darkColor = when (position % 3) {
+            val darkColor = when (position % 4) {
                 0 -> 0xFF00695C.toInt()    // deep teal matching mint card
                 1 -> 0xFF6A1B9A.toInt()    // deep purple matching lavender card
-                else -> 0xFFBF360C.toInt() // deep orange matching peach card
+                2 -> 0xFFBF360C.toInt()    // deep orange matching peach card
+                else -> 0xFF1565C0.toInt() // deep blue matching blue card
             }
             val lightDarkColor = (darkColor and 0x00FFFFFF) or (0xD9 shl 24)
             darkColor to lightDarkColor

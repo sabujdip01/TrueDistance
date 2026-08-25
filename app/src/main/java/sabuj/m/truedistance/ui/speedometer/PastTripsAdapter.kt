@@ -75,11 +75,12 @@ class PastTripsAdapter(
             binding.elapsedText.text = elapsedStr
             binding.avgSpeedText.text = "Avg $avgSpeedFormatted"
 
-            // Card background: Cycle through gradient cards
-            val backgroundRes = when (bindingAdapterPosition % 3) {
+            // Card background: Cycle through gradient cards (mint/lavender/peach/blue)
+            val backgroundRes = when (bindingAdapterPosition % 4) {
                 0 -> R.drawable.bg_card_mint
-                1 -> R.drawable.bg_card_peach
-                else -> R.drawable.bg_card_lavender
+                1 -> R.drawable.bg_card_lavender
+                2 -> R.drawable.bg_card_peach
+                else -> R.drawable.bg_card_blue
             }
             binding.rootContainer.setBackgroundResource(backgroundRes)
 
@@ -90,10 +91,11 @@ class PastTripsAdapter(
                 val sec = ContextCompat.getColor(ctx, R.color.text_gray_purple)
                 prim to sec
             } else {
-                val darkColor = when (bindingAdapterPosition % 3) {
+                val darkColor = when (bindingAdapterPosition % 4) {
                     0 -> 0xFF00695C.toInt()    // deep teal
-                    1 -> 0xFFBF360C.toInt()    // deep orange
-                    else -> 0xFF6A1B9A.toInt() // deep purple
+                    1 -> 0xFF6A1B9A.toInt()    // deep purple
+                    2 -> 0xFFBF360C.toInt()    // deep orange
+                    else -> 0xFF1565C0.toInt() // deep blue
                 }
                 val lightDarkColor = (darkColor and 0x00FFFFFF) or (0xD9 shl 24)
                 darkColor to lightDarkColor

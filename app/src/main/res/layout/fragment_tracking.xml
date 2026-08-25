@@ -64,6 +64,18 @@
                 android:src="@drawable/ic_recenter"
                 app:tint="@color/primary_violet" />
 
+            <!-- WhatsApp style Return to Overview / Fit all markers button -->
+            <ImageButton
+                android:id="@+id/btnBackToOverview"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_icon_chip"
+                android:contentDescription="@string/fit_overview"
+                android:src="@drawable/ic_undo"
+                android:visibility="gone"
+                app:tint="@color/primary_violet" />
+
             <!-- Zoom In Action Button -->
             <ImageButton
                 android:id="@+id/btnZoomIn"

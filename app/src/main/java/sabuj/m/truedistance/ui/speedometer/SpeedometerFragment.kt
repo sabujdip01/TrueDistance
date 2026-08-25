@@ -137,6 +137,8 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    private var isFollowLocationMode = false
+
     /**
      * Sets up click listeners for trip controls, history navigation, and map zoom buttons.
      */
@@ -164,6 +166,8 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
         // Stop Trip action: saves trip and displays confirmation toast
         binding.stopTripButton.setOnClickListener {
             viewModel.stopTrip(requireContext())
+            isFollowLocationMode = false
+            binding.btnBackToOverview.visibility = View.GONE
             android.widget.Toast.makeText(requireContext(), getString(R.string.trip_saved), android.widget.Toast.LENGTH_SHORT).show()
         }
 
@@ -174,13 +178,28 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
         binding.btnZoomOut.setOnClickListener {
             googleMap?.animateCamera(CameraUpdateFactory.zoomOut())
         }
+
+        // Recenter / Focus on User Current Location (WhatsApp feature)
         binding.btnMyLocation.setOnClickListener {
             val loc = viewModel.uiState.value.currentLocation
             if (loc != null && googleMap != null) {
+                if (viewModel.uiState.value.isTracking) {
+                    isFollowLocationMode = true
+                    binding.btnBackToOverview.visibility = View.VISIBLE
+                }
+                val density = resources.displayMetrics.density
+                googleMap?.setPadding(0, (120 * density).toInt(), 0, (20 * density).toInt())
                 googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 17.5f))
             } else {
                 fetchInitialLocation()
             }
+        }
+
+        // Return to Overview / Fit All Markers (WhatsApp feature)
+        binding.btnBackToOverview.setOnClickListener {
+            isFollowLocationMode = false
+            binding.btnBackToOverview.visibility = View.GONE
+            fitOverviewBounds(viewModel.uiState.value)
         }
     }
 
@@ -354,47 +373,75 @@ class SpeedometerFragment : Fragment(), OnMapReadyCallback {
             startMarker = null
         }
 
-        // Update polyline path and auto-adjust camera to fit path + current location
+        // Update polyline path and adjust camera (Overview mode vs Follow mode)
         if (state.pathPoints.isNotEmpty()) {
             polyline?.points = state.pathPoints
 
             if (state.isTracking && !state.isPaused) {
-                if (state.pathPoints.size > 2) {
-                    val builder = LatLngBounds.Builder()
-                    state.pathPoints.forEach { builder.include(it) }
-                    state.currentLocation?.let { builder.include(it) }
-
-                    try {
-                        val bounds = builder.build()
-                        // Ensure bounds has noticeable spread before switching to LatLngBounds
-                        val start = state.pathPoints.first()
-                        val current = state.currentLocation ?: state.pathPoints.last()
-                        val spreadMeters = DistanceCalculator.haversineMeters(
-                            start.latitude, start.longitude,
-                            current.latitude, current.longitude
-                        )
-
-                        if (spreadMeters > 15.0) {
-                            // Auto zoom out to fit all covered path points with UI overlay padding
-                            val topPadding = if (binding.speedOverlayCard.height > 0) binding.speedOverlayCard.bottom + 30 else 120
-                            val bottomPadding = if (binding.statsCard.height > 0) (binding.mapCard.bottom - binding.statsCard.top) + 30 else 180
-                            map.setPadding(60, topPadding, 60, bottomPadding)
-                            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 60))
-                        } else if (state.currentLocation != null) {
-                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(state.currentLocation, 18.5f))
-                        }
-                    } catch (_: Exception) {
-                        state.currentLocation?.let {
-                            map.animateCamera(CameraUpdateFactory.newLatLng(it))
-                        }
+                if (isFollowLocationMode) {
+                    // Zoomed in follow mode: keep user location centered without auto-zooming out
+                    state.currentLocation?.let {
+                        map.animateCamera(CameraUpdateFactory.newLatLng(it))
                     }
-                } else if (state.currentLocation != null) {
-                    // Small path: follow current location at highest zoom
-                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(state.currentLocation, 18.5f))
+                } else {
+                    // Default Overview mode: fit all covered path points and markers
+                    fitOverviewBounds(state)
                 }
             }
         } else {
             polyline?.points = emptyList()
+        }
+    }
+
+    /**
+     * WhatsApp-style overview bounds calculation:
+     * Calculates map padding taking into account top speed card, bottom card, and right-side floating control stack,
+     * so neither start marker, polyline path, nor current location marker is obscured.
+     */
+    private fun fitOverviewBounds(state: SpeedometerUiState) {
+        val map = googleMap ?: return
+        val density = resources.displayMetrics.density
+
+        if (state.pathPoints.size > 1) {
+            val builder = LatLngBounds.Builder()
+            state.pathPoints.forEach { builder.include(it) }
+            state.currentLocation?.let { builder.include(it) }
+
+            try {
+                val bounds = builder.build()
+                val start = state.pathPoints.first()
+                val current = state.currentLocation ?: state.pathPoints.last()
+                val spreadMeters = DistanceCalculator.haversineMeters(
+                    start.latitude, start.longitude,
+                    current.latitude, current.longitude
+                )
+
+                if (spreadMeters > 15.0) {
+                    // Top padding for speed overlay card
+                    val topPadding = if (binding.speedOverlayCard.height > 0) {
+                        binding.speedOverlayCard.bottom + (20 * density).toInt()
+                    } else {
+                        (130 * density).toInt()
+                    }
+                    // Right padding for map control stack (44dp button + 16dp margin + 25dp extra cushion = 85dp)
+                    val rightPadding = (85 * density).toInt()
+                    val leftPadding = (40 * density).toInt()
+                    val bottomPadding = (40 * density).toInt()
+
+                    map.setPadding(leftPadding, topPadding, rightPadding, bottomPadding)
+                    map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (30 * density).toInt()))
+                } else if (state.currentLocation != null) {
+                    map.setPadding(0, (120 * density).toInt(), 0, (20 * density).toInt())
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(state.currentLocation, 18.0f))
+                }
+            } catch (_: Exception) {
+                state.currentLocation?.let {
+                    map.animateCamera(CameraUpdateFactory.newLatLng(it))
+                }
+            }
+        } else if (state.currentLocation != null) {
+            map.setPadding(0, (120 * density).toInt(), 0, (20 * density).toInt())
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(state.currentLocation, 18.0f))
         }
     }
 

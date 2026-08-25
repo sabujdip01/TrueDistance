@@ -195,18 +195,16 @@ Layout structure (top to bottom):
     Balanced (network-based, less battery) / Device Only (GPS only). Maps to Android's
     location priority constants (e.g., `PRIORITY_HIGH_ACCURACY`,
     `PRIORITY_BALANCED_POWER_ACCURACY`).
-  - **Update Frequency**: how often location updates are requested while tracking,
-    e.g. selectable interval such as Every 1s / Every 3s / Every 5s / Every 10s.
-    Default: a reasonable middle value (e.g., every 3s) balancing responsiveness and
-    battery.
+  - **Update Frequency**: how often location updates are requested while tracking:
+    `1s`, `2s`, `3s`, `5s` (default: `3s` balancing responsiveness and battery).
 - **Unit selector**: Kilometers / Miles / Both (default: Kilometers). Applies to all distance
   displays app-wide (Main screen post-tracking readouts, Tracking screen, History).
   - Decimal precision: up to 2 decimals, user-configurable (0/1/2 decimal places).
   - Small-distance auto-format: when distance is under 1 km, automatically display in
-    meters instead (e.g., "850 m" rather than "0.85 km") — toggle to enable/disable.
-- **Background Tracking**: toggle — keep live tracking active (with persistent
-  notification) when app is backgrounded, vs. pause when app is not in foreground.
-  Default: ON.
+- **Keep Screen On**: toggle — prevents device display from sleeping or dimming during active use (default: OFF, user-configurable).
+- **Background Tracking**: Always enabled by default — live tracking and speedometer sessions
+  continue continuously in the background via foreground services with persistent notifications
+  until the user explicitly taps "Stop Tracking" or "Stop Trip".
 
 #### 6.3.2 About Section
 A distinct section (visually separated, e.g. below a divider or in its own card),
@@ -315,8 +313,8 @@ containing:
 | decimalPrecision | int (0–2) | 2 |
 | autoMetersUnder1km | bool | true |
 | gpsAccuracyMode | enum(High, Balanced, DeviceOnly) | High |
-| updateFrequencySeconds | int | 3 |
-| backgroundTrackingEnabled | bool | true |
+| updateFrequencySeconds | int (1, 2, 3, 5) | 3 |
+| keepScreenOn | bool | false |
 
 ### ActiveTrackingSession (runtime state, not necessarily persisted beyond the linked HistoryEntry)
 | Field | Type | Notes |
@@ -562,18 +560,11 @@ size. Concretely:
 
 ---
 
-## 14. V3 Features (Planned — Not in V1 or V2 Scope)
+## 14. Future Improvement Ideas (Backlog)
 
-> **Phased release plan (updated)**:
-> - **V1** — True Distance tab (core feature), Settings, Branding/Splash, all of §6–§12
->   as scoped for V1. Speedometer ships as a placeholder only.
-> - **V2** — Full Speedometer tab implementation (§6.2: gauge, trip stats, live map
->   with actual-path polyline, Start/Pause-Resume/Stop, Past Trips screen).
-> - **V3** — Everything in this section: sticky/removable tracking notification, home
->   screen widget, app icon long-press shortcuts, version screen changelog. These are
->   documented in detail now so the V1/V2 architecture can be built in a way that
->   doesn't block them (e.g., notification structure, widget-friendly data access,
->   launcher shortcuts).
+> **Future Enhancements Backlog**:
+> - The current version (**v2.0.0 (2)**) fully implements the complete scope of **True Distance** and **Speedometer** features.
+> - The detailed items in this section represent candidate improvement ideas and backlog items documented for future releases (e.g. widgets, app shortcuts, stationary auto-pause, removable notification toggle, changelog history).
 
 ### 14.1 Sticky/Persistent Tracking Notification
 - While distance tracking is in progress **and** the app is in the background, a
@@ -651,7 +642,6 @@ size. Concretely:
     append new entries per release without redesigning the screen.
 
 ### 14.5 Speedometer Auto-Pause When Stationary
-- Deferred from V2 to V3 per person's decision (§12.6/§13 note).
 - When implemented: auto-pause Elapsed Time/Distance/Avg Speed accumulation
   (mirrors manual Pause, §6.2.3) when the user's speed stays below a small threshold
   (e.g., <1 km/h) for a minimum duration (e.g., 10–15 seconds) — auto-resumes once
@@ -659,20 +649,15 @@ size. Concretely:
 - Should be a Settings toggle (on/off), since some users may prefer manual-only
   pause control.
 
-### 14.6 V3 Tech/Architecture Notes
-- The v1 foreground-service + notification architecture (§12 Tech Notes) should be
-  designed with v2's sticky/removable toggle in mind — i.e., notification importance/
-  behavior (`setOngoing()` true/false) should be a configurable parameter from the
-  start, not hardcoded, even if the Settings toggle itself ships in v2.
-- The widget (13.2) will need a lightweight way to read "current tracking state +
-  live distance" from the app's local data layer — worth designing the v1 data layer
-  (§8 Data Model, `ActiveTrackingSession`) so it's already accessible to a future
-  `AppWidgetProvider`/`RemoteViews` implementation without major rework (e.g., via
-  `SharedPreferences`/DataStore for the widget-relevant subset of state, since widgets
-  can't easily query a full Room DB synchronously).
-- App Shortcuts (13.3) require API 25+ (`ShortcutManager`); confirm v1's minSdkVersion
-  is compatible or define a graceful fallback for lower API levels.
+### 14.6 Landscape Mode & Tablet Multi-Pane Support
+- The app is designed and optimized for portrait orientation on smartphones.
+- Future improvements could introduce dedicated landscape layouts (e.g., side-by-side map and stats view) for dashboard vehicle docks and tablets.
 
+### 14.7 Tech & Architecture Notes for Future Enhancements
+- The foreground-service + notification architecture (§12 Tech Notes) supports configurable
+  notification persistence (`setOngoing(true/false)`).
+- The widget (14.2) will access lightweight tracking state and live distance via DataStore.
+- App Shortcuts (14.3) use standard Android `ShortcutManager` (API 25+).
 
 ---
 
@@ -707,7 +692,6 @@ size. Concretely:
 - **Utilities**:
   - `DistanceCalculator`, `DistanceSnapshotFormatter`, `SpeedSpikeFilter`, `LocationTrackingHelper`, `NotificationHelper`, `MapUtils`, `GpsStatusHelper`, `NetworkStatusHelper`
 
-### 15.2 Completed Releases
-- **V1 (Completed)**: Core True Distance tracking, Saved Locations, Distance History with time-based tier snapshots, full DayNight theme support, and 80/20 card design.
-- **V2 (Completed)**: Speedometer live tracking, breadcrumb polyline, floating speed counter, stats card, `SpeedometerService` with interactive notification controls, and Past Trips screen with expandable route map snapshot.
-- **V3 (Planned Roadmap)**: Home screen widgets (4x2), Dynamic App Shortcuts, auto-pause on stop detection.
+### 15.2 Release Status
+- **Current Version (`v2.0.0 (2)`)**: Complete implementation of True Distance tracking, Speedometer live recording, Past Trips, Saved Locations, Distance History with time logs, full DayNight theme support, and Material3 floating pill navigation.
+- **Future Improvements**: Backlog items documented in Section 14 (Widgets, Shortcuts, Auto-pause, Removable notification).

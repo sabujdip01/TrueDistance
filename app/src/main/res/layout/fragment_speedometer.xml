@@ -57,7 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <!-- Floating Map Controls Stack: My Location, Zoom In, Zoom Out -->
+        <!-- Floating Map Controls Stack: My Location, Back to Overview (Undo), Zoom In, Zoom Out -->
         <LinearLayout
             android:id="@+id/mapControlsStack"
             android:layout_width="wrap_content"
@@ -74,6 +74,18 @@
                 android:background="@drawable/bg_icon_chip"
                 android:contentDescription="@string/recenter"
                 android:src="@drawable/ic_recenter"
+                app:tint="@color/primary_violet" />
+
+            <!-- WhatsApp style Return to Overview / Fit all markers button -->
+            <ImageButton
+                android:id="@+id/btnBackToOverview"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_icon_chip"
+                android:contentDescription="@string/fit_overview"
+                android:src="@drawable/ic_undo"
+                android:visibility="gone"
                 app:tint="@color/primary_violet" />
 
             <ImageButton

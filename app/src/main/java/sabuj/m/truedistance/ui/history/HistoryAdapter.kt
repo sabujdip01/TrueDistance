@@ -115,11 +115,12 @@ class HistoryAdapter(
                 binding.elapsedText.text = ""
             }
 
-            // --- Card colour (blue/peach/lavender cycle per spec §2.1) ---
-            val backgroundRes = when (bindingAdapterPosition % 3) {
-                0 -> sabuj.m.truedistance.R.drawable.bg_card_blue
-                1 -> sabuj.m.truedistance.R.drawable.bg_card_peach
-                else -> sabuj.m.truedistance.R.drawable.bg_card_lavender
+            // --- Card colour (mint/lavender/peach/blue cycle) ---
+            val backgroundRes = when (bindingAdapterPosition % 4) {
+                0 -> sabuj.m.truedistance.R.drawable.bg_card_mint
+                1 -> sabuj.m.truedistance.R.drawable.bg_card_lavender
+                2 -> sabuj.m.truedistance.R.drawable.bg_card_peach
+                else -> sabuj.m.truedistance.R.drawable.bg_card_blue
             }
             binding.rootContainer.setBackgroundResource(backgroundRes)
 
@@ -130,10 +131,11 @@ class HistoryAdapter(
                 val sec = androidx.core.content.ContextCompat.getColor(ctx, sabuj.m.truedistance.R.color.text_gray_purple)
                 prim to sec
             } else {
-                val darkColor = when (bindingAdapterPosition % 3) {
-                    0 -> 0xFF1565C0.toInt()    // deep blue
-                    1 -> 0xFFBF360C.toInt()    // deep orange
-                    else -> 0xFF6A1B9A.toInt() // deep purple
+                val darkColor = when (bindingAdapterPosition % 4) {
+                    0 -> 0xFF00695C.toInt()    // deep teal
+                    1 -> 0xFF6A1B9A.toInt()    // deep purple
+                    2 -> 0xFFBF360C.toInt()    // deep orange
+                    else -> 0xFF1565C0.toInt() // deep blue
                 }
                 val lightDarkColor = (darkColor and 0x00FFFFFF) or (0xD9 shl 24)
                 darkColor to lightDarkColor

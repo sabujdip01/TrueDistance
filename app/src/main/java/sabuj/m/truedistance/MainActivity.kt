@@ -101,6 +101,19 @@ class MainActivity : AppCompatActivity() {
         } else {
             handleNavigationIntent(intent, bottomNav)
         }
+
+        // Observe keep-screen-on preference and dynamically apply FLAG_KEEP_SCREEN_ON
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                settingsRepository.keepScreenOn.collect { keepOn ->
+                    if (keepOn) {
+                        window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                    } else {
+                        window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                    }
+                }
+            }
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

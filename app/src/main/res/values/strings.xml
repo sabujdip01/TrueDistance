@@ -48,7 +48,7 @@
     <string name="accuracy_balanced">Balanced</string>
     <string name="accuracy_device_only">Device Only</string>
     <string name="update_frequency">Update Frequency</string>
-    <string name="background_tracking">Background Tracking</string>
+    <string name="keep_screen_on">Keep Screen On</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="version">Version</string>
     <string name="version_format">v%1$s (%2$d)</string>
@@ -86,4 +86,5 @@
 
     <!-- Misc -->
     <string name="tracking">Tracking</string>
+    <string name="fit_overview">Fit Overview</string>
 </resources>

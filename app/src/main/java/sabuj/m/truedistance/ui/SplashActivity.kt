@@ -62,6 +62,13 @@ class SplashActivity : AppCompatActivity() {
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Apply system navigation bar window insets so footer text never overlaps 3-button nav bar
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val systemBarInsets = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
+            binding.root.setPadding(0, 0, 0, systemBarInsets.bottom)
+            insets
+        }
+
         // Render current semantic version code & name from BuildConfig
         binding.versionText.text = getString(R.string.version_format, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
 

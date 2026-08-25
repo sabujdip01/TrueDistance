@@ -23,7 +23,7 @@ data class SettingsUiState(
     val autoMetersUnder1km: Boolean = true,
     val gpsAccuracyMode: GpsAccuracyMode = GpsAccuracyMode.HIGH,
     val updateFrequencySeconds: Int = 3,
-    val backgroundTrackingEnabled: Boolean = true
+    val keepScreenOn: Boolean = false
 )
 
 /**
@@ -42,8 +42,8 @@ class SettingsViewModel @Inject constructor(
         combine(repository.autoMetersUnder1km, repository.gpsAccuracyMode, repository.updateFrequencySeconds) { auto, accuracy, freq ->
             Triple(auto, accuracy, freq)
         },
-        repository.backgroundTrackingEnabled
-    ) { (theme, unit, precision), (auto, accuracy, freq), backgroundEnabled ->
+        repository.keepScreenOn
+    ) { (theme, unit, precision), (auto, accuracy, freq), keepScreenOn ->
         SettingsUiState(
             theme = theme,
             unit = unit,
@@ -51,7 +51,7 @@ class SettingsViewModel @Inject constructor(
             autoMetersUnder1km = auto,
             gpsAccuracyMode = accuracy,
             updateFrequencySeconds = freq,
-            backgroundTrackingEnabled = backgroundEnabled
+            keepScreenOn = keepScreenOn
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SettingsUiState())
 
@@ -70,9 +70,9 @@ class SettingsViewModel @Inject constructor(
     /** Sets hardware GPS accuracy mode. */
     fun setGpsAccuracyMode(mode: GpsAccuracyMode) = viewModelScope.launch { repository.setGpsAccuracyMode(mode) }
 
-    /** Sets GPS polling frequency in seconds. */
+    /** Sets GPS polling frequency in seconds (1s, 2s, 3s, 5s). */
     fun setUpdateFrequencySeconds(value: Int) = viewModelScope.launch { repository.setUpdateFrequencySeconds(value) }
 
-    /** Sets background tracking toggle state. */
-    fun setBackgroundTrackingEnabled(value: Boolean) = viewModelScope.launch { repository.setBackgroundTrackingEnabled(value) }
+    /** Sets keep screen on toggle state. */
+    fun setKeepScreenOn(value: Boolean) = viewModelScope.launch { repository.setKeepScreenOn(value) }
 }

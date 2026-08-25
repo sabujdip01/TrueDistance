@@ -41,6 +41,7 @@ class SettingsRepository @Inject constructor(
         val GPS_ACCURACY_MODE = stringPreferencesKey("gps_accuracy_mode")
         val UPDATE_FREQUENCY_SECONDS = intPreferencesKey("update_frequency_seconds")
         val BACKGROUND_TRACKING_ENABLED = booleanPreferencesKey("background_tracking_enabled")
+        val KEEP_SCREEN_ON = booleanPreferencesKey("keep_screen_on")
     }
 
     /** Observes theme mode preference. */
@@ -68,14 +69,14 @@ class SettingsRepository @Inject constructor(
         GpsAccuracyMode.valueOf(it[Keys.GPS_ACCURACY_MODE] ?: GpsAccuracyMode.HIGH.name)
     }
 
-    /** Observes GPS polling update interval in seconds. */
+    /** Observes GPS polling update interval in seconds (1, 2, 3, 5). */
     val updateFrequencySeconds: Flow<Int> = context.dataStore.data.map {
         it[Keys.UPDATE_FREQUENCY_SECONDS] ?: 3
     }
 
-    /** Observes background tracking permission toggle. */
-    val backgroundTrackingEnabled: Flow<Boolean> = context.dataStore.data.map {
-        it[Keys.BACKGROUND_TRACKING_ENABLED] ?: true
+    /** Observes whether the screen should remain on while the app is in the foreground. */
+    val keepScreenOn: Flow<Boolean> = context.dataStore.data.map {
+        it[Keys.KEEP_SCREEN_ON] ?: false
     }
 
     /** Updates theme preference. */
@@ -108,8 +109,8 @@ class SettingsRepository @Inject constructor(
         context.dataStore.edit { it[Keys.UPDATE_FREQUENCY_SECONDS] = value }
     }
 
-    /** Updates background tracking toggle. */
-    suspend fun setBackgroundTrackingEnabled(value: Boolean) {
-        context.dataStore.edit { it[Keys.BACKGROUND_TRACKING_ENABLED] = value }
+    /** Updates keep screen on switch state. */
+    suspend fun setKeepScreenOn(value: Boolean) {
+        context.dataStore.edit { it[Keys.KEEP_SCREEN_ON] = value }
     }
 }

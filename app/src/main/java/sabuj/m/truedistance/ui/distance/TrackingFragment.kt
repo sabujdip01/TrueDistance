@@ -106,6 +106,8 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
         return binding.root
     }
 
+    private var isFollowLocationMode = false
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -117,6 +119,8 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
         // Stop Tracking button — stops the service and returns to the main screen
         binding.stopButton.setOnClickListener {
             viewModel.stopTracking()
+            isFollowLocationMode = false
+            binding.btnBackToOverview.visibility = View.GONE
             sharedDestinationViewModel.requestClearDestination()
             android.widget.Toast.makeText(requireContext(), getString(R.string.trip_saved), android.widget.Toast.LENGTH_SHORT).show()
             findNavController().popBackStack()
@@ -129,11 +133,26 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
         binding.btnZoomOut.setOnClickListener {
             googleMap?.animateCamera(CameraUpdateFactory.zoomOut())
         }
+
+        // Recenter / Focus on User Current Location (WhatsApp feature)
         binding.btnMyLocation.setOnClickListener {
             val loc = viewModel.uiState.value.currentLocation
-            if (loc != null) {
-                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 15f))
+            if (loc != null && googleMap != null) {
+                if (viewModel.uiState.value.isTracking) {
+                    isFollowLocationMode = true
+                    binding.btnBackToOverview.visibility = View.VISIBLE
+                }
+                val density = resources.displayMetrics.density
+                googleMap?.setPadding(0, (120 * density).toInt(), 0, (20 * density).toInt())
+                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 17.5f))
             }
+        }
+
+        // Return to Overview / Fit Both Markers & Line (WhatsApp feature)
+        binding.btnBackToOverview.setOnClickListener {
+            isFollowLocationMode = false
+            binding.btnBackToOverview.visibility = View.GONE
+            fitOverviewBounds(viewModel.uiState.value)
         }
 
         // Observe tracking state: update distance text, stale indicator, and map
@@ -290,22 +309,45 @@ class TrackingFragment : Fragment(), com.google.android.gms.maps.OnMapReadyCallb
             )
         }
 
-        // --- Auto-fit camera to show both markers with padding ---
+        // --- Auto-fit camera or follow current location ---
+        if (state.isTracking) {
+            if (isFollowLocationMode) {
+                state.currentLocation?.let {
+                    map.animateCamera(CameraUpdateFactory.newLatLng(it))
+                }
+            } else {
+                fitOverviewBounds(state)
+            }
+        }
+    }
+
+    /**
+     * WhatsApp-style overview bounds calculation:
+     * Fits both markers (current location & destination) and straight polyline path
+     * with comfortable screen padding to avoid overlay obstructions.
+     */
+    private fun fitOverviewBounds(state: TrackingState) {
+        val map = googleMap ?: return
+        val density = resources.displayMetrics.density
+
+        val topPadding = (140 * density).toInt()    // ~140dp for distance card + margin
+        val bottomPadding = (100 * density).toInt() // ~100dp for bottom stop tracking button
+        val rightPadding = (85 * density).toInt()   // ~85dp for right-side floating controls stack
+        val leftPadding = (40 * density).toInt()
+        map.setPadding(leftPadding, topPadding, rightPadding, bottomPadding)
+
         if (state.currentLocation != null && state.destination != null) {
             val bounds = LatLngBounds.builder()
                 .include(state.currentLocation)
                 .include(state.destination)
                 .build()
-            // 100px padding for comfortable spacing (map.setPadding handles the card overlay)
             try {
-                map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
+                map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (30 * density).toInt()))
             } catch (_: Exception) {
-                // Map not yet laid out — fall back to simple center
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(state.currentLocation, 14f))
             }
         } else if (state.currentLocation != null) {
-            // Only current location available — center on it
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(state.currentLocation, 14f))
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(state.currentLocation, 16f))
         }
     }
 

@@ -62,45 +62,5 @@ class TrueDistanceApp : Application() {
                 }
             } catch (_: Exception) {}
         }
-
-        // Register global activity lifecycle callbacks to monitor whole-app foreground/background status
-        registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
-            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
-            override fun onActivityStarted(activity: Activity) {
-                if (++runningActivities == 1 && !isChangingConfigurations) {
-                    // Application brought to foreground
-                }
-            }
-            override fun onActivityResumed(activity: Activity) {}
-            override fun onActivityPaused(activity: Activity) {}
-            override fun onActivityStopped(activity: Activity) {
-                isChangingConfigurations = activity.isChangingConfigurations
-                if (--runningActivities == 0 && !isChangingConfigurations) {
-                    // Entire application sent to background (Home button / Task switch / Screen lock)
-                    CoroutineScope(Dispatchers.IO).launch {
-                        try {
-                            val bgEnabled = settingsRepository.backgroundTrackingEnabled.first()
-                            if (!bgEnabled) {
-                                // Background tracking disabled: stop active True Distance session
-                                val trackingStopIntent = Intent(applicationContext, TrackingService::class.java).apply {
-                                    action = TrackingService.ACTION_STOP
-                                }
-                                startService(trackingStopIntent)
-
-                                // Background tracking disabled: stop active Speedometer session
-                                val speedometerStopIntent = Intent(applicationContext, SpeedometerService::class.java).apply {
-                                    action = SpeedometerService.ACTION_STOP
-                                }
-                                startService(speedometerStopIntent)
-                            }
-                        } catch (e: Exception) {
-                            Log.e("TrueDistanceApp", "Error stopping services on app background", e)
-                        }
-                    }
-                }
-            }
-            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
-            override fun onActivityDestroyed(activity: Activity) {}
-        })
     }
 }

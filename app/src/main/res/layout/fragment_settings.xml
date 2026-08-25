@@ -260,11 +260,11 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Update Frequency Card (Pill Toggle) -->
+            <!-- Card 4: Update Frequency Selector Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
+                android:layout_marginBottom="12dp"
                 app:cardBackgroundColor="@color/card_white"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="3dp">
@@ -284,7 +284,7 @@
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
-                    <!-- Pill Toggle Selector for Frequency -->
+                    <!-- Pill Toggle Selector for Frequency (1s, 2s, 3s, 5s) -->
                     <com.google.android.material.button.MaterialButtonToggleGroup
                         android:id="@+id/frequencyToggleGroup"
                         android:layout_width="match_parent"
@@ -304,6 +304,15 @@
                             android:textSize="12sp" />
 
                         <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnFreq2s"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="44dp"
+                            android:layout_weight="1"
+                            android:text="2s"
+                            android:textSize="12sp" />
+
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnFreq3s"
                             style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
@@ -320,20 +329,11 @@
                             android:layout_weight="1"
                             android:text="5s"
                             android:textSize="12sp" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnFreq10s"
-                            style="@style/Widget.Material3.Button.OutlinedButton"
-                            android:layout_width="0dp"
-                            android:layout_height="44dp"
-                            android:layout_weight="1"
-                            android:text="10s"
-                            android:textSize="12sp" />
                     </com.google.android.material.button.MaterialButtonToggleGroup>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Background Tracking Card -->
+            <!-- Card 5: Keep Screen On Toggle Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -353,15 +353,15 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:drawableStart="@drawable/ic_distance"
+                        android:drawableStart="@drawable/ic_screen"
                         android:drawablePadding="8dp"
-                        android:text="@string/background_tracking"
+                        android:text="@string/keep_screen_on"
                         android:textColor="@color/text_charcoal"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
                     <com.google.android.material.materialswitch.MaterialSwitch
-                        android:id="@+id/backgroundTrackingSwitch"
+                        android:id="@+id/keepScreenOnSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </LinearLayout>

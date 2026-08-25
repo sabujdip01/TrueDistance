@@ -124,23 +124,25 @@ class SettingsFragment : Fragment() {
             }
         }
 
-        // Update Frequency Pill Toggle Selector
+        // Update Frequency Pill Toggle Selector (1s, 2s, 3s, 5s)
         binding.frequencyToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked || isApplyingState) return@addOnButtonCheckedListener
             when (checkedId) {
                 R.id.btnFreq1s -> viewModel.setUpdateFrequencySeconds(1)
+                R.id.btnFreq2s -> viewModel.setUpdateFrequencySeconds(2)
                 R.id.btnFreq3s -> viewModel.setUpdateFrequencySeconds(3)
                 R.id.btnFreq5s -> viewModel.setUpdateFrequencySeconds(5)
-                R.id.btnFreq10s -> viewModel.setUpdateFrequencySeconds(10)
             }
         }
 
-        // Auto-meters & Background tracking switches
+        // Auto-meters switch
         binding.autoMetersSwitch.setOnCheckedChangeListener { _, checked ->
             if (!isApplyingState) viewModel.setAutoMetersUnder1km(checked)
         }
-        binding.backgroundTrackingSwitch.setOnCheckedChangeListener { _, checked ->
-            if (!isApplyingState) viewModel.setBackgroundTrackingEnabled(checked)
+
+        // Keep screen on switch
+        binding.keepScreenOnSwitch.setOnCheckedChangeListener { _, checked ->
+            if (!isApplyingState) viewModel.setKeepScreenOn(checked)
         }
     }
 
@@ -179,10 +181,10 @@ class SettingsFragment : Fragment() {
         // Frequency Toggle State
         val freqButtonId = when (state.updateFrequencySeconds) {
             1 -> R.id.btnFreq1s
+            2 -> R.id.btnFreq2s
             3 -> R.id.btnFreq3s
             5 -> R.id.btnFreq5s
-            10 -> R.id.btnFreq10s
-            else -> R.id.btnFreq1s
+            else -> R.id.btnFreq3s
         }
         if (binding.frequencyToggleGroup.checkedButtonId != freqButtonId) {
             binding.frequencyToggleGroup.check(freqButtonId)
@@ -192,8 +194,8 @@ class SettingsFragment : Fragment() {
         if (binding.autoMetersSwitch.isChecked != state.autoMetersUnder1km) {
             binding.autoMetersSwitch.isChecked = state.autoMetersUnder1km
         }
-        if (binding.backgroundTrackingSwitch.isChecked != state.backgroundTrackingEnabled) {
-            binding.backgroundTrackingSwitch.isChecked = state.backgroundTrackingEnabled
+        if (binding.keepScreenOnSwitch.isChecked != state.keepScreenOn) {
+            binding.keepScreenOnSwitch.isChecked = state.keepScreenOn
         }
 
         isApplyingState = false

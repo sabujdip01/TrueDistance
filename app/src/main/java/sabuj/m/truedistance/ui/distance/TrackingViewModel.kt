@@ -16,12 +16,11 @@ import javax.inject.Inject
 
 /**
  * §6.1.4 Tracking Screen ViewModel — Bridges [TrackingFragment] with [TrackingService] via [TrackingStateHolder],
- * handling service startup, synchronous state reset, stopping, and background tracking policy enforcement.
+ * handling service startup, synchronous state reset, and stopping.
  */
 @HiltViewModel
 class TrackingViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val settingsRepository: SettingsRepository,
     private val stateHolder: TrackingStateHolder
 ) : ViewModel() {
 
@@ -47,16 +46,5 @@ class TrackingViewModel @Inject constructor(
         context.startService(
             Intent(context, TrackingService::class.java).setAction(TrackingService.ACTION_STOP)
         )
-    }
-
-    /**
-     * §6.1.4 / §6.3.1 — called from Fragment.onStop(): if Background Tracking is
-     * disabled in Settings, leaving the screen should stop tracking rather than
-     * continue silently.
-     */
-    suspend fun stopIfBackgroundTrackingDisabled() {
-        val enabled = settingsRepository.backgroundTrackingEnabled
-        val isEnabled = enabled.first()
-        if (!isEnabled) stopTracking()
     }
 }

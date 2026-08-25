@@ -575,7 +575,7 @@ Selection Req:    true
 Button Style:     Widget.Material3.Button.OutlinedButton
 Active State:     Filled primary_violet (#7C4DFF) with text_on_primary (#FFFFFF)
 Inactive State:   Transparent with text_charcoal / text_slate stroke
-Groups:           Units (KM/Miles), Theme (System/Light/Dark), GPS Accuracy (High/Balanced/Device), Update Frequency (1s/3s/5s/10s)
+Groups:           Units (KM/Miles), Theme (System/Light/Dark), GPS Accuracy (High/Balanced/Device), Update Frequency (1s/2s/3s/5s)
 ```
 
 ### 7.6 Switches (Settings)
@@ -653,6 +653,34 @@ Icon:             Optional — relevant illustration (not implemented in V1)
 Examples:
   - "No Saved Locations Yet"
   - "No Tracking History yet"
+```
+
+### 7.11 Floating Map Controls Stack & WhatsApp-Style Recenter/Overview (V2)
+
+```
+Position:         Bottom-right of map view (16dp margin end, 16dp margin bottom)
+Orientation:      Vertical LinearLayout stack (10dp vertical button spacing)
+Buttons:
+  1. btnMyLocation:
+     - Icon:      @drawable/ic_recenter (crosshair)
+     - Size:      44x44dp, @drawable/bg_icon_chip (card_white fill, primary_violet icon)
+     - Action:    Zooms in tight on user's current location (17.5f), enters Follow Mode, and reveals btnBackToOverview.
+  2. btnBackToOverview (WhatsApp Feature):
+     - Icon:      @drawable/ic_undo (curved return arrow)
+     - Size:      44x44dp, @drawable/bg_icon_chip
+     - Visibility: GONE in default Overview Mode; VISIBLE in Follow Mode.
+     - Action:    Returns to Overview Mode, auto-frames all active markers and route polylines with overlay-safe padding, and hides itself.
+  3. btnZoomIn:
+     - Icon:      @drawable/ic_add (+)
+     - Size:      44x44dp, @drawable/bg_icon_chip
+  4. btnZoomOut:
+     - Icon:      @drawable/ic_minus (-)
+     - Size:      44x44dp, @drawable/bg_icon_chip
+
+Overlay Safe Padding:
+  - Top:          Card height + 20dp (~130-140dp) to clear top distance/speed overlay card.
+  - Right:        85dp to ensure markers and polylines are never obscured behind floating controls stack.
+  - Left & Bottom: 40dp margin cushion.
 ```
 
 ---
@@ -746,7 +774,10 @@ Layout:           Map wrapped in rounded card frame, controls below map
 |  |    |     (signal lost...)  |   | |     card_white_translucent, 16dp radius
 |  |    +-----------------------+   | |
 |  |                                | |
-|  |                         [R]    | |  <- Recenter FAB, bottom-right of map
+|  |                        [R]     | |  <- Floating stack (Recenter, [Back to Overview], +, -)
+|  |                        [<-]    | |     85dp right-side padding for unobstructed marker view
+|  |                        [+]     | |
+|  |                        [-]     | |
 |  +--------------------------------+ |
 +-------------------------------------+
 |                                     |
@@ -848,6 +879,7 @@ Layout (80% Content | 20% Centered Delete):
 |                                     |
 |  Older                              |
 |  ...                                |
+|  +------------------------------+   |
 +-------------------------------------+
 
 Expand/collapse:  Tap on entry row toggles expansion. Only ONE card expanded at a time.
@@ -858,30 +890,27 @@ Overflow menu:    "Clear All" with confirmation dialog
 ### 8.6 Settings Screen
 
 ```
-Root:             ScrollView -> ConstraintLayout -> LinearLayout (vertical)
-Background:       background_soft (#F9F4F8)
-Max content width: 600dp
+Root:             ScrollView -> ConstraintLayout
+Background:       background_soft (#F9F4F8 / #1C1B1A)
 
-Layout:
 +-------------------------------------+
-|                                     |
-|  Preferences                        |  <- Section header (16sp bold, charcoal)
+|  Preferences                        |  <- Section header (14sp bold, gray_purple)
 |                                     |
 |  Theme                              |  <- Label (13sp, gray_purple)
-|  [Light / Dark / System v]          |  <- Spinner
+|  [System / Light / Dark]            |  <- Pill Toggle
 |                                     |
 |  Units                              |
-|  [KM (Default) / Miles / Both v]    |
+|  [Kilometers / Miles]               |  <- Pill Toggle
 |                                     |
 |  Show meters under 1 km    [====]   |  <- Switch row
 |                                     |
 |  GPS Accuracy                       |
-|  [High Accuracy v]                  |
+|  [High / Balanced / Device]         |  <- Pill Toggle
 |                                     |
 |  Update Frequency                   |
-|  [Every 3s v]                       |
+|  [1s / 2s / 3s / 5s]                |  <- Pill Toggle
 |                                     |
-|  Background Tracking       [====]   |  <- Switch row
+|  Keep Screen On            [====]   |  <- Switch row
 |                                     |
 |  -----------------------------------| <- Divider (1dp, gray at 30%)
 |                                     |
@@ -922,7 +951,10 @@ Layout (top to bottom):
 |  |  (17f on load -> 18.5f start)  | |     12dp margin, 2dp elevation
 |  |  (breadcrumb polyline #00796B) | |     auto-drag & auto-zoom out bounds
 |  |                                | |
-|  |                         [R]    | |  <- Recenter FAB, bottom-right of map
+|  |                        [R]     | |  <- Floating stack (Recenter, [Back to Overview], +, -)
+|  |                        [<-]    | |     85dp right-side padding for safe marker visibility
+|  |                        [+]     | |
+|  |                        [-]     | |
 |  +--------------------------------+ |
 +-------------------------------------+
 |  +-- Gradient Stats Card (24dp) --+ |
