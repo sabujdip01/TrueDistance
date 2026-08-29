@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Main app theme — Light mode base -->
+    <style name="Theme.TrueDistance" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary_violet</item>
+        <item name="colorPrimaryVariant">@color/primary_violet_dark</item>
+        <item name="colorSecondary">@color/primary_lavender</item>
+        <item name="android:windowBackground">@color/background_soft</item>
+
+        <!-- Material3 nav bar active indicator pill color roles -->
+        <!-- colorSecondaryContainer = pill fill, colorOnSecondaryContainer = icon/text on pill -->
+        <item name="colorSecondaryContainer">@color/primary_violet</item>
+        <item name="colorOnSecondaryContainer">@color/text_on_primary</item>
+
+        <!-- Transparent status bar with dark icons -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@color/background_soft</item>
+
+        <!-- Modern Dialog Style -->
+        <item name="materialAlertDialogTheme">@style/Theme.TrueDistance.Dialog</item>
+
+        <!-- Button styles -->
+        <item name="materialButtonStyle">@style/Widget.App.Button</item>
+        <item name="bottomNavigationStyle">@style/Widget.App.BottomNavigationView</item>
+    </style>
+
+    <style name="Theme.TrueDistance.Dialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.App.Dialog</item>
+        <item name="android:background">@color/card_white</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button.Text</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.Button.Text</item>
+    </style>
+
+    <style name="ShapeAppearance.App.Dialog" parent="">
+        <item name="cornerSize">24dp</item>
+    </style>
+
+    <style name="ShapeAppearance.App.Pill" parent="ShapeAppearance.Material3.Corner.Full">
+        <item name="cornerSize">22dp</item>
+    </style>
+
+    <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button">
+        <item name="cornerRadius">12dp</item>
+        <item name="backgroundTint">@color/primary_violet</item>
+        <item name="android:textColor">@color/text_on_primary</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+    </style>
+
+    <style name="Widget.App.Button.Text" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/primary_violet</item>
+    </style>
+
+    <style name="Widget.App.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
+        <item name="itemIconTint">@color/nav_item_color_state</item>
+        <item name="itemTextColor">@color/nav_label_color_state</item>
+        <item name="itemBackground">@drawable/bg_nav_item_selector</item>
+        <item name="itemActiveIndicatorStyle">@style/Widget.App.ActiveIndicator.None</item>
+        <item name="itemTextAppearanceActive">@style/BottomNavActiveTextAppearance</item>
+        <item name="itemTextAppearanceInactive">@style/BottomNavInactiveTextAppearance</item>
+        <item name="backgroundTint">@null</item>
+        <item name="elevation">0dp</item>
+        <item name="labelVisibilityMode">labeled</item>
+        <item name="itemPaddingTop">7dp</item>
+        <item name="itemPaddingBottom">0dp</item>
+        <item name="itemRippleColor">@color/primary_lavender</item>
+    </style>
+
+    <style name="Widget.App.ActiveIndicator.None" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:width">0dp</item>
+        <item name="android:height">0dp</item>
+        <item name="android:color">@android:color/transparent</item>
+    </style>
+
+    <style name="BottomNavActiveTextAppearance">
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:lineSpacingExtra">-2dp</item>
+    </style>
+
+    <style name="BottomNavInactiveTextAppearance">
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:lineSpacingExtra">-2dp</item>
+    </style>
+
+    <!-- Splash Screen theme -->
+    <style name="Theme.TrueDistance.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/background_soft</item>
+        <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
+        <item name="postSplashScreenTheme">@style/Theme.TrueDistance</item>
+    </style>
+
+    <!-- Settings styles -->
+    <style name="SettingsSectionHeader">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:textColor">@color/text_charcoal</item>
+    </style>
+
+    <style name="SettingsLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:textColor">@color/text_gray_purple</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="SettingsSpinner">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="SettingsRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingVertical">12dp</item>
+    </style>
+</resources>

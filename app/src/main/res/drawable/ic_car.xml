@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sleek Top-Down Car Icon Vector Drawable -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="28dp"
+    android:height="28dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Main Car Chassis -->
+    <path
+        android:fillColor="#7C4DFF"
+        android:pathData="M7,3 C6,3 5,4 5,6 L5,18 C5,20 6,21 7,21 L8,21 L8,22 C8,22.5 8.5,23 9,23 C9.5,23 10,22.5 10,22 L10,21 L14,21 L14,22 C14,22.5 14.5,23 15,23 C15.5,23 16,22.5 16,22 L16,21 L17,21 C18,21 19,20 19,18 L19,6 C19,4 18,3 17,3 Z" />
+    <!-- Front Windshield Glass -->
+    <path
+        android:fillColor="#E0F7FA"
+        android:pathData="M8,7 C8,6.5 8.5,6 9,6 L15,6 C15.5,6 16,6.5 16,7 L16,9.5 C16,9.8 15.8,10 15.5,10 L8.5,10 C8.2,10 8,9.8 8,9.5 Z" />
+    <!-- Rear Windshield Glass -->
+    <path
+        android:fillColor="#B2EBF2"
+        android:pathData="M8.5,15 C8.2,15 8,14.8 8,14.5 L8,13.5 C8,13.2 8.2,13 8.5,13 L15.5,13 C15.8,13 16,13.2 16,13.5 L16,14.5 C16,14.8 15.8,15 15.5,15 Z" />
+    <!-- Roof Shell Accent -->
+    <path
+        android:fillColor="#651FFF"
+        android:pathData="M8,10 L16,10 L16,13 L8,13 Z" />
+    <!-- Left Side Mirror -->
+    <path
+        android:fillColor="#512DA8"
+        android:pathData="M4,7 C3.5,7 3,7.5 3,8 L3,9 C3,9.5 3.5,10 4,10 Z" />
+    <!-- Right Side Mirror -->
+    <path
+        android:fillColor="#512DA8"
+        android:pathData="M20,7 C20.5,7 21,7.5 21,8 L21,9 C21,9.5 20.5,10 20,10 Z" />
+    <!-- Front Headlights -->
+    <path
+        android:fillColor="#FFF59D"
+        android:pathData="M7,3.5 L9,3.5 L8.5,4.5 L7,4.5 Z M15,3.5 L17,3.5 L17,4.5 L15.5,4.5 Z" />
+</vector>

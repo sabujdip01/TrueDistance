@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Destination Reached celebration dialog layout.
+     Matches the app's violet/lavender theme with a clean card design. -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="32dp"
+    android:background="@drawable/dialog_rounded_bg">
+
+    <!-- Checkmark icon -->
+    <ImageView
+        android:id="@+id/successIcon"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:src="@drawable/ic_check_circle"
+        android:contentDescription="Success"
+        app:tint="@color/primary_violet" />
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/reachedTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Destination Reached!"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="@color/text_charcoal"
+        android:gravity="center" />
+
+    <!-- Destination name -->
+    <TextView
+        android:id="@+id/reachedDestinationName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="15sp"
+        android:textColor="@color/text_gray_purple"
+        android:gravity="center" />
+
+    <!-- Close button -->
+    <Button
+        android:id="@+id/closeButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Close"
+        app:backgroundTint="@color/primary_violet"
+        android:textColor="@android:color/white"
+        android:textSize="16sp" />
+
+</LinearLayout>
